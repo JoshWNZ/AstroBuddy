@@ -1,0 +1,178 @@
+package com.pilot.astrobuddy.presentation.forecast_display
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.BottomAppBar
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.pilot.astrobuddy.domain.model.weatherapi.Astro
+import com.pilot.astrobuddy.presentation.Screen
+import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastDayItem
+import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastScrollerItem
+
+
+@Composable
+fun ForecastScreen(
+    navController: NavController,
+    viewModel: ForecastViewModel = hiltViewModel()
+){
+    val state = viewModel.state.value
+    val scaffoldState = rememberScaffoldState()
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar ={
+            TopAppBar(
+                title={Text("Forecast")},
+                backgroundColor = Color.DarkGray,
+                actions = {
+                    Row(){
+                        Icon(
+                            imageVector = Icons.Rounded.Bookmark,
+                            tint = if(state.isSaved){Color.Yellow}else{Color.LightGray},
+                            contentDescription = "SaveLoc",
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .clickable {
+                                    viewModel.toggleSaved(viewModel.location.id)
+                                }
+                        )
+                        Icon(
+                            imageVector = Icons.Rounded.Menu,
+                            contentDescription = null
+                        )
+                    }
+                          },
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowBack,
+                        contentDescription = "Back",
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .clickable {
+                                navController.navigate(Screen.LocationSearchScreen.route)
+                            }
+                    )
+                }
+            )
+        },
+        content = {padding->
+            Column(
+                modifier = Modifier
+                    .background(MaterialTheme.colors.background)
+                    .padding(padding)
+            ) {
+                state.forecast?.let { fc ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Blue),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        var locName = ""
+                        //if a real location and not a generated blank one (for raw coord entry)
+                        if(!viewModel.location.name.isEmpty() && viewModel.location.name!="_") {
+                            locName = viewModel.location.name
+                        }
+                        Column(modifier = Modifier
+                            .align(CenterVertically)
+                            .padding(start = 5.dp)
+                        ){
+                            if(locName.isNotEmpty()){
+                                Text(
+                                    text= locName,
+                                    style = MaterialTheme.typography.body1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text= "${fc.latitude}, ${fc.longitude}",
+                                    style = MaterialTheme.typography.body1,
+                                )
+                            }else{
+                                Text(
+                                    text= "${fc.latitude}, ${fc.longitude}",
+                                    style = MaterialTheme.typography.body1,
+                                )
+                            }
+
+                        }
+                        Column(modifier = Modifier
+                            .align(CenterVertically)
+                            .padding(end = 5.dp)){
+                            val lightPollution = getLightPollution(fc.latitude.toString(),fc.longitude.toString())
+                            Text(
+                                text= "sqm: ${lightPollution.second}",
+                                style = MaterialTheme.typography.body1
+                            )
+                            Text(
+                                text= "bortle: ${lightPollution.first}",
+                                style = MaterialTheme.typography.body1
+                            )
+                        }
+                    }
+                    val curAstro: List<Astro> = if(state.astro.isNotEmpty()){
+                        state.astro
+                    } else{
+                        emptyList()
+                    }
+                    ForecastScrollerItem(fd = fc, astro = curAstro)
+                }
+                if (state.error.isNotBlank()) {
+                    Text(
+                        text = state.error,
+                        color = MaterialTheme.colors.error,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                    )
+                }
+                if (state.isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }
+            }
+        },
+        bottomBar = {
+            BottomAppBar(backgroundColor = Color.DarkGray) {
+                Text("Example Nav Bar", textAlign = TextAlign.Center)
+            }
+        }
+    )
+}
+
+private fun getLightPollution(lat: String, long: String): Pair<Int,Double>{
+    val goawaywarning = lat+long+"a"
+    goawaywarning+""
+    return Pair(0,0.0)
+}
