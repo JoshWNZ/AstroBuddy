@@ -38,13 +38,12 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-
 fun ForecastDayItem(
     fd: OMForecast,
-    day: Int,
+    d: Int,
     astro: Astro
 ){
-    val date = LocalDate.parse(fd.hourly.time[day*24], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    val date = LocalDate.parse(fd.hourly.time[d*24], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     val day = date.format(DateTimeFormatter.ofPattern("EEE"))
     val dayMon = date.format(DateTimeFormatter.ofPattern("dd - MMM"))
     Row(

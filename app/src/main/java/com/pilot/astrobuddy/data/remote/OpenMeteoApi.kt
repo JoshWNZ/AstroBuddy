@@ -1,13 +1,14 @@
 package com.pilot.astrobuddy.data.remote
 
 import com.pilot.astrobuddy.data.remote.dto.openmeteo_dto.OMForecastDto
-import com.pilot.astrobuddy.data.remote.dto.openmeteo_dto.OMLocationResultDto
-import com.pilot.astrobuddy.data.remote.dto.openmeteo_dto.ResultDto
-
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface OpenMeteoApi {
+    /*
+    Function to get a forecast from the openmeteo api, given a lat and long value, and map the json output
+     to an OMForecastDto object
+     */
     @GET("/v1/forecast")
     suspend fun getForecast(
         @Query("latitude") lat: String,

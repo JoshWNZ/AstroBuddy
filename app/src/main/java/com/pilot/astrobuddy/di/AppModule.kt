@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.room.Room
 import com.pilot.astrobuddy.common.Constants
 import com.pilot.astrobuddy.data.local.AstroBuddyDatabase
-import com.pilot.astrobuddy.data.local.OMLocationDao
 import com.pilot.astrobuddy.data.remote.OpenMeteoApi
 import com.pilot.astrobuddy.data.remote.OpenMeteoSearchApi
 import com.pilot.astrobuddy.data.remote.WeatherApi
@@ -20,10 +19,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
+/*
+Contains providers for dagger hilt to inject dependencies
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    //retrofit
     @Provides
     @Singleton
     fun providesWeatherApi() : WeatherApi {
@@ -54,6 +57,7 @@ object AppModule {
             .create(OpenMeteoSearchApi::class.java)
     }
 
+    //repositories
     @Provides
     @Singleton
     fun providesForecastRepository(apiWA: WeatherApi, apiOM: OpenMeteoApi, apiSOM: OpenMeteoSearchApi): ForecastRepository{
@@ -66,6 +70,7 @@ object AppModule {
         return SavedLocationRepositoryImpl(db.locDao)
     }
 
+    //room database
     @Provides
     @Singleton
     fun provideAstroBuddyDatabase(app: Application): AstroBuddyDatabase{

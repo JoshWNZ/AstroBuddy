@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -34,7 +33,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pilot.astrobuddy.domain.model.weatherapi.Astro
 import com.pilot.astrobuddy.presentation.Screen
-import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastDayItem
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastScrollerItem
 
 
@@ -53,7 +51,8 @@ fun ForecastScreen(
                 title={Text("Forecast")},
                 backgroundColor = Color.DarkGray,
                 actions = {
-                    Row(){
+                    Row{
+                        //Button to save/bookmark location
                         Icon(
                             imageVector = Icons.Rounded.Bookmark,
                             tint = if(state.isSaved){Color.Yellow}else{Color.LightGray},
@@ -64,6 +63,7 @@ fun ForecastScreen(
                                     viewModel.toggleSaved(viewModel.location.id)
                                 }
                         )
+                        //menu button for decoration i suppose
                         Icon(
                             imageVector = Icons.Rounded.Menu,
                             contentDescription = null
@@ -71,6 +71,7 @@ fun ForecastScreen(
                     }
                           },
                 navigationIcon = {
+                    //Button to navigate back
                     Icon(
                         imageVector = Icons.Rounded.ArrowBack,
                         contentDescription = "Back",
@@ -89,6 +90,7 @@ fun ForecastScreen(
                     .background(MaterialTheme.colors.background)
                     .padding(padding)
             ) {
+                //show the forecast when it's available
                 state.forecast?.let { fc ->
                     Row(
                         modifier = Modifier
@@ -98,13 +100,14 @@ fun ForecastScreen(
                     ){
                         var locName = ""
                         //if a real location and not a generated blank one (for raw coord entry)
-                        if(!viewModel.location.name.isEmpty() && viewModel.location.name!="_") {
+                        if(viewModel.location.name.isNotEmpty() && viewModel.location.name!="_") {
                             locName = viewModel.location.name
                         }
                         Column(modifier = Modifier
                             .align(CenterVertically)
                             .padding(start = 5.dp)
                         ){
+                            //Show name if available, and coordinates
                             if(locName.isNotEmpty()){
                                 Text(
                                     text= locName,
@@ -121,8 +124,8 @@ fun ForecastScreen(
                                     style = MaterialTheme.typography.body1,
                                 )
                             }
-
                         }
+                        //Light pollution info
                         Column(modifier = Modifier
                             .align(CenterVertically)
                             .padding(end = 5.dp)){
@@ -137,13 +140,14 @@ fun ForecastScreen(
                             )
                         }
                     }
-                    val curAstro: List<Astro> = if(state.astro.isNotEmpty()){
-                        state.astro
-                    } else{
+                    //Get the astronomical forecast
+                    val curAstro: List<Astro> = state.astro.ifEmpty {
                         emptyList()
                     }
+                    //pass forecast data into scrollable composable
                     ForecastScrollerItem(fd = fc, astro = curAstro)
                 }
+                //display an error message if one is available
                 if (state.error.isNotBlank()) {
                     Text(
                         text = state.error,
@@ -154,6 +158,7 @@ fun ForecastScreen(
                             .padding(horizontal = 20.dp)
                     )
                 }
+                //display a spinning loading icon if the resource flow is still loading
                 if (state.isLoading) {
                     Box(
                         modifier = Modifier.fillMaxSize()
@@ -164,6 +169,7 @@ fun ForecastScreen(
             }
         },
         bottomBar = {
+            //TODO
             BottomAppBar(backgroundColor = Color.DarkGray) {
                 Text("Example Nav Bar", textAlign = TextAlign.Center)
             }
@@ -171,6 +177,10 @@ fun ForecastScreen(
     )
 }
 
+/*
+Helper function to get light pollution info from some magical method that i will write
+sometime maybe
+ */
 private fun getLightPollution(lat: String, long: String): Pair<Int,Double>{
     val goawaywarning = lat+long+"a"
     goawaywarning+""

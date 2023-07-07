@@ -3,7 +3,9 @@ package com.pilot.astrobuddy.domain.use_case.get_locations
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.domain.repository.SavedLocationRepository
 import javax.inject.Inject
-
+/*
+Use-case to define suspend functions to access location database
+ */
 class GetSavedLocUseCase @Inject constructor(
     private val repository: SavedLocationRepository
 ){

@@ -7,6 +7,9 @@ import androidx.room.Query
 import com.pilot.astrobuddy.data.local.entity.OMLocationEntity
 import com.pilot.astrobuddy.data.local.entity.OMLocationSavedEntity
 
+/*
+Dao to access and update the location and saved-location tables in the database
+ */
 @Dao
 interface OMLocationDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -30,6 +33,7 @@ interface OMLocationDao{
     @Query("DELETE FROM OMLocationSavedEntity WHERE (:delId)==id")
     suspend fun unsaveLocation(delId: Int)
 
+    //Query method to delete all locations which haven't been saved/bookmarked by the user
     @Query("DELETE FROM OMLocationEntity WHERE id NOT IN(SELECT id FROM OMLocationSavedEntity)")
     suspend fun deleteUnsaved()
 }

@@ -1,6 +1,5 @@
 package com.pilot.astrobuddy.presentation.forecast_display
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -25,31 +24,47 @@ class ForecastViewModel @Inject constructor(
     private val getSavedLocUseCase: GetSavedLocUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
+    //initialise a mutable forecast
     private val _state = mutableStateOf(ForecastState())
     val state: State<ForecastState> = _state
 
+    //initialise an empty location for if the api call fails
     var location =  OMLocation("","","","","","",0.0,0,0.0,0.0,"")
 
+    /*
+    initialise the state information
+     */
     init {
+        //get location id from the nav parameters
         val id = savedStateHandle.get<String>(Constants.PARAM_ID_NAME)
-        Log.i("locLoaded",id.toString())
+
+        //launch a coroutine
         viewModelScope.launch {
+            //fetch location from database
             if (id != null) {
                 location = getSavedLocUseCase.getLocation(id.toInt())
             }
+            //check if the location is already bookmarked
             if (getSavedLocUseCase.getAllSaved().contains(location.id)) {
                 _state.value = _state.value.copy(isSaved = true)
             }
+            //fetch lat/long from location
             val lat = location.latitude.toString()
             val long = location.longitude.toString()
-
-            getForecast(lat, long)
-            getAstro(lat, long)
+            //launch coroutines to get weather and astro forecasts
+            launch{
+                getForecast(lat, long)
+            }
+            launch{
+                getAstro(lat, long)
+            }
         }
 
     }
 
+    /*
+    Function to get forecast and update the state accordingly
+     */
     private fun getForecast(latitude: String, longitude: String){
         getForecastUseCase(latitude,longitude).onEach{result ->
             when(result){
@@ -68,6 +83,9 @@ class ForecastViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    /*
+    Function to get astronomical forecast and update state accordingly
+     */
     private fun getAstro(latitude: String, longitude: String){
         getAstroUseCase(latitude,longitude).onEach{result ->
             when(result){
@@ -78,7 +96,6 @@ class ForecastViewModel @Inject constructor(
                     _state.value = _state.value.copy(
                         astroError = result.message ?: "An unexpected error occurred"
                     )
-                    Log.i("bork",result.message?: "An unexpected error occurred")
                 }
                 is Resource.Loading -> {
                     _state.value = _state.value.copy(isAstroLoading = true)
@@ -87,6 +104,9 @@ class ForecastViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    /*
+    Save or unsave a location
+     */
     fun toggleSaved(id: Int){
         viewModelScope.launch{
             if(_state.value.isSaved){

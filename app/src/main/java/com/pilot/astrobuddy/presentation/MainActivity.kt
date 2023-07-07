@@ -20,6 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AstroBuddyTheme {
                 Surface(color = MaterialTheme.colors.background){
+                    //initialise navcontroller and navhost
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,

@@ -1,6 +1,5 @@
 package com.pilot.astrobuddy.presentation.forecast_display.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -12,12 +11,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
@@ -29,8 +26,6 @@ import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -53,10 +48,12 @@ fun ForecastScrollerItem(
     fd: OMForecast,
     astro: List<Astro>
 ){
+    val scope = rememberCoroutineScope()
 
+    //remember the states of the day and hour rows
     val dayRowState = rememberLazyListState()
     val hoursRowState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
+    //update the day row position when the hour row moves, but more slowly to keep in sync
     val scrollState = rememberScrollableState{delta->
         scope.launch{
             dayRowState.scrollBy(-delta/1.465f)
@@ -64,15 +61,16 @@ fun ForecastScrollerItem(
         }
         delta
     }
-
+    //store the current pixel width of the screen
     val width = LocalConfiguration.current.screenWidthDp
 
+    //fetch the current datetime from the system, format it to an hour value
     val curTime = LocalDateTime.now()
     val curHour = curTime.format(DateTimeFormatter.ofPattern("HH"))
 
+    //automatically scroll to the current hour
     LaunchedEffect(Unit){
         scope.launch{
-            //Log.i("SCROLLED",(curHour.toFloat()*(25.dp.value)).toString())
             scrollState.animateScrollBy(curHour.toFloat()*(25.dp.value))
             hoursRowState.animateScrollToItem(curHour.toInt())
         }
@@ -86,14 +84,19 @@ fun ForecastScrollerItem(
             flingBehavior = ScrollableDefaults.flingBehavior()
         )
     ){
+        //day row cannot be scrolled by the user, can only be updated
+        // by the scrollstate of the hour row
         LazyRow(
             state = dayRowState,
             userScrollEnabled = false
         ){
+            //give each day an item in the row
             items(fd.hourly.time.size/24){d->
+                    //format the first datetime from each day
                     val date = LocalDate.parse(fd.hourly.time[d*24], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     val day = date.format(DateTimeFormatter.ofPattern("EEE"))
                     val dayMon = date.format(DateTimeFormatter.ofPattern("dd - MMM"))
+                    //display the date as dd-mm and the day as a word
                     Box(
                         modifier = Modifier
                             .background(Color.LightGray)
@@ -113,6 +116,7 @@ fun ForecastScrollerItem(
                             )
                         }
                     }
+                    //get the current astronomical forecast or default to an empty one (to be fixed)
                     val curAstro = astro.elementAtOrElse(d){Astro("","","","","","")}
                     Row(
                         modifier = Modifier
@@ -164,8 +168,9 @@ fun ForecastScrollerItem(
         }
         Row(modifier = Modifier.height(300.dp)){
             Column{
+                //display a column of labels for each element of the forecast
                 val labels = listOf(
-                    "time","cloudTot","cloudHi","cloudMed","cloudLow","rainprob","windspd","winddir","temp","feels","humidity","dewpoint"
+                    "time","cloudTot","cloudHi","cloudMed","cloudLow","visibility","rainprob","windspd","winddir","temp","feels","humidity","dewpoint"
                 )
                 Column(
                     modifier = Modifier
@@ -190,11 +195,13 @@ fun ForecastScrollerItem(
 
                 }
             }
+            //Vertical divider
             Divider(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(1.dp)
             )
+            //scrollable lazyrow containing all forecast values for each hour
             LazyRow(
                 state = hoursRowState,
                 userScrollEnabled = false
@@ -205,6 +212,7 @@ fun ForecastScrollerItem(
 
                     val curDay = (dayMon == curTime.format(DateTimeFormatter.ofPattern("dd - MMM")))
 
+                    //pass the current hour into hours from the current day
                     if(curDay){
                         ForecastHourItem(forecastHour = fd.hourly, i=i, curHour = curHour)
                     }else{

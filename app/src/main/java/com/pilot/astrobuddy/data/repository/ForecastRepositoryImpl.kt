@@ -5,12 +5,13 @@ import com.pilot.astrobuddy.data.remote.OpenMeteoSearchApi
 import com.pilot.astrobuddy.data.remote.WeatherApi
 import com.pilot.astrobuddy.data.remote.dto.openmeteo_dto.OMForecastDto
 import com.pilot.astrobuddy.data.remote.dto.openmeteo_dto.OMLocationResultDto
-import com.pilot.astrobuddy.data.remote.dto.openmeteo_dto.ResultDto
 import com.pilot.astrobuddy.data.remote.dto.weatherapi_dto.ForecastResultDto
 import com.pilot.astrobuddy.data.remote.dto.weatherapi_dto.LocationResultDto
 import com.pilot.astrobuddy.domain.repository.ForecastRepository
 import javax.inject.Inject
-
+/*
+Implementation of the forecastrepository, which takes the various apis and applies the relevant methods
+ */
 class ForecastRepositoryImpl @Inject constructor(
     private val apiWA: WeatherApi,
     private val apiOM: OpenMeteoApi,

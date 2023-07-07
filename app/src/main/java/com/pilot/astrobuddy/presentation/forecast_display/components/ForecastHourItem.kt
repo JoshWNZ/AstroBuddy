@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.pilot.astrobuddy.data.remote.dto.openmeteo_dto.HourlyDto
-import com.pilot.astrobuddy.domain.model.weatherapi.ForecastHour
 import kotlin.math.roundToInt
 
 
@@ -23,8 +22,10 @@ fun ForecastHourItem(
     i: Int,
     curHour: String?
 ){
+    //get the hour value like this because i cant be bothered with another formatter
     val hour = "${forecastHour.time[i][11]}${forecastHour.time[i][12]}"
     Column {
+        //highlight the current hour column
         val curCol= if(curHour!=null && curHour==hour){Color.Magenta}else{Color.DarkGray}
         Box(modifier = Modifier.size(24.dp).background(curCol)){
             Text(
@@ -65,6 +66,17 @@ fun ForecastHourItem(
         Box(modifier = Modifier.size(24.dp).background(curCol)){
             Text(
                 text=forecastHour.cloudcover_low[i].toString(),
+                style = MaterialTheme.typography.body2,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        Divider()
+
+        //normalise visibility in meters to a more reasonable value that fits in its box
+        val visNormalised = ((forecastHour.visibility[i] / 24000)*100).roundToInt()
+        Box(modifier = Modifier.size(24.dp).background(curCol)){
+            Text(
+                text=visNormalised.toString(),
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.align(Alignment.Center)
             )
@@ -136,6 +148,9 @@ fun ForecastHourItem(
     }
 }
 
+/*
+Function to take a direction in degrees and return a corresponding directional arrow
+ */
 private fun degToDir(angle: Int): String{
     //val directions2 = listOf("↑N", "↗NE", "→E", "↘SE", "↓S", "↙SW", "←W", "↖NW")
     val directions = listOf("↑", "↗", "→", "↘", "↓", "↙", "←", "↖")

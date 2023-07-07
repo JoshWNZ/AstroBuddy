@@ -85,6 +85,7 @@ fun LocationSearchScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ){
+                        //Text box for search input
                         TextField(
                             value = viewModel.searchQuery.value,
                             onValueChange = viewModel::onSearch,
@@ -94,6 +95,7 @@ fun LocationSearchScreen(
                                 Text(text = "Enter a location or decimal coordinates")
                             }
                         )
+                        //initialise states n scopes for location services
                         val locPermissionState = rememberPermissionState(
                             android.Manifest.permission.ACCESS_COARSE_LOCATION
                         )
@@ -103,6 +105,7 @@ fun LocationSearchScreen(
                             LocationServices.getFusedLocationProviderClient(context)
                         }
 
+                        //Button to get current location
                         IconButton(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -116,21 +119,26 @@ fun LocationSearchScreen(
                             },
                             onClick = {
                                 if(locPermissionState.status.isGranted){
+                                    //launch a coroutine to get current location
                                     scope.launch {
+                                        //get the location from the google api
                                         val result = locClient.getCurrentLocation(
                                             Priority.PRIORITY_BALANCED_POWER_ACCURACY,
                                             CancellationTokenSource().token,
                                         ).await()
-
+                                        //generate a semi-unique id from the location info
                                         val id = ((result.latitude + result.longitude) * result.accuracy)
+                                        //initialise a new location object with the fetched info
                                         val curLoc = OMLocation(
                                             "", "", "", "", "", "",
                                             result.altitude, id.toInt(), result.latitude, result.longitude, "User Location"
                                         )
+                                        //save the location and navigate to the forecast screen as usual
                                         viewModel.saveLoc(curLoc)
                                         navController.navigate(Screen.ForecastScreen.route+"/${curLoc.id}")
                                     }
                                 }else{
+                                    //launch permission request
                                     locPermissionState.launchPermissionRequest()
                                 }
 
@@ -142,8 +150,10 @@ fun LocationSearchScreen(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize()
                     ){
+                        //if the user is inputting coordinates, show them as an option
                         if(viewModel.searchQuery.value.isNotBlank()){
                             if(viewModel.searchQuery.value[0].isDigit() || viewModel.searchQuery.value[0]=='-'){
+                                //TODO make this work properly
                                 val coordLoc = OMLocation(
                                     admin1 = "",
                                     admin2 = "",
@@ -167,7 +177,9 @@ fun LocationSearchScreen(
                                 }
                             }
                         }
+                        //if the user is yet to input a query, and there are any bookmarked locations
                         if(viewModel.searchQuery.value.isBlank() && savedLocs.isNotEmpty()){
+                            //display all the bookmarked locations
                             items(savedLocs){loc->
                                 LocationSearchItem(
                                     location = loc,
@@ -178,18 +190,21 @@ fun LocationSearchScreen(
                                 )
                             }
                         }
+                        //show fetched locations from the user query
                         items(state.locations){loc->
                             LocationSearchItem(
                                 location = loc,
                                 onItemClick = {
+                                    //save the location into the database
                                     viewModel.saveLoc(loc)
+                                    //navigate to the forecast screen and pass the loc id
                                     navController.navigate(Screen.ForecastScreen.route+"/${loc.id}")
                                 }
                             )
                         }
 
                     }
-
+                    //display an error message if needed
                     if(state.error.isNotBlank()){
                         Text(
                             text=state.error,
@@ -200,6 +215,7 @@ fun LocationSearchScreen(
                                 .padding(horizontal = 20.dp)
                         )
                     }
+                    //display a loading icon when applicable
                     if(state.isLoading){
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                     }

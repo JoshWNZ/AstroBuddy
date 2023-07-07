@@ -1,6 +1,5 @@
 package com.pilot.astrobuddy.data.local
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.pilot.astrobuddy.data.local.entity.OMLocationEntity

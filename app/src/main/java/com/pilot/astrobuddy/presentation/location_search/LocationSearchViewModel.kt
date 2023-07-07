@@ -1,6 +1,5 @@
 package com.pilot.astrobuddy.presentation.location_search
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -24,21 +23,29 @@ class LocationSearchViewModel @Inject constructor(
     //savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    //initialise a mutable variable to store the current search query
     private val _searchQuery = mutableStateOf("")
     val searchQuery: State<String> = _searchQuery
 
+    //initialise a blank state
     private val _state = mutableStateOf(LocationSearchState())
     val state: State<LocationSearchState> = _state
 
+    //initialise a variable to store bookmarked locations
     var savedLocs: List<OMLocation> = emptyList()
 
     private var searchJob: Job? = null
 
+    /**
+    Function called whenever the user updates the search box
+     */
     fun onSearch(query: String){
+        //update the query var, cancel the current job, launch a new one
         _searchQuery.value = query
         searchJob?.cancel()
         searchJob = viewModelScope.launch{
-            delay(50L)
+            //delay to avoid polling the api for every single text box update
+            delay(100L)
             getLocationsUseCase(query).onEach{result ->
                 when(result){
                     is Resource.Success -> {
@@ -57,6 +64,10 @@ class LocationSearchViewModel @Inject constructor(
         }
     }
 
+    /**
+    On initialisation, delete locations from the database which aren't bookmarked
+    get the remaining bookmarked locations
+     */
     init{
         viewModelScope.launch{
             getSavedLocUseCase.deleteUnsaved()
@@ -64,10 +75,12 @@ class LocationSearchViewModel @Inject constructor(
         }
     }
 
+    /**
+    Save the provided location into the database, to be fetched by the location screen
+     */
     fun saveLoc(loc: OMLocation){
         viewModelScope.launch{
             getSavedLocUseCase.insertLocation(loc)
-            Log.i("locSaved", loc.id.toString())
         }
     }
 

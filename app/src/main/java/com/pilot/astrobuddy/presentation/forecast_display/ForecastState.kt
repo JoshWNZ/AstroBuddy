@@ -1,9 +1,11 @@
 package com.pilot.astrobuddy.presentation.forecast_display
 
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
-import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.domain.model.weatherapi.Astro
 
+/*
+State record to hold up-to-date information to update the ui
+ */
 data class ForecastState(
     val isLoading: Boolean = false,
     val isAstroLoading: Boolean = false,

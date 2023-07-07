@@ -6,17 +6,19 @@ import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.domain.repository.SavedLocationRepository
 import javax.inject.Inject
 
+/*
+Implementation of the savedlocationrepository, which takes the database access object
+and gives implementations of each method, mapping the direct database outputs to more useful objects
+ */
 class SavedLocationRepositoryImpl @Inject constructor(
     private val locDao: OMLocationDao
 ):SavedLocationRepository {
     override suspend fun getLocation(id: Int): OMLocation {
-        val loc = locDao.getLocation(id).toLocation()
-        return loc
+        return locDao.getLocation(id).toLocation()
     }
 
     override suspend fun getAllLocations(): List<OMLocation> {
-        val locs = locDao.getAllLocations().map{l-> l.toLocation()}
-        return locs
+        return locDao.getAllLocations().map { l -> l.toLocation() }
     }
 
     override suspend fun insertLocation(loc: OMLocation) {
@@ -35,8 +37,8 @@ class SavedLocationRepositoryImpl @Inject constructor(
         locDao.deleteUnsaved()
     }
 
-    override suspend fun saveLocation(loc: Int) {
-        locDao.saveLocation(OMLocationSavedEntity(loc))
+    override suspend fun saveLocation(id: Int) {
+        locDao.saveLocation(OMLocationSavedEntity(id))
     }
 
     override suspend fun unsaveLocation(id: Int) {

@@ -1,6 +1,5 @@
 package com.pilot.astrobuddy.domain.repository
 
-import com.pilot.astrobuddy.data.local.entity.OMLocationSavedEntity
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 
 interface SavedLocationRepository{
