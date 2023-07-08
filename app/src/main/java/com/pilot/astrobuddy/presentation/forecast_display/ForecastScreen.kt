@@ -78,7 +78,7 @@ fun ForecastScreen(
                         modifier = Modifier
                             .padding(start = 8.dp)
                             .clickable {
-                                navController.navigate(Screen.LocationSearchScreen.route)
+                                navController.popBackStack()
                             }
                     )
                 }

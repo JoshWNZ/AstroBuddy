@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.pilot.astrobuddy.presentation.forecast_display.ForecastScreen
 import com.pilot.astrobuddy.presentation.location_search.LocationSearchScreen
+import com.pilot.astrobuddy.presentation.settings_screen.SettingsScreen
 import com.pilot.astrobuddy.presentation.ui.theme.AstroBuddyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,6 +36,11 @@ class MainActivity : ComponentActivity() {
                             route = Screen.ForecastScreen.route + "/{id}"
                         ){
                             ForecastScreen(navController)
+                        }
+                        composable(
+                            route = Screen.SettingsScreen.route
+                        ){
+                            SettingsScreen(navController)
                         }
                     }
                 }
