@@ -19,7 +19,7 @@ class SettingsViewModel @Inject constructor(
 
     init{
         viewModelScope.launch{
-            _state.value = SettingsState(settingsStore.getDaysFromDataStore()?: 5)
+            _state.value = SettingsState(settingsStore.getDaysFromDataStore())
         }
     }
 

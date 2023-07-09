@@ -21,20 +21,16 @@ class GetSavedLocUseCase @Inject constructor(
     suspend fun deleteLocation(id: Int){
         repository.deleteLocation(id)
     }
-
     suspend fun getAllSaved(): List<Int>{
         return repository.getAllSaved()
     }
-
     suspend fun deleteUnsaved(){
         repository.deleteUnsaved()
     }
-
     suspend fun saveLocation(id: Int){
         repository.saveLocation(id)
     }
     suspend fun unsaveLocation(id: Int){
         repository.unsaveLocation(id)
     }
-
 }

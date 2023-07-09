@@ -1,7 +1,5 @@
 package com.pilot.astrobuddy.data.remote.dto.weatherapi_dto
 
-import com.pilot.astrobuddy.domain.model.weatherapi.LocationResult
-
 data class LocationResultDto(
     val country: String,
     val id: Int,
@@ -11,17 +9,17 @@ data class LocationResultDto(
     val region: String,
     val url: String
 ){
-    fun toLocation() : LocationResult {
-        return LocationResult(
-            country = country,
-            id = id,
-            lat = lat,
-            lon = lon,
-            name = name,
-            region = region,
-            url = url,
-            coord = "$lat,$lon"
-        )
-    }
+//    fun toLocation() : LocationResult {
+//        return LocationResult(
+//            country = country,
+//            id = id,
+//            lat = lat,
+//            lon = lon,
+//            name = name,
+//            region = region,
+//            url = url,
+//            coord = "$lat,$lon"
+//        )
+//    }
 }
 

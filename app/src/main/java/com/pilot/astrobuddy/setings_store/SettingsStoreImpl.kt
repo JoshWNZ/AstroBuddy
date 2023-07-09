@@ -31,9 +31,28 @@ class SettingsStoreImpl @Inject constructor(
         return values[DAYS_KEY]?: DEFAULT_DAYS
     }
 
+    override suspend fun toggleUnits() {
+        if(getUnits() == "C"){
+            dataStore.edit {
+                it[UNITS_KEY] = "F"
+            }
+        }else{
+            dataStore.edit {
+                it[UNITS_KEY] = "C"
+            }
+        }
+
+    }
+
+    override suspend fun getUnits(): String{
+        val values = dataStore.data.first()
+        return values[UNITS_KEY]?:DEFAULT_UNIT
+    }
+
     companion object PrefKeys{
         val DAYS_KEY = intPreferencesKey("forecast_days")
         val UNITS_KEY = stringPreferencesKey("units")
         const val DEFAULT_DAYS = 7
+        const val DEFAULT_UNIT = "C"
     }
 }

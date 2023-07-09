@@ -68,7 +68,7 @@ class ForecastViewModel @Inject constructor(
     Function to get forecast and update the state accordingly
      */
     private fun getForecast(latitude: String, longitude: String){
-        var days = 5
+        var days: Int
         viewModelScope.launch{
             days = settingsStore.getDaysFromDataStore()
             getForecastUseCase(latitude,longitude,days).onEach{result ->
