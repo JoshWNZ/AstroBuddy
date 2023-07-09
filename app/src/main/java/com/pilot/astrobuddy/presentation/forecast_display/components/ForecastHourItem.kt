@@ -73,7 +73,7 @@ fun ForecastHourItem(
         Divider()
 
         //normalise visibility in meters to a more reasonable value that fits in its box
-        val visNormalised = ((forecastHour.visibility[i] / 24000)*100).roundToInt()
+        val visNormalised = ((forecastHour.visibility[i] / 24140)*100).roundToInt()
         Box(modifier = Modifier.size(24.dp).background(curCol)){
             Text(
                 text=visNormalised.toString(),
@@ -84,8 +84,9 @@ fun ForecastHourItem(
         Divider()
 
         Box(modifier = Modifier.size(24.dp).background(curCol)){
+            val prob = forecastHour.precipitation_probability[i]?:"NA"
             Text(
-                text=forecastHour.precipitation_probability[i].toString(),
+                text= prob.toString(),
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.align(Alignment.Center)
             )

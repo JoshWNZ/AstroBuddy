@@ -28,7 +28,7 @@ interface OpenMeteoApi {
                 "winddirection_10m," +
                 "is_day",
         @Query("timezone") timezone: String = "auto",
-        @Query("forecast_days") days: String = "4"
+        @Query("forecast_days") days: String
     ) : OMForecastDto
 
 }

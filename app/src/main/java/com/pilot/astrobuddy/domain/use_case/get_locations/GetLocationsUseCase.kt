@@ -21,9 +21,13 @@ class GetLocationsUseCase @Inject constructor(
             emit(Resource.Loading())
             //try retrieve locations from api and map to proper objects
             val locations = repository.getOMLocations(query).results
-            val outLocations = locations.map{ r->r.toLocation()}
-            //emit data if successful
-            emit(Resource.Success(outLocations))
+            if(locations.isNullOrEmpty()){
+                emit(Resource.Success(emptyList()))
+            }else{
+                val outLocations = locations.map{ r->r.toLocation()}
+                //emit data if successful
+                emit(Resource.Success(outLocations))
+            }
         }catch(e: HttpException){
             //emit applicable errors
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))

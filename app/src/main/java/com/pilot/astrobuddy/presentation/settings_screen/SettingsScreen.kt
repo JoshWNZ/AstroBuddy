@@ -6,21 +6,23 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -42,7 +44,19 @@ fun SettingsScreen(
         topBar = {
             TopAppBar(
                 title={ Text("Preferences") },
-                backgroundColor = Color.DarkGray
+                backgroundColor = Color.DarkGray,
+                navigationIcon = {
+                    //Button to navigate back
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowBack,
+                        contentDescription = "Back",
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .clickable {
+                                navController.popBackStack()
+                            }
+                    )
+                }
             )
         },
         content = {padding->
@@ -51,10 +65,11 @@ fun SettingsScreen(
                     .background(MaterialTheme.colors.background)
                     .padding(padding)
             ){
+                Spacer(modifier = Modifier.height(16.dp))
                 Column(modifier = Modifier.fillMaxSize()){
                     Row(modifier = Modifier
                         .fillMaxWidth()
-                        .height(32.dp),
+                        .padding(20.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ){
                         Text(text="Forecasted Days")
@@ -63,24 +78,41 @@ fun SettingsScreen(
                         Row(horizontalArrangement = Arrangement.SpaceEvenly){
                             Box(
                                 modifier = Modifier.clickable{
-                                    if(days>0){
+                                    if(days>1){
                                         viewModel.updateDays(days-1)
                                     }
                                 }.background(Color.Gray)
+                                    .size(64.dp),
+                                contentAlignment = Alignment.Center
                             ){
-                                Text("-",style = MaterialTheme.typography.h2)
+                                Text(
+                                    text="-",
+                                    style = MaterialTheme.typography.h3
+                                )
                             }
-                            Box{
-                                Text(text=state.forecastDays.toString())
+                            Box(
+                                modifier = Modifier.size(64.dp),
+                                contentAlignment = Alignment.Center
+                            ){
+                                Text(
+                                    text=state.forecastDays.toString(),
+                                    style = MaterialTheme.typography.h4
+                                )
                             }
                             Box(
                                 modifier = Modifier.clickable{
-                                    if(days<12){
+                                    if(days<14){
                                         viewModel.updateDays(days+1)
                                     }
                                 }.background(Color.Gray)
+                                    .size(64.dp),
+                                contentAlignment = Alignment.Center
+
                             ){
-                                Text("+",style = MaterialTheme.typography.h2)
+                                Text(
+                                    text="+",
+                                    style = MaterialTheme.typography.h3
+                                )
                             }
                         }
 

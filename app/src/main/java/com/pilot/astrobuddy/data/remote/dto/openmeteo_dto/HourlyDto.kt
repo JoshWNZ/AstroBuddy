@@ -8,7 +8,7 @@ data class HourlyDto(
     val cloudcover_mid: List<Int>,
     val dewpoint_2m: List<Double>,
     val is_day: List<Int>,
-    val precipitation_probability: List<Int>,
+    val precipitation_probability: List<Int?>,
     val relativehumidity_2m: List<Int>,
     val temperature_2m: List<Double>,
     val time: List<String>,

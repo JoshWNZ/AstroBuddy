@@ -24,8 +24,8 @@ class ForecastRepositoryImpl @Inject constructor(
         return apiWA.getLocations(query = query)
     }
 
-    override suspend fun getOMForecast(lat: String, long: String): OMForecastDto{
-        return apiOM.getForecast(lat=lat,long=long)
+    override suspend fun getOMForecast(lat: String, long: String, days: Int): OMForecastDto{
+        return apiOM.getForecast(lat=lat,long=long,days = days.toString())
     }
 
     override suspend fun getOMLocations(query: String): OMLocationResultDto{

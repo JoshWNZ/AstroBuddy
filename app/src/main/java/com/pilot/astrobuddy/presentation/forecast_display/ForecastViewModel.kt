@@ -11,6 +11,7 @@ import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetAstroUseCase
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetForecastUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
+import com.pilot.astrobuddy.setings_store.SettingsStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -22,7 +23,8 @@ class ForecastViewModel @Inject constructor(
     private val getForecastUseCase: GetForecastUseCase,
     private val getAstroUseCase: GetAstroUseCase,
     private val getSavedLocUseCase: GetSavedLocUseCase,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val settingsStore: SettingsStore
 ) : ViewModel() {
     //initialise a mutable forecast
     private val _state = mutableStateOf(ForecastState())
@@ -66,21 +68,27 @@ class ForecastViewModel @Inject constructor(
     Function to get forecast and update the state accordingly
      */
     private fun getForecast(latitude: String, longitude: String){
-        getForecastUseCase(latitude,longitude).onEach{result ->
-            when(result){
-                is Resource.Success -> {
-                    _state.value = _state.value.copy(forecast = result.data, isLoading = false, error = "")
+        var days = 5
+        viewModelScope.launch{
+            days = settingsStore.getDaysFromDataStore()
+            getForecastUseCase(latitude,longitude,days).onEach{result ->
+                when(result){
+                    is Resource.Success -> {
+                        _state.value = _state.value.copy(forecast = result.data, isLoading = false, error = "")
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            error = result.message ?: "An unexpected error occurred"
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(isLoading = true)
+                    }
                 }
-                is Resource.Error -> {
-                    _state.value = _state.value.copy(
-                        error = result.message ?: "An unexpected error occurred"
-                    )
-                }
-                is Resource.Loading -> {
-                    _state.value = _state.value.copy(isLoading = true)
-                }
-            }
-        }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
+        }
+
+
     }
 
     /*

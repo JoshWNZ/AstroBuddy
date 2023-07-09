@@ -15,12 +15,12 @@ class GetForecastUseCase @Inject constructor(
     /*
     Overridden invocation function to return a flow of resources containing weather forecasts
      */
-    operator fun invoke(lat: String, long: String): Flow<Resource<OMForecast>> = flow{
+    operator fun invoke(lat: String, long: String, days: Int): Flow<Resource<OMForecast>> = flow{
         try{
             //initially report loading
             emit(Resource.Loading())
             //try get forecast from api
-            val forecast = repository.getOMForecast(lat,long).toForecast()
+            val forecast = repository.getOMForecast(lat,long,days).toForecast()
             //if successful, emit a success containing the data
             emit(Resource.Success(forecast))
         }catch(e: HttpException){
