@@ -32,7 +32,7 @@ class SettingsStoreImpl @Inject constructor(
     }
 
     override suspend fun toggleUnits() {
-        if(getUnits() == "C"){
+        if(getUnitsFromDataStore() == "C"){
             dataStore.edit {
                 it[UNITS_KEY] = "F"
             }
@@ -41,10 +41,9 @@ class SettingsStoreImpl @Inject constructor(
                 it[UNITS_KEY] = "C"
             }
         }
-
     }
 
-    override suspend fun getUnits(): String{
+    override suspend fun getUnitsFromDataStore(): String{
         val values = dataStore.data.first()
         return values[UNITS_KEY]?:DEFAULT_UNIT
     }

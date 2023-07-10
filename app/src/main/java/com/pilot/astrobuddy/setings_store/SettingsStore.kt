@@ -6,6 +6,6 @@ interface SettingsStore {
 
     suspend fun getDaysFromDataStore(): Int
 
-    suspend fun getUnits(): String
+    suspend fun getUnitsFromDataStore(): String
     suspend fun toggleUnits()
 }

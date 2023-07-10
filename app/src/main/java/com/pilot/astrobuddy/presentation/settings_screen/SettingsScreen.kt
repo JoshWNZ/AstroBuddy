@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomAppBar
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -70,9 +71,10 @@ fun SettingsScreen(
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ){
-                        Text(text="Forecasted Days")
+                        Text(text="Forecasted Days", style = MaterialTheme.typography.h5)
                         val days = state.forecastDays
 
                         Row(horizontalArrangement = Arrangement.SpaceEvenly){
@@ -116,6 +118,44 @@ fun SettingsScreen(
                             }
                         }
 
+                    }
+                    Divider()
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Text(text="Units", style = MaterialTheme.typography.h5)
+                        val unit = state.units
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            modifier = Modifier.clickable{
+                                viewModel.updateUnits()
+                            }
+                        ) {
+                            Box(
+                                modifier = Modifier.background(if(unit == "C"){Color.Gray}else{Color.LightGray})
+                                    .size(64.dp),
+                                contentAlignment = Alignment.Center
+                            ){
+                                Text(
+                                    text="F",
+                                    style = MaterialTheme.typography.h3
+                                )
+                            }
+                            Box(
+                                modifier = Modifier.background(if(unit == "F"){Color.Gray}else{Color.LightGray})
+                                    .size(64.dp),
+                                contentAlignment = Alignment.Center
+                            ){
+                                Text(
+                                    text="C",
+                                    style = MaterialTheme.typography.h3
+                                )
+                            }
+                        }
                     }
                 }
             }
