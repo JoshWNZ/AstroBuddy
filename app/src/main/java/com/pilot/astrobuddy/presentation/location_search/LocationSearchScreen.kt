@@ -1,6 +1,7 @@
 package com.pilot.astrobuddy.presentation.location_search
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -154,34 +155,40 @@ fun LocationSearchScreen(
                         modifier = Modifier.fillMaxSize()
                     ){
                         //if the user is inputting coordinates, show them as an option
-                        if(viewModel.searchQuery.value.isNotBlank()){
-                            if(viewModel.searchQuery.value[0].isDigit() || viewModel.searchQuery.value[0]=='-'){
-                                //TODO make this work properly
-                                val coordLoc = OMLocation(
-                                    admin1 = "",
-                                    admin2 = "",
-                                    admin3 = "",
-                                    admin4 = "",
-                                    country = "",
-                                    country_code = "",
-                                    elevation = -1.0,
-                                    id = 215,
-                                    latitude = -41.3,
-                                    longitude = 174.78,
-                                    name = "_"
-                                )
-                                item {
-                                    LocationSearchItem(
-                                        location = coordLoc,
-                                        onItemClick = {
-                                            viewModel.saveLoc(coordLoc)
-                                            navController.navigate(Screen.ForecastScreen.route+"/${coordLoc.id}")
-                                        })
+                        val query = viewModel.searchQuery.value
+                        if(query.isNotBlank()){
+                            if(query[0].isDigit() || query[0]=='-'){
+                                if(query.contains(",")){
+                                    val arr = query.split(",")
+                                    Log.i("SPLIT", arr[0])
+                                    Log.i("SPLIT", arr[1])
+                                    //TODO make this work properly
+                                    val coordLoc = OMLocation(
+                                        admin1 = "",
+                                        admin2 = "",
+                                        admin3 = "",
+                                        admin4 = "",
+                                        country = "",
+                                        country_code = "",
+                                        elevation = -1.0,
+                                        id = 215,
+                                        latitude = 0.0,//arr[0].toDouble(),
+                                        longitude = 0.0,//arr[1].toDouble(),
+                                        name = ""
+                                    )
+                                    item {
+                                        LocationSearchItem(
+                                            location = coordLoc,
+                                            onItemClick = {
+                                                viewModel.saveLoc(coordLoc)
+                                                navController.navigate(Screen.ForecastScreen.route+"/${coordLoc.id}")
+                                            })
+                                    }
                                 }
                             }
                         }
                         //if the user is yet to input a query, and there are any bookmarked locations
-                        if(viewModel.searchQuery.value.isBlank() && savedLocs.isNotEmpty()){
+                        if(query.isBlank() && savedLocs.isNotEmpty()){
                             //display all the bookmarked locations
                             items(savedLocs){loc->
                                 LocationSearchItem(

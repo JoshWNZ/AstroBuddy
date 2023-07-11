@@ -12,10 +12,13 @@ import com.pilot.astrobuddy.data.repository.ForecastRepositoryImpl
 import com.pilot.astrobuddy.data.repository.SavedLocationRepositoryImpl
 import com.pilot.astrobuddy.domain.repository.ForecastRepository
 import com.pilot.astrobuddy.domain.repository.SavedLocationRepository
+import com.pilot.astrobuddy.setings_store.SettingsStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -41,17 +44,17 @@ object AppModule {
     @Provides
     @Singleton
     fun providesOpenMeteoApi() : OpenMeteoApi {
-//        val loggingInterceptor = HttpLoggingInterceptor()
-//        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-//
-//        val client = OkHttpClient.Builder()
-//            .addInterceptor(loggingInterceptor)
-//            .build()
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .build()
 
         return Retrofit.Builder()
             .baseUrl(Constants.OM_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            //.client(client)
+            .client(client)
             .build()
             .create(OpenMeteoApi::class.java)
     }
@@ -69,8 +72,8 @@ object AppModule {
     //repositories
     @Provides
     @Singleton
-    fun providesForecastRepository(apiWA: WeatherApi, apiOM: OpenMeteoApi, apiSOM: OpenMeteoSearchApi): ForecastRepository{
-        return ForecastRepositoryImpl(apiWA,apiOM, apiSOM)
+    fun providesForecastRepository(apiWA: WeatherApi, apiOM: OpenMeteoApi, apiSOM: OpenMeteoSearchApi, settingsStore: SettingsStore): ForecastRepository{
+        return ForecastRepositoryImpl(apiWA,apiOM, apiSOM, settingsStore)
     }
 
     @Provides

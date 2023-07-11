@@ -1,6 +1,7 @@
 package com.pilot.astrobuddy.presentation.settings_screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -74,7 +75,7 @@ fun SettingsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ){
-                        Text(text="Forecasted Days", style = MaterialTheme.typography.h5)
+                        Text(text="Forecasted Days", style = MaterialTheme.typography.h6)
                         val days = state.forecastDays
 
                         Row(horizontalArrangement = Arrangement.SpaceEvenly){
@@ -89,7 +90,8 @@ fun SettingsScreen(
                             ){
                                 Text(
                                     text="-",
-                                    style = MaterialTheme.typography.h3
+                                    style = MaterialTheme.typography.h3,
+                                    modifier = Modifier.align(Alignment.Center)
                                 )
                             }
                             Box(
@@ -126,7 +128,7 @@ fun SettingsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ){
-                        Text(text="Units", style = MaterialTheme.typography.h5)
+                        Text(text="Units", style = MaterialTheme.typography.h6)
                         val unit = state.units
 
                         Row(
@@ -135,9 +137,12 @@ fun SettingsScreen(
                                 viewModel.updateUnits()
                             }
                         ) {
+                            val celsius = (unit=="C")
                             Box(
-                                modifier = Modifier.background(if(unit == "C"){Color.Gray}else{Color.LightGray})
-                                    .size(64.dp),
+                                modifier = Modifier.background(if(!celsius){Color.Blue}else{Color.Gray})
+                                    .size(if(!celsius){64.dp}else{60.dp})
+                                    .align(Alignment.CenterVertically)
+                                    .border(color = Color.LightGray, width = if(!celsius){2.dp}else{0.dp}),
                                 contentAlignment = Alignment.Center
                             ){
                                 Text(
@@ -146,8 +151,10 @@ fun SettingsScreen(
                                 )
                             }
                             Box(
-                                modifier = Modifier.background(if(unit == "F"){Color.Gray}else{Color.LightGray})
-                                    .size(64.dp),
+                                modifier = Modifier.background(if(celsius){Color.Blue}else{Color.Gray})
+                                    .size(if(celsius){64.dp}else{60.dp})
+                                    .align(Alignment.CenterVertically)
+                                    .border(color = Color.LightGray, width = if(celsius){2.dp}else{0.dp}),
                                 contentAlignment = Alignment.Center
                             ){
                                 Text(
@@ -157,6 +164,7 @@ fun SettingsScreen(
                             }
                         }
                     }
+                    Divider()
                 }
             }
         },

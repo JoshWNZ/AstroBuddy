@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pilot.astrobuddy.domain.model.weatherapi.Astro
+import com.pilot.astrobuddy.presentation.Screen
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastScrollerItem
 
 
@@ -77,7 +78,7 @@ fun ForecastScreen(
                         modifier = Modifier
                             .padding(start = 8.dp)
                             .clickable {
-                                navController.popBackStack()
+                                navController.navigate(Screen.LocationSearchScreen.route)
                             }
                     )
                 }
