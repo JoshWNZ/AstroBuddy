@@ -13,5 +13,6 @@ data class ForecastState(
     val astro: List<Astro> = emptyList(),
     val error: String = "",
     val astroError: String = "",
-    val isSaved: Boolean = false
+    val isSaved: Boolean = false,
+    val calendar: Boolean = false
 )

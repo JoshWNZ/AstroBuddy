@@ -126,4 +126,10 @@ class ForecastViewModel @Inject constructor(
             }
         }
     }
+
+    fun toggleCalendarView(){
+        viewModelScope.launch{
+            _state.value = _state.value.copy(calendar = !_state.value.calendar)
+        }
+    }
 }

@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.BottomAppBar
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -48,6 +47,7 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.presentation.Screen
+import com.pilot.astrobuddy.presentation.common.myBottomNavBar
 import com.pilot.astrobuddy.presentation.location_search.components.LocDropDownMenu
 import com.pilot.astrobuddy.presentation.location_search.components.LocationSearchItem
 import kotlinx.coroutines.launch
@@ -234,9 +234,7 @@ fun LocationSearchScreen(
             }
         },
         bottomBar = {
-            BottomAppBar(backgroundColor = Color.DarkGray) {
-                Text("Example Nav Bar", textAlign = TextAlign.Center)
-            }
+            myBottomNavBar(navController = navController)
         }
     )
 }

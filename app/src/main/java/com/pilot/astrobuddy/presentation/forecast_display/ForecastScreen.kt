@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomAppBar
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -19,7 +21,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Bookmark
-import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.Grid4x4
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,6 +36,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pilot.astrobuddy.domain.model.weatherapi.Astro
 import com.pilot.astrobuddy.presentation.Screen
+import com.pilot.astrobuddy.presentation.common.myBottomNavBar
+import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastCalendarItem
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastScrollerItem
 
 
@@ -52,22 +57,17 @@ fun ForecastScreen(
                 backgroundColor = Color.DarkGray,
                 actions = {
                     Row{
-                        //Button to save/bookmark location
-                        Icon(
-                            imageVector = Icons.Rounded.Bookmark,
-                            tint = if(state.isSaved){Color.Yellow}else{Color.LightGray},
-                            contentDescription = "SaveLoc",
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .clickable {
-                                    viewModel.toggleSaved(viewModel.location.id)
-                                }
-                        )
                         //menu button for decoration i suppose
                         Icon(
-                            imageVector = Icons.Rounded.Menu,
-                            contentDescription = null
+                            imageVector = if(state.calendar){Icons.Rounded.Grid4x4}else{Icons.Rounded.CalendarMonth},
+                            contentDescription = null,
+                            modifier = Modifier
+                                .clickable {
+                                    viewModel.toggleCalendarView()
+                                }
+                                .size(32.dp)
                         )
+                        Spacer(modifier = Modifier.width(16.dp))
                     }
                           },
                 navigationIcon = {
@@ -125,10 +125,24 @@ fun ForecastScreen(
                                 )
                             }
                         }
+                        //Button to save/bookmark location
+                        Icon(
+                            imageVector = Icons.Rounded.Bookmark,
+                            tint = if(state.isSaved){Color.Yellow}else{Color.LightGray},
+                            contentDescription = "SaveLoc",
+                            modifier = Modifier
+                                .padding(end = 32.dp)
+                                .clickable {
+                                    viewModel.toggleSaved(viewModel.location.id)
+                                }
+                                .align(CenterVertically)
+                                .size(32.dp)
+                        )
                         //Light pollution info
                         Column(modifier = Modifier
                             .align(CenterVertically)
-                            .padding(end = 5.dp)){
+                            .padding(end = 5.dp)
+                        ){
                             val lightPollution = getLightPollution(fc.latitude.toString(),fc.longitude.toString())
                             Text(
                                 text= "sqm: ${lightPollution.second}",
@@ -145,7 +159,11 @@ fun ForecastScreen(
                         emptyList()
                     }
                     //pass forecast data into scrollable composable
-                    ForecastScrollerItem(fd = fc, astro = curAstro)
+                    if(state.calendar){
+                        ForecastCalendarItem(fd = fc, astro = curAstro)
+                    }else{
+                        ForecastScrollerItem(fd = fc, astro = curAstro)
+                    }
                 }
                 //display an error message if one is available
                 if (state.error.isNotBlank()) {
@@ -169,10 +187,7 @@ fun ForecastScreen(
             }
         },
         bottomBar = {
-            //TODO
-            BottomAppBar(backgroundColor = Color.DarkGray) {
-                Text("Example Nav Bar", textAlign = TextAlign.Center)
-            }
+            myBottomNavBar(navController = navController)
         }
     )
 }
