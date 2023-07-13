@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.pilot.astrobuddy.presentation.common.myBottomNavBar
+import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
 
 
 @Composable
@@ -168,8 +168,7 @@ fun SettingsScreen(
             }
         },
         bottomBar = {
-            myBottomNavBar(navController = navController)
+            MyBottomNavBar(navController = navController)
         }
-
     )
 }

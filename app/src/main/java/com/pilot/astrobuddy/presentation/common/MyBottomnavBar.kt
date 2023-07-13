@@ -16,7 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.pilot.astrobuddy.presentation.Screen
 
 @Composable
-fun myBottomNavBar(navController: NavController){
+fun MyBottomNavBar(navController: NavController){
     val items = listOf(Screen.LocationSearchScreen,Screen.SettingsScreen)
     val icons = listOf(Icons.Rounded.Cloud,Icons.Rounded.Settings)
     BottomNavigation(backgroundColor = Color.DarkGray) {

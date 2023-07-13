@@ -1,5 +1,6 @@
 package com.pilot.astrobuddy.presentation.forecast_display
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pilot.astrobuddy.domain.model.weatherapi.Astro
 import com.pilot.astrobuddy.presentation.Screen
-import com.pilot.astrobuddy.presentation.common.myBottomNavBar
+import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastCalendarItem
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastScrollerItem
 
@@ -156,6 +157,7 @@ fun ForecastScreen(
                     }
                     //Get the astronomical forecast
                     val curAstro: List<Astro> = state.astro.ifEmpty {
+                        Log.i("Empty", "NoAstro")
                         emptyList()
                     }
                     //pass forecast data into scrollable composable
@@ -187,7 +189,7 @@ fun ForecastScreen(
             }
         },
         bottomBar = {
-            myBottomNavBar(navController = navController)
+            MyBottomNavBar(navController = navController)
         }
     )
 }

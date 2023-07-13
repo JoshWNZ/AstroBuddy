@@ -47,7 +47,7 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.presentation.Screen
-import com.pilot.astrobuddy.presentation.common.myBottomNavBar
+import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
 import com.pilot.astrobuddy.presentation.location_search.components.LocDropDownMenu
 import com.pilot.astrobuddy.presentation.location_search.components.LocationSearchItem
 import kotlinx.coroutines.launch
@@ -234,7 +234,7 @@ fun LocationSearchScreen(
             }
         },
         bottomBar = {
-            myBottomNavBar(navController = navController)
+            MyBottomNavBar(navController = navController)
         }
     )
 }
