@@ -1,8 +1,10 @@
 package com.pilot.astrobuddy.domain.use_case.calculate_sunmoon
 
+import android.util.Log
 import java.lang.Math.toRadians
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.JulianFields
 import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.ceil
@@ -20,7 +22,7 @@ object CalculateSunMoonUseCase {
         val curJulian = ceil(julianDay - 2451545 + 0.0008)
 
         //calculate mean solar time
-        val meanSol = curJulian - (longitude.toDouble() / 360)
+        val meanSol = curJulian - (-(longitude.toDouble()) / 360)
 
         //calculate solar mean anomaly
         val solMeanAnom = (357.5291 + 0.98560028 * meanSol) % 360
@@ -48,28 +50,17 @@ object CalculateSunMoonUseCase {
         val sunrise = solarTrans - hourAngle/360
 
         val sunset = solarTrans + hourAngle/360
-
+        Log.i("STEP","BACK TO DATE")
         return Pair(getRealTime(sunrise), getRealTime(sunset))
     }
 
 
-    private fun getJulianDay(date: LocalDate): Int{
-        var year = date.getYear()
-        var month = date.getMonthValue()
-        var day = date.getDayOfMonth()
+    private fun getJulianDay(date: LocalDate): Double{
 
-        if(month <= 2){
-            year--
-            month +=12
-        }
-
-        val a = year / 100
-        val b = a / 4
-        val c = 2 - a + b
-        val e = (365.25 * (year + 4716)).toInt()
-        val f = (30.6001 * (month + 1)).toInt()
-
-        return c + day + e + f - 1524
+        val result = date.getLong(JulianFields.JULIAN_DAY).toDouble()
+        Log.i("DATE",date.toString())
+        Log.i("JULIAN",result.toString())
+        return result
     }
     private fun getRealTime(julianDay: Double): String{
         val wholeJulianDay = julianDay.toInt()
@@ -77,6 +68,8 @@ object CalculateSunMoonUseCase {
         val hour = (fractionalDay * 24).toInt()
         val minute = (fractionalDay * 24 * 60 % 60).toInt()
 
+        Log.i("JULIAN",julianDay.toString())
+        Log.i("DATE","$hour:$minute")
         return "$hour:$minute"
     }
 }

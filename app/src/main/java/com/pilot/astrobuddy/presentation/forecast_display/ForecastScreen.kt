@@ -166,6 +166,10 @@ fun ForecastScreen(
                     }else{
                         ForecastScrollerItem(fd = fc, astro = curAstro)
                     }
+                    Text(text=curAstro.map{a->a.sunrise}.toString())
+                    Text(text=curAstro.map{a->a.sunset}.toString())
+                    Text(text=state.sunInfo.map{p->p.first}.toString())
+                    Text(text=state.sunInfo.map{p->p.second}.toString())
                 }
                 //display an error message if one is available
                 if (state.error.isNotBlank()) {

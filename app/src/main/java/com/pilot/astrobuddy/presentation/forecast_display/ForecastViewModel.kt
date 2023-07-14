@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pilot.astrobuddy.common.Constants
 import com.pilot.astrobuddy.common.Resource
+import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
+import com.pilot.astrobuddy.domain.use_case.calculate_sunmoon.CalculateSunMoonUseCase
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetAstroUseCase
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetForecastUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
@@ -55,7 +57,7 @@ class ForecastViewModel @Inject constructor(
             val long = location.longitude.toString()
             //launch coroutines to get weather and astro forecasts
             launch{
-                getForecast(lat, long)
+                getForecast(lat, long, location.elevation)
             }
             launch{
                 getAstro(lat, long)
@@ -67,7 +69,7 @@ class ForecastViewModel @Inject constructor(
     /*
     Function to get forecast and update the state accordingly
      */
-    private fun getForecast(latitude: String, longitude: String){
+    private fun getForecast(latitude: String, longitude: String, elevation: Double){
         var days: Int
         viewModelScope.launch{
             days = settingsStore.getDaysFromDataStore()
@@ -75,6 +77,9 @@ class ForecastViewModel @Inject constructor(
                 when(result){
                     is Resource.Success -> {
                         _state.value = _state.value.copy(forecast = result.data, isLoading = false, error = "")
+                        result.data?.let {
+                            calculateAstro(latitude, longitude, location.elevation, it)
+                        }
                     }
                     is Resource.Error -> {
                         _state.value = _state.value.copy(
@@ -131,5 +136,24 @@ class ForecastViewModel @Inject constructor(
         viewModelScope.launch{
             _state.value = _state.value.copy(calendar = !_state.value.calendar)
         }
+    }
+
+    private fun calculateAstro(latitude: String, longitude: String, elevation: Double, forecast: OMForecast){
+        val days = forecast.hourly.time.size / 24
+        val sunrises = ArrayList<String>()
+        val sunsets = ArrayList<String>()
+        val sunInfo = ArrayList<Pair<String,String>>()
+        for(i in 0 until days){
+            val sun = CalculateSunMoonUseCase.calculateSun(
+                latitude = latitude,
+                longitude = longitude,
+                elevation = elevation,
+                time = forecast.hourly.time[i*24]
+            )
+            sunInfo.add(sun)
+            sunrises.add(sun.first)
+            sunsets.add(sun.second)
+        }
+        _state.value = _state.value.copy(sunInfo = sunInfo)
     }
 }

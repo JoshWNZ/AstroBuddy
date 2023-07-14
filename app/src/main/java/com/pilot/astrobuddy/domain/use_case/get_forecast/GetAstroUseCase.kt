@@ -23,7 +23,7 @@ class GetAstroUseCase @Inject constructor(
             //initially report loading
             emit(Resource.Loading())
             //try get forecast from api
-            val forecast = repository.getWAForecast(lat+long).forecast.toAstroList()
+            val forecast = repository.getWAForecast("$lat,$long").forecast.toAstroList()
             //if successful, emit a success containing the data
             emit(Resource.Success(forecast))
         }catch(e: HttpException){
