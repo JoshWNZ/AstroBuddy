@@ -39,5 +39,8 @@ fun LocDropDownMenu(navController: NavController){
         DropdownMenuItem(onClick = { navController.navigate(Screen.SettingsScreen.route) }) {
             Text("Preferences")
         }
+        DropdownMenuItem(onClick = { navController.navigate(Screen.AttributionScreen.route) }) {
+            Text("Attribution")
+        }
     }
 }

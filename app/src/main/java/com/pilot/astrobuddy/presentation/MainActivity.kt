@@ -8,6 +8,7 @@ import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.pilot.astrobuddy.presentation.attribution_screen.AttributionScreen
 import com.pilot.astrobuddy.presentation.forecast_display.ForecastScreen
 import com.pilot.astrobuddy.presentation.location_search.LocationSearchScreen
 import com.pilot.astrobuddy.presentation.settings_screen.SettingsScreen
@@ -41,6 +42,11 @@ class MainActivity : ComponentActivity() {
                             route = Screen.SettingsScreen.route
                         ){
                             SettingsScreen(navController)
+                        }
+                        composable(
+                            route = Screen.AttributionScreen.route
+                        ){
+                            AttributionScreen(navController)
                         }
                     }
                 }

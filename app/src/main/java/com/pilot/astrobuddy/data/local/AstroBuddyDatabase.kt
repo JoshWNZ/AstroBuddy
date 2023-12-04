@@ -7,6 +7,7 @@ import com.pilot.astrobuddy.data.local.entity.OMLocationSavedEntity
 
 @Database(
     entities = [OMLocationEntity::class,OMLocationSavedEntity::class],
+    exportSchema = false,
     version = 2
 )
 abstract class AstroBuddyDatabase: RoomDatabase() {

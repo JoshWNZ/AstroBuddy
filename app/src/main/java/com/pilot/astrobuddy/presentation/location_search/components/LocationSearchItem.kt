@@ -36,7 +36,9 @@ fun LocationSearchItem(
         var locname = ""
         //if a real location and not a generated blank one (for raw coord entry)
         if(location.name.isNotEmpty()) {
-            locname = "${location.name}, ${location.admin1}, ${location.country}"
+            locname += location.name
+            if(location.admin1?.isNotEmpty() == true){locname += ", ${location.admin1}"}
+            if(location.country.isNotEmpty()){locname += ", ${location.country}"}
         }
 
         Column (
@@ -49,12 +51,12 @@ fun LocationSearchItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text= "${location.latitude},${location.longitude}",
+                    text= "${location.latitude}, ${location.longitude}",
                     style = MaterialTheme.typography.body1,
                 )
             }else{
                 Text(
-                    text= "${location.latitude},${location.longitude}",
+                    text= "${location.latitude}, ${location.longitude}",
                     style = MaterialTheme.typography.body2,
                 )
             }

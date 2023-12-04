@@ -1,7 +1,6 @@
 package com.pilot.astrobuddy.presentation.location_search
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -96,7 +96,7 @@ fun LocationSearchScreen(
                             modifier = Modifier
                                 .weight(0.85f),
                             placeholder = {
-                                Text(text = "Enter a location or decimal coordinates")
+                                Text(text = "Enter location or coordinates [-xx.xx, yy.yy]")
                             }
                         )
                         //initialise states n scopes for location services
@@ -160,8 +160,16 @@ fun LocationSearchScreen(
                             if(query[0].isDigit() || query[0]=='-'){
                                 if(query.contains(",")){
                                     val arr = query.split(",")
-                                    Log.i("SPLIT", arr[0])
-                                    Log.i("SPLIT", arr[1])
+                                    arr.forEach { s -> s.trim() }
+
+                                    var lat = 0.0
+                                    var long = 0.0
+
+                                    try{
+                                        lat = if (arr[0].isBlank() || (arr[0].length <= 2 && !arr[0].isDigitsOnly())) 0.0 else arr[0].toDouble()
+                                        long = if (arr[1].isBlank() || (arr[1].length <= 2 && !arr[1].isDigitsOnly())) 0.0 else arr[1].toDouble()
+                                    }catch(_: NumberFormatException){}
+
                                     //TODO make this work properly
                                     val coordLoc = OMLocation(
                                         admin1 = "",
@@ -171,10 +179,10 @@ fun LocationSearchScreen(
                                         country = "",
                                         country_code = "",
                                         elevation = -1.0,
-                                        id = 215,
-                                        latitude = 0.0,//arr[0].toDouble(),
-                                        longitude = 0.0,//arr[1].toDouble(),
-                                        name = ""
+                                        id = 9999999,
+                                        latitude = if(lat < -180 || lat > 180) 0.0 else lat,
+                                        longitude = if(long < -180 || long > 180) 0.0 else long,
+                                        name = "Custom Location"
                                     )
                                     item {
                                         LocationSearchItem(
@@ -188,7 +196,7 @@ fun LocationSearchScreen(
                             }
                         }
                         //if the user is yet to input a query, and there are any bookmarked locations
-                        if(query.isBlank() && savedLocs.isNotEmpty()){
+                        if(query.isBlank()){
                             //display all the bookmarked locations
                             items(savedLocs){loc->
                                 LocationSearchItem(

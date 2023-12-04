@@ -8,7 +8,6 @@ import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.ceil
 import kotlin.math.cos
-import kotlin.math.round
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -16,6 +15,7 @@ import kotlin.math.sqrt
 object CalculateSunMoonUseCase {
     fun calculateSun(time: String, latitude: String, longitude: String, elevation: Double): Pair<String,String>{
         val date = LocalDate.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        Log.i("TIME", "$time $latitude $longitude $elevation")
         Log.i("STEP","NEW DAY")
 
         // Jdate - get number of julian days since jan 1 2000
