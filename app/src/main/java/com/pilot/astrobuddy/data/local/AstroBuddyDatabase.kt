@@ -6,9 +6,9 @@ import com.pilot.astrobuddy.data.local.entity.OMLocationEntity
 import com.pilot.astrobuddy.data.local.entity.OMLocationSavedEntity
 
 @Database(
-    entities = [OMLocationEntity::class,OMLocationSavedEntity::class],
+    entities = [OMLocationEntity::class, OMLocationSavedEntity::class],
     exportSchema = false,
-    version = 2
+    version = 5
 )
 abstract class AstroBuddyDatabase: RoomDatabase() {
     abstract val locDao: OMLocationDao

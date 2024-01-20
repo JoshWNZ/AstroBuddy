@@ -8,4 +8,5 @@ object Constants {
 
     //Navigation parameter names
     const val PARAM_ID_NAME = "id"
+    const val PARAM_OBJ_NAME = "name"
 }

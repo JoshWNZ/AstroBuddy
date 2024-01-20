@@ -6,6 +6,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
@@ -17,8 +18,8 @@ import com.pilot.astrobuddy.presentation.Screen
 
 @Composable
 fun MyBottomNavBar(navController: NavController){
-    val items = listOf(Screen.LocationSearchScreen,Screen.SettingsScreen)
-    val icons = listOf(Icons.Rounded.Cloud,Icons.Rounded.Settings)
+    val items = listOf(Screen.LocationSearchScreen,Screen.ObjectSearchScreen,Screen.SettingsScreen)
+    val icons = listOf(Icons.Rounded.Cloud,Icons.Rounded.Star,Icons.Rounded.Settings)
     BottomNavigation(backgroundColor = Color.DarkGray) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination

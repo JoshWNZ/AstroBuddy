@@ -5,12 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.pilot.astrobuddy.presentation.attribution_screen.AttributionScreen
 import com.pilot.astrobuddy.presentation.forecast_display.ForecastScreen
 import com.pilot.astrobuddy.presentation.location_search.LocationSearchScreen
+import com.pilot.astrobuddy.presentation.object_display.ObjectDisplayScreen
+import com.pilot.astrobuddy.presentation.object_search.ObjectSearchScreen
 import com.pilot.astrobuddy.presentation.settings_screen.SettingsScreen
 import com.pilot.astrobuddy.presentation.ui.theme.AstroBuddyTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,6 +21,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        installSplashScreen()
+
         super.onCreate(savedInstanceState)
         setContent {
             AstroBuddyTheme {
@@ -47,6 +53,16 @@ class MainActivity : ComponentActivity() {
                             route = Screen.AttributionScreen.route
                         ){
                             AttributionScreen(navController)
+                        }
+                        composable(
+                            route = Screen.ObjectSearchScreen.route
+                        ){
+                            ObjectSearchScreen(navController)
+                        }
+                        composable(
+                            route = Screen.ObjectDisplayScreen.route + "/{name}"
+                        ){
+                            ObjectDisplayScreen(navController)
                         }
                     }
                 }
