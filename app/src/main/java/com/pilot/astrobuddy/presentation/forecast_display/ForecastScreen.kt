@@ -17,6 +17,8 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -26,6 +28,8 @@ import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Grid4x4
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -40,6 +44,7 @@ import com.pilot.astrobuddy.presentation.Screen
 import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastCalendarItem
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastScrollerItem
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -50,8 +55,12 @@ fun ForecastScreen(
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
 
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     Scaffold(
         scaffoldState = scaffoldState,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar ={
             TopAppBar(
                 title={Text("Forecast")},
@@ -135,6 +144,12 @@ fun ForecastScreen(
                                 .padding(end = 32.dp)
                                 .clickable {
                                     viewModel.toggleSaved(viewModel.location.id)
+                                    scope.launch{
+                                        snackbarHostState.showSnackbar(
+                                            if(state.isSaved){"Removed from favourites"}
+                                            else{"Added to favourites"}
+                                        )
+                                    }
                                 }
                                 .align(CenterVertically)
                                 .size(32.dp)

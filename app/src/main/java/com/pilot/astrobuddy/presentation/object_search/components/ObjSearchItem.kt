@@ -1,6 +1,5 @@
 package com.pilot.astrobuddy.presentation.object_search.components
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,20 +33,13 @@ fun ObjSearchItem(
             .padding(20.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ){
-        var commonName = ""
-        var NGC = ""
-        var IC = ""
-        var M = ""
-
-        Log.i("OBJECT", "Object: NGC:$NGC IC:$IC M:$M")
-
 
         Column (
             modifier = Modifier.align(Alignment.CenterVertically)
         ){
 
             if(!astroObject.CommonNames.isNullOrEmpty()){
-                commonName = astroObject.CommonNames
+                val commonName = astroObject.CommonNames
                 Text(
                     text= commonName,
                     style = MaterialTheme.typography.body1,
@@ -56,21 +48,21 @@ fun ObjSearchItem(
             }
 
             if(!astroObject.NGC.isNullOrEmpty()){
-                NGC = astroObject.NGC
+                val NGC = astroObject.NGC
                 Text(
                     text= "NGC $NGC",
                     style = MaterialTheme.typography.body2
                 )
             }
             if(!astroObject.IC.isNullOrEmpty()){
-                IC = astroObject.IC
+                val IC = astroObject.IC
                 Text(
                     text= "IC $IC",
                     style = MaterialTheme.typography.body2
                 )
             }
             if(!astroObject.M.isNullOrEmpty()){
-                M = astroObject.M
+                val M = astroObject.M
                 Text(
                     text= "M $M",
                     style = MaterialTheme.typography.body2

@@ -6,20 +6,28 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.PlaylistAdd
+import androidx.compose.material.icons.rounded.PlaylistRemove
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,7 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
+import com.pilot.astrobuddy.domain.model.astro_objects.ObjDefinitions
 import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
+import kotlinx.coroutines.launch
 
 const val imageScale = 200
 
@@ -43,16 +53,37 @@ fun ObjectDisplayScreen(
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
 
-
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
         scaffoldState = scaffoldState,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState)},
         topBar ={
             TopAppBar(
                 title={ state.astroObject?.let { Text(it.Name) } },
                 backgroundColor = Color.DarkGray,
                 actions = {
+                    Icon(
+                        imageVector = if(state.isSaved){Icons.Rounded.PlaylistRemove}
+                                        else{Icons.Rounded.PlaylistAdd},
+                        contentDescription = null,
+                        tint = if(state.isSaved){Color.Yellow}
+                                else{Color.LightGray},
+                        modifier = Modifier
+                            .clickable {
+                                viewModel.toggleSave()
 
+                                scope.launch{
+                                    snackbarHostState.showSnackbar(
+                                        if(state.isSaved){"Removed from watchlist"}
+                                        else{"Added to watchlist"}
+                                    )
+                                }
+                            }
+                            .size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
                 },
                 navigationIcon = {
                     //Button to navigate back
@@ -88,11 +119,16 @@ fun ObjectDisplayScreen(
                             val fov = ((maxSize.toDouble()/60)*1.5).toString()
 
                             ObjectImageFromHiPS(fov = fov, obj = obj.Name)
+                            if(obj.CommonNames!=null){
+                                Text(obj.CommonNames)
+                            }
                             Text(obj.Name)
                             Text("RA:"+obj.RA)
                             Text("Dec:"+obj.Dec)
                             Text("Mag:"+obj.getMagnitude())
                             Text("Size:"+obj.getSize())
+                            Text("Type: "+ ObjDefinitions.objectTypes[obj.Type])
+                            Text("Constellation: "+ ObjDefinitions.constellations[obj.Const])
                         }
                     }
                 }

@@ -31,9 +31,6 @@ class LocationSearchViewModel @Inject constructor(
     private val _state = mutableStateOf(LocationSearchState())
     val state: State<LocationSearchState> = _state
 
-    //initialise a variable to store bookmarked locations
-    var savedLocs: List<OMLocation> = emptyList()
-
     private var searchJob: Job? = null
 
     /**
@@ -49,7 +46,7 @@ class LocationSearchViewModel @Inject constructor(
             getLocationsUseCase(query).onEach{result ->
                 when(result){
                     is Resource.Success -> {
-                        _state.value = LocationSearchState(locations = result.data ?: emptyList())
+                        _state.value = _state.value.copy(locations = result.data ?: emptyList())
                     }
                     is Resource.Error -> {
                         _state.value = LocationSearchState(
@@ -71,7 +68,7 @@ class LocationSearchViewModel @Inject constructor(
     init{
         viewModelScope.launch{
             getSavedLocUseCase.deleteUnsaved()
-            savedLocs = getSavedLocUseCase.getAllLocations()
+            _state.value = _state.value.copy(savedLocs = getSavedLocUseCase.getAllLocations())
         }
     }
 

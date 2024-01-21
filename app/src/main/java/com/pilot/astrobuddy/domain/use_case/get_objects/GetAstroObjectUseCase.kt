@@ -1,4 +1,4 @@
-package com.pilot.astrobuddy.domain.use_case
+package com.pilot.astrobuddy.domain.use_case.get_objects
 
 import com.pilot.astrobuddy.common.Resource
 import com.pilot.astrobuddy.domain.model.astro_objects.AstroObject

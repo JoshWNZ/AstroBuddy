@@ -62,7 +62,6 @@ fun LocationSearchScreen(
 ){
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
-    val savedLocs = viewModel.savedLocs
 
     Scaffold (
         scaffoldState = scaffoldState,
@@ -198,7 +197,7 @@ fun LocationSearchScreen(
                         //if the user is yet to input a query, and there are any bookmarked locations
                         if(query.isBlank()){
                             //display all the bookmarked locations
-                            items(savedLocs){loc->
+                            items(state.savedLocs){loc->
                                 LocationSearchItem(
                                     location = loc,
                                     onItemClick = {

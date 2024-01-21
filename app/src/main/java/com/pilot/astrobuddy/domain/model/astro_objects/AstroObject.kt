@@ -1,5 +1,6 @@
 package com.pilot.astrobuddy.domain.model.astro_objects
 
+import com.pilot.astrobuddy.data.local.entity.AstroObjectEntity
 import kotlin.math.log10
 
 data class AstroObject (
@@ -69,18 +70,10 @@ data class AstroObject (
         return Pair(MajAx?:"",MinAx?:"")
     }
 
-    //return the RA and DEC coords in decimal form (converted from Deg,Min,Sec)
-    fun getDecimalCoords(): Pair<Double,Double>{
-        if(RA.isNullOrEmpty() || Dec.isNullOrEmpty()){
-            return Pair(0.0,0.0)
-        }else{
-            val raVals = RA.split(':').map { s -> s.toDouble() }
-            val decVals = Dec.split(':').map { s -> s.toDouble() }
-
-            val raDouble = raVals[0]+raVals[1]/60+raVals[2]/3600
-            val decDouble = decVals[0]+decVals[1]/60+decVals[2]/3600
-
-            return Pair(raDouble,decDouble)
-        }
+    fun toAstroObjectEntity(): AstroObjectEntity{
+        return AstroObjectEntity(Name, Type, RA, Dec, Const, MajAx, MinAx, PosAng, BMag, VMag, JMag,
+            HMag, KMag, SurfBr, Hubble, Pax, PmRA, PMDec, RadVel, Redshift, CstarUMag, CstarBMag,
+            CstarVMag, M, NGC, IC, CstarNames, Identifiers, CommonNames)
     }
+
 }

@@ -1,7 +1,7 @@
 package com.pilot.astrobuddy.domain.model.astro_objects
 
 object ObjDefinitions {
-    val ObjectTypes: Map<String,String> = hashMapOf(
+    val objectTypes: Map<String,String> = hashMapOf(
         "*" to "Star",
         "**" to "Double Star",
         "*Ass" to "Association of Stars",

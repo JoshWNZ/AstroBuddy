@@ -13,9 +13,11 @@ import com.pilot.astrobuddy.data.remote.WeatherApi
 import com.pilot.astrobuddy.data.repository.AstroObjectRepositoryImpl
 import com.pilot.astrobuddy.data.repository.ForecastRepositoryImpl
 import com.pilot.astrobuddy.data.repository.SavedLocationRepositoryImpl
+import com.pilot.astrobuddy.data.repository.SavedObjectRepositoryImpl
 import com.pilot.astrobuddy.domain.repository.AstroObjectRepository
 import com.pilot.astrobuddy.domain.repository.ForecastRepository
 import com.pilot.astrobuddy.domain.repository.SavedLocationRepository
+import com.pilot.astrobuddy.domain.repository.SavedObjectRepository
 import com.pilot.astrobuddy.setings_store.SettingsStore
 import dagger.Module
 import dagger.Provides
@@ -99,6 +101,12 @@ object AppModule {
     @Singleton
     fun providesAstroObjectRepository(db: AstroObjectDatabase): AstroObjectRepository{
         return AstroObjectRepositoryImpl(db.objDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSavedObjectRepository(db: AstroBuddyDatabase): SavedObjectRepository {
+        return SavedObjectRepositoryImpl(db.saveObjDao)
     }
 
     //room database

@@ -1,12 +1,11 @@
 package com.pilot.astrobuddy.presentation.object_search
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pilot.astrobuddy.common.Resource
-import com.pilot.astrobuddy.domain.use_case.GetAstroObjectUseCase
+import com.pilot.astrobuddy.domain.use_case.get_objects.GetAstroObjectUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -34,29 +33,30 @@ class ObjectSearchViewModel @Inject constructor(
     Function called whenever the user updates the search box
      */
     fun onSearch(query: String){
-        Log.i("SEARCH", "initiate object search")
         //update the query var, cancel the current job, launch a new one
         _searchQuery.value = query
         searchJob?.cancel()
+
+        if(query.isEmpty()){
+            _state.value = ObjectSearchState(objects = emptyList())
+            return
+        }
+
         searchJob = viewModelScope.launch{
             //delay to avoid polling the api for every single text box update
             delay(100L)
             getAstroObjectUseCase.searchAstroObjects(query).onEach{result ->
-                Log.i("SEARCH","its happening poggers")
                 when(result){
                     is Resource.Success -> {
                         _state.value = ObjectSearchState(objects = result.data ?: emptyList())
-                        Log.i("SEARCH","result:"+result.data?.map{e->e.Name})
                     }
                     is Resource.Error -> {
                         _state.value = ObjectSearchState(
                             error = result.message ?: "An unexpected error occurred"
                         )
-                        Log.i("SEARCH","error:"+result.message)
                     }
                     is Resource.Loading -> {
                         _state.value = ObjectSearchState(isLoading = true)
-                        Log.i("SEARCH","Loading")
                     }
                 }
             }.launchIn(this)
