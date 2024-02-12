@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pilot.astrobuddy.common.Resource
 import com.pilot.astrobuddy.domain.use_case.get_objects.GetAstroObjectUseCase
+import com.pilot.astrobuddy.domain.use_case.get_objects.GetSavedObjectUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ObjectSearchViewModel @Inject constructor(
-    private val getAstroObjectUseCase: GetAstroObjectUseCase
+    private val getAstroObjectUseCase: GetAstroObjectUseCase,
+    private val getSavedObjectUseCase: GetSavedObjectUseCase
 ) : ViewModel() {
 
     //initialise a mutable variable to store the current search query
@@ -60,6 +62,15 @@ class ObjectSearchViewModel @Inject constructor(
                     }
                 }
             }.launchIn(this)
+        }
+    }
+
+    fun getWatchlist(){
+        searchJob?.cancel()
+
+        viewModelScope.launch{
+            //delay to avoid polling the api for every single text box update
+            _state.value = ObjectSearchState(objects = getSavedObjectUseCase.getAllObjects())
         }
     }
 

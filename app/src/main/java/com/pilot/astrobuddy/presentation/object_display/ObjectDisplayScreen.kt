@@ -1,5 +1,6 @@
 package com.pilot.astrobuddy.presentation.object_display
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -74,10 +75,13 @@ fun ObjectDisplayScreen(
                             .clickable {
                                 viewModel.toggleSave()
 
-                                scope.launch{
+                                scope.launch {
                                     snackbarHostState.showSnackbar(
-                                        if(state.isSaved){"Removed from watchlist"}
-                                        else{"Added to watchlist"}
+                                        if (state.isSaved) {
+                                            "Removed from watchlist"
+                                        } else {
+                                            "Added to watchlist"
+                                        }
                                     )
                                 }
                             }
@@ -164,7 +168,7 @@ fun ObjectImageFromHiPS(
     fov: String,
     obj: String,
 ){
-    val url = "https://alasky.cds.unistra.fr/hips-image-services/hips2fits?" +
+    var url = "https://alasky.cds.unistra.fr/hips-image-services/hips2fits?" +
             "hips=CDS%2FP%2FDSS2%2Fcolor" +
             "&width=720&height=720" +
             "&fov=$fov" +
@@ -173,6 +177,8 @@ fun ObjectImageFromHiPS(
             "&rotation_angle=0.0" +
             "&object=$obj" +
             "&format=jpg"
+
+    Log.i("IMAGE", "$obj $fov")
 
     Box(modifier = Modifier.size(imageScale.dp), contentAlignment = Alignment.Center){
         SubcomposeAsyncImage(
@@ -184,10 +190,13 @@ fun ObjectImageFromHiPS(
             loading = {
                 Box(
                     modifier = Modifier.size((imageScale/1.5).dp),
-                    contentAlignment = Alignment.Center)
-                {
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator()
                 }
+            },
+            onError = {
+                Log.i("IMAGE_ERROR", "Image borked")
             }
         )
     }
@@ -226,5 +235,12 @@ fun CoordImageFromHiPS(
                 }
             }
         )
+    }
+}
+
+@Composable
+fun ImageError(){
+    Box(modifier = Modifier.size(imageScale.dp), contentAlignment = Alignment.Center){
+        Text(text="Image Service Unavailable")
     }
 }

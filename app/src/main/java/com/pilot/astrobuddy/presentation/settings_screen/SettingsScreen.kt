@@ -31,7 +31,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
 
-
 @Composable
 fun SettingsScreen(
     navController: NavController,
@@ -68,6 +67,12 @@ fun SettingsScreen(
             ){
                 Spacer(modifier = Modifier.height(16.dp))
                 Column(modifier = Modifier.fillMaxSize()){
+                    Text(
+                        text = "Forecast Settings",
+                        style = MaterialTheme.typography.h4,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Divider()
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp),
@@ -79,11 +84,13 @@ fun SettingsScreen(
 
                         Row(horizontalArrangement = Arrangement.SpaceEvenly){
                             Box(
-                                modifier = Modifier.clickable{
-                                    if(days>1){
-                                        viewModel.updateDays(days-1)
+                                modifier = Modifier
+                                    .clickable {
+                                        if (days > 1) {
+                                            viewModel.updateDays(days - 1)
+                                        }
                                     }
-                                }.background(Color.Gray)
+                                    .background(Color.Gray)
                                     .size(64.dp),
                                 contentAlignment = Alignment.Center
                             ){
@@ -103,11 +110,13 @@ fun SettingsScreen(
                                 )
                             }
                             Box(
-                                modifier = Modifier.clickable{
-                                    if(days<14){
-                                        viewModel.updateDays(days+1)
+                                modifier = Modifier
+                                    .clickable {
+                                        if (days < 14) {
+                                            viewModel.updateDays(days + 1)
+                                        }
                                     }
-                                }.background(Color.Gray)
+                                    .background(Color.Gray)
                                     .size(64.dp),
                                 contentAlignment = Alignment.Center
 
@@ -138,10 +147,29 @@ fun SettingsScreen(
                         ) {
                             val celsius = (unit=="C")
                             Box(
-                                modifier = Modifier.background(if(!celsius){Color.Blue}else{Color.Gray})
-                                    .size(if(!celsius){64.dp}else{60.dp})
+                                modifier = Modifier
+                                    .background(
+                                        if (!celsius) {
+                                            Color.Blue
+                                        } else {
+                                            Color.Gray
+                                        }
+                                    )
+                                    .size(
+                                        if (!celsius) {
+                                            64.dp
+                                        } else {
+                                            60.dp
+                                        }
+                                    )
                                     .align(Alignment.CenterVertically)
-                                    .border(color = Color.LightGray, width = if(!celsius){2.dp}else{0.dp}),
+                                    .border(
+                                        color = Color.LightGray, width = if (!celsius) {
+                                            2.dp
+                                        } else {
+                                            0.dp
+                                        }
+                                    ),
                                 contentAlignment = Alignment.Center
                             ){
                                 Text(
@@ -150,10 +178,29 @@ fun SettingsScreen(
                                 )
                             }
                             Box(
-                                modifier = Modifier.background(if(celsius){Color.Blue}else{Color.Gray})
-                                    .size(if(celsius){64.dp}else{60.dp})
+                                modifier = Modifier
+                                    .background(
+                                        if (celsius) {
+                                            Color.Blue
+                                        } else {
+                                            Color.Gray
+                                        }
+                                    )
+                                    .size(
+                                        if (celsius) {
+                                            64.dp
+                                        } else {
+                                            60.dp
+                                        }
+                                    )
                                     .align(Alignment.CenterVertically)
-                                    .border(color = Color.LightGray, width = if(celsius){2.dp}else{0.dp}),
+                                    .border(
+                                        color = Color.LightGray, width = if (celsius) {
+                                            2.dp
+                                        } else {
+                                            0.dp
+                                        }
+                                    ),
                                 contentAlignment = Alignment.Center
                             ){
                                 Text(
@@ -163,6 +210,18 @@ fun SettingsScreen(
                             }
                         }
                     }
+                    Divider()
+                    Text(
+                        text = "Object Settings",
+                        style = MaterialTheme.typography.h4,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Divider()
+                    Text(
+                        text = "Equipment Settings",
+                        style = MaterialTheme.typography.h4,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
                     Divider()
                 }
             }

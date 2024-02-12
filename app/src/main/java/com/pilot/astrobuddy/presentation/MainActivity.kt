@@ -10,6 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.pilot.astrobuddy.presentation.attribution_screen.AttributionScreen
+import com.pilot.astrobuddy.presentation.equipment_screen.EquipmentScreen
+import com.pilot.astrobuddy.presentation.equipment_setup.EquipmentSetupScreen
 import com.pilot.astrobuddy.presentation.forecast_display.ForecastScreen
 import com.pilot.astrobuddy.presentation.location_search.LocationSearchScreen
 import com.pilot.astrobuddy.presentation.object_display.ObjectDisplayScreen
@@ -63,6 +65,16 @@ class MainActivity : ComponentActivity() {
                             route = Screen.ObjectDisplayScreen.route + "/{name}"
                         ){
                             ObjectDisplayScreen(navController)
+                        }
+                        composable(
+                            route = Screen.EquipmentScreen.route
+                        ){
+                            EquipmentScreen(navController)
+                        }
+                        composable(
+                            route = Screen.EquipmentSetupScreen.route + "/{id}"
+                        ){
+                            EquipmentSetupScreen(navController)
                         }
                     }
                 }
