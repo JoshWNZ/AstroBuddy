@@ -88,17 +88,17 @@ fun EquipmentSetupScreen(
     if(state.astroEquipment != null){
         val equip = state.astroEquipment
 
-        setupName = equip.setupName
-        scopeName = equip.scopeName
+        setupName   = equip.setupName
+        scopeName   = equip.scopeName
         focalLength = equip.focalLength.toString()
-        aperture = equip.aperture.toString()
-        modifier = equip.modifier.toString()
-        cameraName = equip.cameraName
-        vertPixels = equip.verticalPixels.toString()
-        horiPixels = equip.horizontalPixels.toString()
+        aperture    = equip.aperture.toString()
+        modifier    = equip.modifier.toString()
+        cameraName  = equip.cameraName
+        vertPixels  = equip.verticalPixels.toString()
+        horiPixels  = equip.horizontalPixels.toString()
         sensorWidth = equip.sensorWidth.toString()
         sensorHeight = equip.sensorHeight.toString()
-        pixelScale = equip.pixelScale.toString()
+        pixelScale  = equip.pixelScale.toString()
 
         selectedOptionText = options[options.indexOf(equip.modifier.toString())]
 

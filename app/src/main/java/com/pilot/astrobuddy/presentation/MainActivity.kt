@@ -13,6 +13,7 @@ import com.pilot.astrobuddy.presentation.attribution_screen.AttributionScreen
 import com.pilot.astrobuddy.presentation.equipment_screen.EquipmentScreen
 import com.pilot.astrobuddy.presentation.equipment_setup.EquipmentSetupScreen
 import com.pilot.astrobuddy.presentation.forecast_display.ForecastScreen
+import com.pilot.astrobuddy.presentation.home_screen.HomeScreen
 import com.pilot.astrobuddy.presentation.location_search.LocationSearchScreen
 import com.pilot.astrobuddy.presentation.object_display.ObjectDisplayScreen
 import com.pilot.astrobuddy.presentation.object_search.ObjectSearchScreen
@@ -34,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.LocationSearchScreen.route
+                        startDestination = Screen.HomeScreen.route
                     ){
                         composable(
                             route = Screen.LocationSearchScreen.route
@@ -75,6 +76,11 @@ class MainActivity : ComponentActivity() {
                             route = Screen.EquipmentSetupScreen.route + "/{id}"
                         ){
                             EquipmentSetupScreen(navController)
+                        }
+                        composable(
+                            route = Screen.HomeScreen.route
+                        ){
+                            HomeScreen(navController)
                         }
                     }
                 }

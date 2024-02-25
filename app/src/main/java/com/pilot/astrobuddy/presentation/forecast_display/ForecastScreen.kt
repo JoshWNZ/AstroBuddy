@@ -45,7 +45,6 @@ import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastCal
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastScrollerItem
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun ForecastScreen(
     navController: NavController,

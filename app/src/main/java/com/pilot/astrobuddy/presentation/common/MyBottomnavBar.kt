@@ -6,6 +6,7 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cloud
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.Composable
@@ -26,6 +27,7 @@ fun MyBottomNavBar(navController: NavController){
     val items = listOf(
         Screen.LocationSearchScreen,
         Screen.ObjectSearchScreen,
+        Screen.HomeScreen,
         Screen.EquipmentScreen,
         Screen.SettingsScreen
     )
@@ -39,12 +41,13 @@ fun MyBottomNavBar(navController: NavController){
                     when(items.indexOf(screen)){
                         0 -> Icon(Icons.Rounded.Cloud,contentDescription = null)
                         1 -> Icon(Icons.Rounded.Star,contentDescription = null)
-                        2 -> Icon(
+                        2 -> Icon(Icons.Rounded.Home,contentDescription = null,modifier = Modifier.size(40.dp))
+                        3 -> Icon(
                             painter = painterResource(id = R.drawable.scope),
                             contentDescription = null,
-                            modifier = Modifier.size(26.dp)
+                            modifier = Modifier.size(24.dp)
                         )
-                        3 -> Icon(Icons.Rounded.Settings,contentDescription = null)
+                        4 -> Icon(Icons.Rounded.Settings,contentDescription = null)
                     }
                        },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
