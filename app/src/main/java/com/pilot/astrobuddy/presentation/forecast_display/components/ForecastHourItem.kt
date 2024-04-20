@@ -22,12 +22,15 @@ fun ForecastHourItem(
     i: Int,
     curHour: String?
 ){
+
+    val boxSize = 28.dp
+
     //get the hour value like this because i cant be bothered with another formatter
     val hour = "${forecastHour.time[i][11]}${forecastHour.time[i][12]}"
     Column {
         //highlight the current hour column
         val curCol= if(curHour!=null && curHour==hour){Color.Magenta}else{Color.DarkGray}
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             Text(
                 text=hour,
                 style = MaterialTheme.typography.body2,
@@ -36,7 +39,7 @@ fun ForecastHourItem(
         }
         Divider()
 
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             Text(
                 text=forecastHour.cloudcover[i].toString(),
                 style = MaterialTheme.typography.body2,
@@ -45,7 +48,7 @@ fun ForecastHourItem(
         }
         Divider()
 
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             Text(
                 text=forecastHour.cloudcover_high[i].toString(),
                 style = MaterialTheme.typography.body2,
@@ -54,7 +57,7 @@ fun ForecastHourItem(
         }
         Divider()
 
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             Text(
                 text=forecastHour.cloudcover_mid[i].toString(),
                 style = MaterialTheme.typography.body2,
@@ -63,7 +66,7 @@ fun ForecastHourItem(
         }
         Divider()
 
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             Text(
                 text=forecastHour.cloudcover_low[i].toString(),
                 style = MaterialTheme.typography.body2,
@@ -74,7 +77,7 @@ fun ForecastHourItem(
 
         //normalise visibility in meters to a more reasonable value that fits in its box
         val visNormalised = ((forecastHour.visibility[i] / 24140)*100).roundToInt()
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             Text(
                 text=visNormalised.toString(),
                 style = MaterialTheme.typography.body2,
@@ -83,7 +86,7 @@ fun ForecastHourItem(
         }
         Divider()
 
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             val prob = forecastHour.precipitation_probability[i]?:"NA"
             Text(
                 text= prob.toString(),
@@ -93,7 +96,7 @@ fun ForecastHourItem(
         }
         Divider()
 
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             Text(
                 text=forecastHour.windspeed_10m[i].roundToInt().toString(),
                 style = MaterialTheme.typography.body2,
@@ -101,7 +104,7 @@ fun ForecastHourItem(
             )
         }
 
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             val dir = degToDir(forecastHour.winddirection_10m[i])
             Text(
                 text=dir,
@@ -111,7 +114,7 @@ fun ForecastHourItem(
         }
         Divider()
 
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             Text(
                 text=forecastHour.temperature_2m[i].roundToInt().toString(),
                 style = MaterialTheme.typography.body2,
@@ -120,7 +123,7 @@ fun ForecastHourItem(
         }
         Divider()
 
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             Text(
                 text=forecastHour.apparent_temperature[i].roundToInt().toString(),
                 style = MaterialTheme.typography.body2,
@@ -129,7 +132,7 @@ fun ForecastHourItem(
         }
         Divider()
 
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             Text(
                 text=forecastHour.relativehumidity_2m[i].toString(),
                 style = MaterialTheme.typography.body2,
@@ -138,7 +141,7 @@ fun ForecastHourItem(
         }
         Divider()
 
-        Box(modifier = Modifier.size(24.dp).background(curCol)){
+        Box(modifier = Modifier.size(boxSize).background(curCol)){
             Text(
                 text=forecastHour.dewpoint_2m[i].roundToInt().toString(),
                 style = MaterialTheme.typography.body2,

@@ -433,10 +433,11 @@ fun EquipmentSetupScreen(
 
                         IconButton(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(64.dp)
+                                //.fillMaxWidth()
+                                .width(256.dp)
+                                .height(32.dp)
                                 .align(Alignment.CenterHorizontally)
-                                .weight(0.15f)
+                                //.weight(0.15f)
                                 .clip(CircleShape)
                                 .background(Color.Blue),
                             content = {

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.Home
@@ -32,6 +33,7 @@ fun MyBottomNavBar(navController: NavController){
         Screen.SettingsScreen
     )
 
+
     BottomNavigation(backgroundColor = Color.DarkGray) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
@@ -50,6 +52,16 @@ fun MyBottomNavBar(navController: NavController){
                         4 -> Icon(Icons.Rounded.Settings,contentDescription = null)
                     }
                        },
+                label = {
+                    when(items.indexOf(screen)){
+                        0 -> Text("Weather")
+                        1 -> Text("Objects")
+                        2 -> Text("Home")
+                        3 -> Text("Setups")
+                        4 -> Text("Settings")
+                    }
+                },
+                alwaysShowLabel = false,
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
                     navController.navigate(screen.route) {

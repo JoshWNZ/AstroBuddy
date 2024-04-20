@@ -19,4 +19,23 @@ data class AstroEquipment (
     fun toAstroEquipmentEntity(): AstroEquipmentEntity{
         return AstroEquipmentEntity(id,setupName, scopeName, focalLength, aperture, modifier, cameraName, verticalPixels, horizontalPixels, sensorWidth, sensorHeight, pixelScale)
     }
+
+    companion object Dummy {
+        fun getDummyAstroEquipment(): AstroEquipment {
+            return AstroEquipment(
+                0,
+                "",
+                "",
+                0.0,
+                0.0,
+                0.0,
+                "",
+                0,
+                0,
+                0.0,
+                0.0,
+                0.0,
+            )
+        }
+    }
 }

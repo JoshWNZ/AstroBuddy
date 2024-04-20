@@ -30,4 +30,22 @@ data class OMLocation(
             name
         )
     }
+
+    companion object Dummy{
+        fun getDummyOMLocation(): OMLocation{
+            return OMLocation(
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                0.0,
+                0,
+                0.0,
+                0.0,
+                "",
+            )
+        }
+    }
 }

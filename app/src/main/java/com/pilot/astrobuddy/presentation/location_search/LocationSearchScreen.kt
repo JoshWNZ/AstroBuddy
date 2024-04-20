@@ -95,7 +95,7 @@ fun LocationSearchScreen(
                             modifier = Modifier
                                 .weight(0.85f),
                             placeholder = {
-                                Text(text = "Enter location or coordinates [-xx.xx, yy.yy]")
+                                Text(text = "Enter location or coordinates")
                             }
                         )
                         //initialise states n scopes for location services

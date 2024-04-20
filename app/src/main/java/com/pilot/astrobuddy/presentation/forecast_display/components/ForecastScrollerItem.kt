@@ -56,7 +56,7 @@ fun ForecastScrollerItem(
     //update the day row position when the hour row moves, but more slowly to keep in sync
     val scrollState = rememberScrollableState{delta->
         scope.launch{
-            dayRowState.scrollBy(-delta/1.465f)
+            dayRowState.scrollBy(-delta/1.935f)
             hoursRowState.scrollBy(-delta)
         }
         delta
@@ -71,7 +71,7 @@ fun ForecastScrollerItem(
     //automatically scroll to the current hour
     LaunchedEffect(Unit){
         scope.launch{
-            scrollState.animateScrollBy(curHour.toFloat()*(25.dp.value))
+            scrollState.animateScrollBy(curHour.toFloat()*(29.dp.value))
             hoursRowState.animateScrollToItem(curHour.toInt())
         }
     }
@@ -95,7 +95,7 @@ fun ForecastScrollerItem(
                     //format the first datetime from each day
                     val date = LocalDate.parse(fd.hourly.time[d*24], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     val day = date.format(DateTimeFormatter.ofPattern("EEE"))
-                    val dayMon = date.format(DateTimeFormatter.ofPattern("dd - MMM"))
+                    val dayMon = date.format(DateTimeFormatter.ofPattern("dd MMM"))
                     //display the date as dd-mm and the day as a word
                     Box(
                         modifier = Modifier
@@ -112,7 +112,7 @@ fun ForecastScrollerItem(
                             Text(
                                 text=dayMon,
                                 modifier = Modifier.align(CenterHorizontally),
-                                style = MaterialTheme.typography.body1.copy(color= MaterialTheme.colors.onSecondary)
+                                style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
                             )
                         }
                     }
@@ -133,54 +133,60 @@ fun ForecastScrollerItem(
                         }
                         Column {
                             Text(
-                                text= "rise: ${curAstro.sunrise}",
-                                style = MaterialTheme.typography.body1.copy(color= MaterialTheme.colors.onSecondary)
+                                text= "rise: ${curAstro.sunrise.removePrefix("0")}",
+                                style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
                             )
                             Text(
-                                text= "set: ${curAstro.sunset}",
-                                style = MaterialTheme.typography.body1.copy(color= MaterialTheme.colors.onSecondary)
+                                text= "set: ${curAstro.sunset.removePrefix("0")}",
+                                style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
                             )
                         }
                     }
 
-                    Row(
+
+                    Column(
                         modifier = Modifier
                             .background(Color.Gray)
                             .height(44.dp)
-                            .width((width*0.50).dp)
+                            .width((width*0.5).dp)
                     ){
-                        Icon(
-                            imageVector = Icons.Rounded.DarkMode,
-                            contentDescription = "Moon"
-                        )
-                        Column {
+                        Row{
+                            Icon(
+                                imageVector = Icons.Rounded.DarkMode,
+                                contentDescription = "Moon"
+                            )
                             Text(
                                 text= "${curAstro.moon_phase}, ${curAstro.moon_illumination}%",
-                                style = MaterialTheme.typography.body1
-                            )
-                            Text(
-                                text= "rise: ${curAstro.moonrise}, set: ${curAstro.moonset}",
-                                style = MaterialTheme.typography.body2
+                                style = MaterialTheme.typography.body2,
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                                    .align(CenterVertically)
                             )
                         }
+                        Text(
+                            text= "rise: ${curAstro.moonrise.removePrefix("0")}" +
+                                    ", set: ${curAstro.moonset.removePrefix("0")}",
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier.padding(start = 2.dp)
+                        )
                     }
                 }
         }
-        Row(modifier = Modifier.height(300.dp)){
+        Row(modifier = Modifier.height(370.dp)){
             Column{
                 //display a column of labels for each element of the forecast
                 val labels = listOf(
-                    "time","cloudTot","cloudHi","cloudMed","cloudLow","visibility","rainprob","windspd","winddir","temp","feels","humidity","dewpoint"
+                    "hour","cloudTot","cloudHi","cloudMed","cloudLow","visibility","rainprob","windspd","winddir","temp","feels","humidity","dewpoint"
                 )
                 Column(
                     modifier = Modifier
                         .background(Color.DarkGray)
-                        .width(63.dp)
+                        .width(64.dp)
                 ){
                     labels.forEach {
                         Box(
                             modifier = Modifier
-                                .height(24.dp)
+                                .height(28.dp)
                                 .align(CenterHorizontally),
                             contentAlignment = Center
                         ){

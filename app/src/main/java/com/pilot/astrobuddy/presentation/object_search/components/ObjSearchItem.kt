@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -30,60 +31,76 @@ fun ObjSearchItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onItemClick(astroObject) }
-            .padding(20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(16.dp)
+            .height(56.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ){
+        Row(
+            modifier = Modifier.weight(0.9f),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
+                if (!astroObject.CommonNames.isNullOrEmpty()) {
+                    var commonName = astroObject.CommonNames.replace(",", ", ")
+                    if (commonName.length > 22) {
+                        commonName = commonName.substring(0, 22) + "..."
+                    }
+                    Text(
+                        text = commonName,
+                        style = MaterialTheme.typography.body1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
-        Column (
-            modifier = Modifier.align(Alignment.CenterVertically)
-        ){
-
-            if(!astroObject.CommonNames.isNullOrEmpty()){
-                val commonName = astroObject.CommonNames
-                Text(
-                    text= commonName,
-                    style = MaterialTheme.typography.body1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (!astroObject.NGC.isNullOrEmpty()) {
+                    val NGC = astroObject.NGC.removePrefix("0")
+                    Text(
+                        text = "NGC $NGC",
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                if (!astroObject.IC.isNullOrEmpty()) {
+                    val IC = astroObject.IC.removePrefix("0")
+                    Text(
+                        text = "IC $IC",
+                        style = MaterialTheme.typography.body2
+                    )
+                }
+                if (!astroObject.M.isNullOrEmpty()) {
+                    val M = astroObject.M.removePrefix("0")
+                    Text(
+                        text = "M $M",
+                        style = MaterialTheme.typography.body2
+                    )
+                }
             }
 
-            if(!astroObject.NGC.isNullOrEmpty()){
-                val NGC = astroObject.NGC
+            Column(
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
                 Text(
-                    text= "NGC $NGC",
+                    text = "App. Mag: " + String.format("%.2f", astroObject.getMagnitude()).replace("nu","NA"),
+                    style = MaterialTheme.typography.body2
+                )
+
+                val size = astroObject.getSize()
+                val sizeString = if(size.second.isEmpty()){
+                    size.first + "\'"
+                }else{
+                    size.first + "\', " + size.second + "\'"
+                }
+                Text(
+                    text = "Size: $sizeString",
                     style = MaterialTheme.typography.body2
                 )
             }
-            if(!astroObject.IC.isNullOrEmpty()){
-                val IC = astroObject.IC
-                Text(
-                    text= "IC $IC",
-                    style = MaterialTheme.typography.body2
-                )
-            }
-            if(!astroObject.M.isNullOrEmpty()){
-                val M = astroObject.M
-                Text(
-                    text= "M $M",
-                    style = MaterialTheme.typography.body2
-                )
-            }
-        }
-
-        Column(
-            modifier = Modifier.align(Alignment.CenterVertically)
-        ){
-            Text(
-                text= "App. Mag: "+String.format("%.2f",astroObject.getMagnitude()),
-                style = MaterialTheme.typography.body2
-            )
-            Text(
-                text= "Size (arcmin): "+astroObject.getSize().first+","+astroObject.getSize().second,
-                style = MaterialTheme.typography.body2
-            )
         }
 
         Box(
+            modifier = Modifier.weight(0.1f),
             contentAlignment = Alignment.CenterEnd
         ){
             Icon(
