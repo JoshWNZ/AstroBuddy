@@ -23,6 +23,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pilot.astrobuddy.domain.model.astro_equipment.AstroEquipment
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
+import com.pilot.astrobuddy.presentation.Screen
 import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
 import com.pilot.astrobuddy.presentation.home_screen.components.AstroRowItem
 
@@ -51,11 +53,9 @@ fun HomeScreen(
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
 
-//    LaunchedEffect(0){
-//        viewModel.fetchSavedEquipment()
-//        viewModel.fetchSavedObjects()
-//        viewModel.fetchSavedLocations()
-//    }
+    LaunchedEffect(0){
+        viewModel.fetchInformation()
+    }
 
     //variables for dropdown menu functionality
     val equipList = state.savedEquip
@@ -224,7 +224,12 @@ fun HomeScreen(
                     LazyRow(modifier = Modifier.fillMaxWidth()){
                         objList.forEach{obj ->
                             item{
-                                AstroRowItem(obj)
+                                AstroRowItem(
+                                    obj = obj,
+                                    onItemClick = {
+                                        navController.navigate(Screen.ObjectDisplayScreen.route+"/${obj.Name}")
+                                    },
+                                )
                             }
                         }
                     }

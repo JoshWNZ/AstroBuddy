@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pilot.astrobuddy.common.Resource
+import com.pilot.astrobuddy.domain.model.astro_equipment.AstroEquipment
+import com.pilot.astrobuddy.domain.model.astro_objects.AstroObject
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.domain.use_case.get_equipment.GetAstroEquipmentUseCase
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetAstroUseCase
@@ -30,16 +32,21 @@ class HomeScreenViewModel @Inject constructor(
     private val _state = mutableStateOf(HomeScreenState())
     val state: State<HomeScreenState> = _state
 
-    fun fetchSavedEquipment() /*:List<AstroEquipment>*/{
+
+    fun fetchInformation(){
+        //initialise lists to save data
+        var astroEquipmentList: List<AstroEquipment> = emptyList()
+        var savedLocationList: List<OMLocation> = emptyList()
+        var savedObjectList: List<AstroObject> = emptyList()
+
+        //fetch astro equipment
         viewModelScope.launch{
             getAstroEquipmentUseCase.getAllAstroEquipment().onEach{ result ->
                 when(result){
                     is Resource.Success -> {
-                        result.data ?: emptyList()
-                        _state.value = _state.value.copy(savedEquip = result.data ?: emptyList())
+                        astroEquipmentList = result.data?:emptyList()
                         Log.i("HOMELOAD","equipment fetched")
-                        Log.i("HOMELOAD",_state.value.savedEquip[0].setupName)
-                        _state.value = _state.value.copy(isLoading = false)
+                        Log.i("HOMELOAD",astroEquipmentList[0].setupName)
                     }
                     is Resource.Error -> {
                         _state.value = _state.value.copy(
@@ -51,24 +58,25 @@ class HomeScreenViewModel @Inject constructor(
                     }
                 }
             }.launchIn(this)
-        }
-    }
 
-    fun fetchSavedLocations(){
-        viewModelScope.launch{
-            _state.value = _state.value.copy(savedLocs = getSavedLocUseCase.getAllLocations())
+            savedLocationList = getSavedLocUseCase.getAllLocations()
             Log.i("HOMELOAD","locations fetched")
-            Log.i("HOMELOAD",_state.value.savedLocs[0].name)
-        }
-    }
+            Log.i("HOMELOAD",savedLocationList[0].name)
 
-    fun fetchSavedObjects(){
-        viewModelScope.launch{
-            _state.value = _state.value.copy(savedObjects = getSavedObjectUseCase.getAllObjects())
+            savedObjectList = getSavedObjectUseCase.getAllObjects()
             Log.i("HOMELOAD","objects fetched")
-            Log.i("HOMELOAD",_state.value.savedObjects[0].Name)
+            Log.i("HOMELOAD",savedObjectList[0].Name)
+
+            _state.value = _state.value.copy(
+                isLoading = false,
+                savedEquip = astroEquipmentList,
+                savedLocs = savedLocationList,
+                savedObjects = savedObjectList
+                )
         }
     }
 
-    fun fetchForecast(loc: OMLocation){}
+    fun fetchForecast(loc: OMLocation){
+
+    }
 }

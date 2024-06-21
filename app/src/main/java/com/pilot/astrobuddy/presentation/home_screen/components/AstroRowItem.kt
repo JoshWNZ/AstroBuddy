@@ -1,6 +1,7 @@
 package com.pilot.astrobuddy.presentation.home_screen.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,10 +18,14 @@ import com.pilot.astrobuddy.domain.model.astro_objects.AstroObject
 
 @Composable
 fun AstroRowItem(
-    obj: AstroObject
+    obj: AstroObject,
+    onItemClick: (AstroObject) -> Unit
 ){
         Column(
-            modifier = Modifier.padding(3.dp).background(Color.DarkGray)
+            modifier = Modifier
+                .padding(3.dp)
+                .background(Color.DarkGray)
+                .clickable { onItemClick(obj) }
         ){
             if(!obj.CommonNames.isNullOrEmpty()){
                 val commonName = obj.CommonNames
@@ -58,7 +63,6 @@ fun AstroRowItem(
                         )
                     }
                 }
-
                 Column(
                     modifier = Modifier.align(Alignment.CenterVertically)
                 ){
