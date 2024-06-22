@@ -40,7 +40,8 @@ class ObjectSearchViewModel @Inject constructor(
         searchJob?.cancel()
 
         if(query.isEmpty()){
-            _state.value = ObjectSearchState(objects = emptyList())
+            //_state.value = ObjectSearchState(objects = emptyList())
+            getWatchlist()
             return
         }
 
