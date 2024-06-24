@@ -39,6 +39,13 @@ class LocationSearchViewModel @Inject constructor(
     fun onSearch(query: String){
         //update the query var, cancel the current job, launch a new one
         _searchQuery.value = query
+
+        if(query.isEmpty()){
+            //_state.value = ObjectSearchState(objects = emptyList())
+            getBookmarked()
+            return
+        }
+
         searchJob?.cancel()
         searchJob = viewModelScope.launch{
             //delay to avoid polling the api for every single text box update
@@ -62,12 +69,12 @@ class LocationSearchViewModel @Inject constructor(
     }
 
     /**
-    On initialisation, delete locations from the database which aren't bookmarked
-    get the remaining bookmarked locations
+     * Retrieve list of bookmarked locations
      */
-    init{
+    private fun getBookmarked(){
+        searchJob?.cancel()
+
         viewModelScope.launch{
-            getSavedLocUseCase.deleteUnsaved()
             _state.value = _state.value.copy(savedLocs = getSavedLocUseCase.getAllLocations())
         }
     }
@@ -79,6 +86,14 @@ class LocationSearchViewModel @Inject constructor(
         viewModelScope.launch{
             getSavedLocUseCase.insertLocation(loc)
         }
+    }
+
+    /**
+    On initialisation, delete cached locations from the database which aren't bookmarked
+    and get the remaining bookmarked locations
+     */
+    init{
+        getBookmarked()
     }
 
 

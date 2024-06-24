@@ -21,7 +21,6 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,10 +40,6 @@ fun ObjectSearchScreen(
 ){
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
-
-    LaunchedEffect(key1 = 0) {
-        viewModel.getWatchlist()
-    }
 
     Scaffold (
         scaffoldState = scaffoldState,

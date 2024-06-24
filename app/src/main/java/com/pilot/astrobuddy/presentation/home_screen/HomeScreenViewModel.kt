@@ -46,7 +46,6 @@ class HomeScreenViewModel @Inject constructor(
                     is Resource.Success -> {
                         astroEquipmentList = result.data?:emptyList()
                         Log.i("HOMELOAD","equipment fetched")
-                        Log.i("HOMELOAD",astroEquipmentList[0].setupName)
                     }
                     is Resource.Error -> {
                         _state.value = _state.value.copy(
@@ -61,11 +60,9 @@ class HomeScreenViewModel @Inject constructor(
 
             savedLocationList = getSavedLocUseCase.getAllLocations()
             Log.i("HOMELOAD","locations fetched")
-            Log.i("HOMELOAD",savedLocationList[0].name)
 
             savedObjectList = getSavedObjectUseCase.getAllObjects()
             Log.i("HOMELOAD","objects fetched")
-            Log.i("HOMELOAD",savedObjectList[0].Name)
 
             _state.value = _state.value.copy(
                 isLoading = false,

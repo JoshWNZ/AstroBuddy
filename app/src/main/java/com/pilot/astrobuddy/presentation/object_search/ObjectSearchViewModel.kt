@@ -66,13 +66,17 @@ class ObjectSearchViewModel @Inject constructor(
         }
     }
 
-    fun getWatchlist(){
+    private fun getWatchlist(){
         searchJob?.cancel()
 
         viewModelScope.launch{
             //delay to avoid polling the api for every single text box update
             _state.value = ObjectSearchState(objects = getSavedObjectUseCase.getAllObjects())
         }
+    }
+
+    init{
+        getWatchlist()
     }
 
 }
