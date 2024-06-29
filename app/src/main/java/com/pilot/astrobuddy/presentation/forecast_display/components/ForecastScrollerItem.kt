@@ -7,9 +7,11 @@ import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
 import com.pilot.astrobuddy.domain.model.weatherapi.Astro
 import kotlinx.coroutines.launch
@@ -43,7 +46,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-
 fun ForecastScrollerItem(
     fd: OMForecast,
     astro: List<Astro>
@@ -92,91 +94,96 @@ fun ForecastScrollerItem(
         ){
             //give each day an item in the row
             items(fd.hourly.time.size/24){d->
-                    //format the first datetime from each day
-                    val date = LocalDate.parse(fd.hourly.time[d*24], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                    val day = date.format(DateTimeFormatter.ofPattern("EEE"))
-                    val dayMon = date.format(DateTimeFormatter.ofPattern("dd MMM"))
-                    //display the date as dd-mm and the day as a word
-                    Box(
-                        modifier = Modifier
-                            .background(Color.LightGray)
-                            .height(44.dp)
-                            .width((width*0.15).dp),
-                        contentAlignment = Center
-                    ){
-                        Column(modifier = Modifier.padding(start = 2.dp)){
-                            Text(
-                                text=day,
-                                modifier = Modifier.align(CenterHorizontally),
-                                style = MaterialTheme.typography.body1.copy(color= MaterialTheme.colors.onSecondary))
-                            Text(
-                                text=dayMon,
-                                modifier = Modifier.align(CenterHorizontally),
-                                style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
-                            )
-                        }
-                    }
-                    //get the current astronomical forecast or default to an empty one (to be fixed)
-                    val curAstro = astro.elementAtOrElse(d){Astro("","","","","","")}
-                    Row(
-                        modifier = Modifier
-                            .background(Color.Yellow)
-                            .height(44.dp)
-                            .width((width*0.35).dp)
-                    ){
-                        Column(modifier = Modifier.align(CenterVertically)){
-                            Icon(
-                                imageVector = Icons.Rounded.WbSunny,
-                                contentDescription = "Sun",
-                                tint = Color.Black
-                            )
-                        }
-                        Column {
-                            Text(
-                                text= "rise: ${curAstro.sunrise.removePrefix("0")}",
-                                style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
-                            )
-                            Text(
-                                text= "set: ${curAstro.sunset.removePrefix("0")}",
-                                style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
-                            )
-                        }
-                    }
-
-
-                    Column(
-                        modifier = Modifier
-                            .background(Color.Gray)
-                            .height(44.dp)
-                            .width((width*0.5).dp)
-                    ){
-                        Row{
-                            Icon(
-                                imageVector = Icons.Rounded.DarkMode,
-                                contentDescription = "Moon"
-                            )
-                            Text(
-                                text= "${curAstro.moon_phase}, ${curAstro.moon_illumination}%",
-                                style = MaterialTheme.typography.body2,
-                                modifier = Modifier
-                                    .padding(start = 4.dp)
-                                    .align(CenterVertically)
-                            )
-                        }
+                //format the first datetime from each day
+                val date = LocalDate.parse(fd.hourly.time[d*24], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                val day = date.format(DateTimeFormatter.ofPattern("EEE"))
+                val dayMon = date.format(DateTimeFormatter.ofPattern("dd MMM"))
+                //display the date as dd-mm and the day as a word
+                Box(
+                    modifier = Modifier
+                        .background(Color.LightGray)
+                        .height(44.dp)
+                        .width((width*0.15).dp),
+                    contentAlignment = Center
+                ){
+                    Column(modifier = Modifier.padding(start = 2.dp)){
                         Text(
-                            text= "rise: ${curAstro.moonrise.removePrefix("0")}" +
-                                    ", set: ${curAstro.moonset.removePrefix("0")}",
-                            style = MaterialTheme.typography.body2,
-                            modifier = Modifier.padding(start = 2.dp)
+                            text=day,
+                            modifier = Modifier.align(CenterHorizontally),
+                            style = MaterialTheme.typography.body1.copy(color= MaterialTheme.colors.onSecondary))
+                        Text(
+                            text=dayMon,
+                            modifier = Modifier.align(CenterHorizontally),
+                            style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
                         )
                     }
                 }
+                //get the current astronomical forecast or default to an empty one (to be fixed)
+                val curAstro = astro.elementAtOrElse(d){Astro("","","","","","")}
+
+                // Sunrise/set
+                Row(
+                    modifier = Modifier
+                        .background(Color.Yellow)
+                        .height(44.dp)
+                        .width((width*0.35).dp)
+                ){
+                    Icon(
+                        imageVector = Icons.Rounded.WbSunny,
+                        contentDescription = "Sun",
+                        tint = Color.Black,
+                        modifier = Modifier.fillMaxHeight()
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalArrangement = Arrangement.Center
+                    ){
+                        Text(
+                            text= "rise: ${curAstro.sunrise.removePrefix("0")}",
+                            style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
+                        )
+                        Text(
+                            text= "set:  ${curAstro.sunset.removePrefix("0")}",
+                            style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
+                        )
+                    }
+                }
+
+                //Moon phase, rise/set
+                Column(
+                    modifier = Modifier
+                        .background(Color.Gray)
+                        .height(44.dp)
+                        .width((width*0.5).dp)
+                ){
+                    Row{
+                        Icon(
+                            imageVector = Icons.Rounded.DarkMode,
+                            contentDescription = "Moon"
+                        )
+                        Text(
+                            text= "${curAstro.moon_phase}, ${curAstro.moon_illumination}%",
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier
+                                .padding(start = 4.dp)
+                                .align(CenterVertically)
+                        )
+                    }
+                    Text(
+                        text= "rise: ${curAstro.moonrise.removePrefix("0")}" +
+                                ", set: ${curAstro.moonset.removePrefix("0")}",
+                        style = MaterialTheme.typography.body2,
+                        modifier = Modifier.padding(start = 2.dp)
+                    )
+                }
+            }
         }
         Row(modifier = Modifier.height(370.dp)){
             Column{
                 //display a column of labels for each element of the forecast
                 val labels = listOf(
-                    "hour","cloudTot","cloudHi","cloudMed","cloudLow","visibility","rainprob","windspd","winddir","temp","feels","humidity","dewpoint"
+                    "Time","Total Cloud","High Cloud","Mid Cloud","Low Cloud","Visibility","Rain prob.","Wind Speed","Wind Dir.","Temp","Feels Like","Humidity","Dew Point"
                 )
                 Column(
                     modifier = Modifier
@@ -193,19 +200,26 @@ fun ForecastScrollerItem(
                             Text(
                                 text=it,
                                 style = MaterialTheme.typography.body2,
-                                textAlign = TextAlign.Center
+                                fontSize = 11.sp,
+                                textAlign = TextAlign.Right,
+                                modifier = Modifier
+                                    .padding(end = 2.dp)
+                                    .fillMaxWidth()
                             )
                         }
-                        Divider()
+                        Divider(
+                            color = Color.Gray
+                        )
                     }
 
                 }
             }
             //Vertical divider
             Divider(
+                color = Color.Gray,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(1.dp)
+                    .width(2.dp)
             )
             //scrollable lazyrow containing all forecast values for each hour
             LazyRow(
@@ -218,6 +232,8 @@ fun ForecastScrollerItem(
 
                     val curDay = (dayMon == curTime.format(DateTimeFormatter.ofPattern("dd - MMM")))
 
+                    val isNewDay = (i+1)%24==0
+
                     //pass the current hour into hours from the current day
                     if(curDay){
                         ForecastHourItem(forecastHour = fd.hourly, i=i, curHour = curHour)
@@ -225,15 +241,17 @@ fun ForecastScrollerItem(
                         ForecastHourItem(forecastHour = fd.hourly, i=i, curHour=null)
                     }
                     Divider(
+                        color = if(isNewDay){Color.Blue}else{MaterialTheme.colors.onSurface.copy(alpha=0.1f)},
                         modifier = Modifier
                             .fillMaxHeight()
-                            .width(1.dp)
+                            .width(2.dp)
                     )
 
                 }
             }
         }
         Divider(
+            color = MaterialTheme.colors.onSurface.copy(alpha=0.1f),
             modifier = Modifier.fillMaxWidth()
         )
     }

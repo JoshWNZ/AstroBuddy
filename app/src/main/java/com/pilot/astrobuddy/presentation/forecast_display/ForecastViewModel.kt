@@ -144,7 +144,7 @@ class ForecastViewModel @Inject constructor(
         val sunsets = ArrayList<String>()
         val sunInfo = ArrayList<Pair<String,String>>()
         for(i in 0 until days){
-            val sun = CalculateSunMoonUseCase.calculateSun(
+            val sun = CalculateSunMoonUseCase.calculateSunRiseSet(
                 latitude = latitude,
                 longitude = longitude,
                 elevation = elevation,
@@ -155,5 +155,13 @@ class ForecastViewModel @Inject constructor(
             sunsets.add(sun.second)
         }
         _state.value = _state.value.copy(sunInfo = sunInfo)
+    }
+
+    fun getTimeFormat(): String{
+        var result = ""
+        viewModelScope.launch{
+            result = settingsStore.getTimeFormatFromDataStore()
+        }
+        return result
     }
 }
