@@ -45,13 +45,33 @@ class SettingsStoreImpl @Inject constructor(
 
     override suspend fun getUnitsFromDataStore(): String{
         val values = dataStore.data.first()
-        return values[UNITS_KEY]?:DEFAULT_UNIT
+        return values[UNITS_KEY]?: DEFAULT_UNIT
+    }
+
+    override suspend fun toggleTimeFormat() {
+        if(getTimeFormatFromDataStore() == "12h"){
+            dataStore.edit{
+                it[TIMEFORMAT_KEY] = "24h"
+            }
+        }else{
+            dataStore.edit{
+                it[TIMEFORMAT_KEY] = "12h"
+            }
+        }
+    }
+
+    override suspend fun getTimeFormatFromDataStore(): String {
+        val values = dataStore.data.first()
+        return values[TIMEFORMAT_KEY]?: DEFAULT_TIMEFORMAT
     }
 
     companion object PrefKeys{
         val DAYS_KEY = intPreferencesKey("forecast_days")
         val UNITS_KEY = stringPreferencesKey("units")
+        val TIMEFORMAT_KEY = stringPreferencesKey("time_format")
         const val DEFAULT_DAYS = 7
         const val DEFAULT_UNIT = "C"
+        const val DEFAULT_TIMEFORMAT = "12h"
     }
+
 }

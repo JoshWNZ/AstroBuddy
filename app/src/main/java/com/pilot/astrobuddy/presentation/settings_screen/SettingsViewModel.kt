@@ -26,14 +26,21 @@ class SettingsViewModel @Inject constructor(
     fun updateDays(days: Int){
         viewModelScope.launch {
             settingsStore.saveDaysToDataStore(days)
-            _state.value = SettingsState(settingsStore.getDaysFromDataStore(),_state.value.units)
+            _state.value = _state.value.copy(forecastDays = settingsStore.getDaysFromDataStore())
         }
     }
 
     fun updateUnits(){
         viewModelScope.launch{
             settingsStore.toggleUnits()
-            _state.value = SettingsState(_state.value.forecastDays,settingsStore.getUnitsFromDataStore())
+            _state.value = _state.value.copy(units = settingsStore.getUnitsFromDataStore())
+        }
+    }
+
+    fun updateTimeFormat(){
+        viewModelScope.launch{
+            settingsStore.toggleTimeFormat()
+            _state.value = _state.value.copy(timeFormat = settingsStore.getTimeFormatFromDataStore())
         }
     }
 }

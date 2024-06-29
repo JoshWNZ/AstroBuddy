@@ -174,7 +174,7 @@ fun SettingsScreen(
                             ){
                                 Text(
                                     text="F",
-                                    style = MaterialTheme.typography.h3
+                                    style = MaterialTheme.typography.h4
                                 )
                             }
                             Box(
@@ -205,7 +205,88 @@ fun SettingsScreen(
                             ){
                                 Text(
                                     text="C",
-                                    style = MaterialTheme.typography.h3
+                                    style = MaterialTheme.typography.h4
+                                )
+                            }
+                        }
+                    }
+                    Divider()
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Text(text="Time Format", style = MaterialTheme.typography.h6)
+                        val timeFormat = state.timeFormat
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            modifier = Modifier.clickable{
+                                viewModel.updateTimeFormat()
+                            }
+                        ) {
+                            val military = (timeFormat=="24h")
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        if (!military) {
+                                            Color.Blue
+                                        } else {
+                                            Color.Gray
+                                        }
+                                    )
+                                    .size(
+                                        if (!military) {
+                                            64.dp
+                                        } else {
+                                            60.dp
+                                        }
+                                    )
+                                    .align(Alignment.CenterVertically)
+                                    .border(
+                                        color = Color.LightGray, width = if (!military) {
+                                            2.dp
+                                        } else {
+                                            0.dp
+                                        }
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ){
+                                Text(
+                                    text="12h",
+                                    style = MaterialTheme.typography.h5
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        if (military) {
+                                            Color.Blue
+                                        } else {
+                                            Color.Gray
+                                        }
+                                    )
+                                    .size(
+                                        if (military) {
+                                            64.dp
+                                        } else {
+                                            60.dp
+                                        }
+                                    )
+                                    .align(Alignment.CenterVertically)
+                                    .border(
+                                        color = Color.LightGray, width = if (military) {
+                                            2.dp
+                                        } else {
+                                            0.dp
+                                        }
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ){
+                                Text(
+                                    text="24h",
+                                    style = MaterialTheme.typography.h5
                                 )
                             }
                         }

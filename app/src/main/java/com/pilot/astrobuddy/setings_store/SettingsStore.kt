@@ -6,4 +6,6 @@ interface SettingsStore {
     suspend fun getDaysFromDataStore(): Int
     suspend fun getUnitsFromDataStore(): String
     suspend fun toggleUnits()
+    suspend fun toggleTimeFormat()
+    suspend fun getTimeFormatFromDataStore(): String
 }
