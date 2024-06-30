@@ -3,7 +3,9 @@ package com.pilot.astrobuddy.presentation.forecast_display.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -96,14 +98,13 @@ fun ForecastHourItem(
         }
         Divider()
 
-        Box(modifier = Modifier.size(boxSize).background(curCol)){
+        Box(modifier = Modifier.width(boxSize).height(boxSize+1.5.dp).background(curCol)){
             Text(
                 text=forecastHour.windspeed_10m[i].roundToInt().toString(),
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-
         Box(modifier = Modifier.size(boxSize).background(curCol)){
             val dir = degToDir(forecastHour.winddirection_10m[i])
             Text(

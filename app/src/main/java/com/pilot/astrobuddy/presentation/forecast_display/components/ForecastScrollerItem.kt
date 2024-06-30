@@ -181,7 +181,7 @@ fun ForecastScrollerItem(
                 }
             }
         }
-        Row(modifier = Modifier.height(370.dp)){
+        Row(modifier = Modifier.height(380.dp)){
             Column{
                 //display a column of labels for each element of the forecast
                 val labels = listOf(
@@ -243,7 +243,7 @@ fun ForecastScrollerItem(
                         ForecastHourItem(forecastHour = fd.hourly, i=i, curHour=null)
                     }
                     Divider(
-                        color = if(isNewDay){Color.Blue}else{MaterialTheme.colors.onSurface.copy(alpha=0.1f)},
+                        color = if(isNewDay){Color.Blue}else{MaterialTheme.colors.onSurface.copy(alpha=0.01f)},
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(2.dp)
