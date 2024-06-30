@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,7 +23,7 @@ import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Grid4x4
@@ -44,6 +45,7 @@ import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastCalendarItem
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastScrollerItem
 import kotlinx.coroutines.launch
+import kotlin.math.round
 
 @Composable
 fun ForecastScreen(
@@ -76,12 +78,11 @@ fun ForecastScreen(
                                 .size(32.dp)
                         )
                         Spacer(modifier = Modifier.width(16.dp))
-                    }
-                          },
+                    } },
                 navigationIcon = {
                     //Button to navigate back
                     Icon(
-                        imageVector = Icons.Rounded.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                         contentDescription = "Back",
                         modifier = Modifier
                             .padding(start = 8.dp)
@@ -103,14 +104,23 @@ fun ForecastScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.Blue),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                            .background(Color.Blue)
+                            .height(44.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+
                     ){
                         var locName = ""
                         //if a real location and not a generated blank one (for raw coord entry)
                         if(viewModel.location.name.isNotEmpty() && viewModel.location.name!="_") {
                             locName = viewModel.location.name
                         }
+
+                        val elevationString: String = if(viewModel.getUnits()=="C"){
+                            "${fc.elevation}m"
+                        }else{
+                            "${round(fc.elevation*3.28084)}ft"
+                        }
+
                         Column(modifier = Modifier
                             .align(CenterVertically)
                             .padding(start = 5.dp)
@@ -123,12 +133,12 @@ fun ForecastScreen(
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    text= "${fc.latitude}, ${fc.longitude}",
+                                    text= "(${fc.latitude}, ${fc.longitude}), $elevationString",
                                     style = MaterialTheme.typography.body1,
                                 )
                             }else{
                                 Text(
-                                    text= "${fc.latitude}, ${fc.longitude}",
+                                    text= "(${fc.latitude}, ${fc.longitude}), $elevationString",
                                     style = MaterialTheme.typography.body1,
                                 )
                             }
@@ -139,7 +149,7 @@ fun ForecastScreen(
                             tint = if(state.isSaved){Color.Yellow}else{Color.LightGray},
                             contentDescription = "SaveLoc",
                             modifier = Modifier
-                                .padding(end = 32.dp)
+                                .padding(end = 106.dp)
                                 .clickable {
                                     viewModel.toggleSaved(viewModel.location.id)
                                     scope.launch{
@@ -150,7 +160,7 @@ fun ForecastScreen(
                                     }
                                 }
                                 .align(CenterVertically)
-                                .size(32.dp)
+                                .size(36.dp)
                         )
                         //Light pollution info
                         Column(modifier = Modifier
@@ -179,10 +189,6 @@ fun ForecastScreen(
                     }else{
                         ForecastScrollerItem(fd = fc, astro = curAstro)
                     }
-//                    Text(text=curAstro.map{a->a.sunrise}.toString())
-//                    Text(text=curAstro.map{a->a.sunset}.toString())
-//                    Text(text=state.sunInfo.map{p->p.first}.toString())
-//                    Text(text=state.sunInfo.map{p->p.second}.toString())
                 }
                 //display an error message if one is available
                 if (state.error.isNotBlank()) {

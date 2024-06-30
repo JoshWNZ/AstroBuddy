@@ -88,27 +88,6 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
-//    /*
-//    Function to get astronomical forecast and update state accordingly
-//     */
-//    private fun getAstro(latitude: String, longitude: String){
-//        getAstroUseCase(latitude,longitude).onEach{result ->
-//            when(result){
-//                is Resource.Success -> {
-//                    _state.value = _state.value.copy(astro = result.data?: emptyList(), isAstroLoading = false, astroError = "")
-//                }
-//                is Resource.Error -> {
-//                    _state.value = _state.value.copy(
-//                        astroError = result.message ?: "An unexpected error occurred"
-//                    )
-//                }
-//                is Resource.Loading -> {
-//                    _state.value = _state.value.copy(isAstroLoading = true)
-//                }
-//            }
-//        }.launchIn(viewModelScope)
-//    }
-
     /*
     Save or unsave a location
      */
@@ -173,6 +152,14 @@ class ForecastViewModel @Inject constructor(
         var result = ""
         viewModelScope.launch{
             result = settingsStore.getTimeFormatFromDataStore()
+        }
+        return result
+    }
+
+    fun getUnits(): String{
+        var result = ""
+        viewModelScope.launch{
+            result = settingsStore.getUnitsFromDataStore()
         }
         return result
     }

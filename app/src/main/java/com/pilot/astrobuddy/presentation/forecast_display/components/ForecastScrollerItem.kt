@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -132,19 +133,19 @@ fun ForecastScrollerItem(
                         imageVector = Icons.Rounded.WbSunny,
                         contentDescription = "Sun",
                         tint = Color.Black,
-                        modifier = Modifier.fillMaxHeight()
+                        modifier = Modifier.fillMaxHeight().padding(start=6.dp)
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Column(
                         modifier = Modifier.fillMaxHeight(),
                         verticalArrangement = Arrangement.Center
                     ){
                         Text(
-                            text= "rise: ${curAstro.sunrise.removePrefix("0")}",
+                            text= "rise: ${curAstro.sunrise}",
                             style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
                         )
                         Text(
-                            text= "set:  ${curAstro.sunset.removePrefix("0")}",
+                            text= "set:  ${curAstro.sunset}",
                             style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
                         )
                     }
@@ -156,6 +157,7 @@ fun ForecastScrollerItem(
                         .background(Color.Gray)
                         .height(44.dp)
                         .width((width*0.5).dp)
+                        .offset(x=6.dp)
                 ){
                     Row{
                         Icon(
@@ -171,8 +173,8 @@ fun ForecastScrollerItem(
                         )
                     }
                     Text(
-                        text= "rise: ${curAstro.moonrise.removePrefix("0")}" +
-                                ", set: ${curAstro.moonset.removePrefix("0")}",
+                        text= "rise: ${curAstro.moonrise}" +
+                                ", set: ${curAstro.moonset}",
                         style = MaterialTheme.typography.body2,
                         modifier = Modifier.padding(start = 2.dp)
                     )
