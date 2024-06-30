@@ -63,9 +63,13 @@ fun AttributionScreen(
                     Text("Astronomical database derived from Mattia Verga's OpenNGC project."+
                             "\nhttps://github.com/mattiaverga/OpenNGC"
                     )
-                    Divider()
+                    Divider(modifier = Modifier.padding(vertical = 16.dp))
                     Text("Weather data provided via the OpenMeteo API." +
                                 "\nhttps://open-meteo.com/"
+                    )
+                    Divider(modifier = Modifier.padding(vertical = 16.dp))
+                    Text("Astronomical calculation library by Cosinekitty." +
+                        "\nhttps://github.com/cosinekitty/astronomy"
                     )
                 }
             }
