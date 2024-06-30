@@ -75,6 +75,7 @@ class LocationSearchViewModel @Inject constructor(
         searchJob?.cancel()
 
         viewModelScope.launch{
+            getSavedLocUseCase.deleteUnsaved()
             _state.value = _state.value.copy(savedLocs = getSavedLocUseCase.getAllLocations())
         }
     }

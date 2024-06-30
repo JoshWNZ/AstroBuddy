@@ -1,5 +1,6 @@
 package com.pilot.astrobuddy.di
 
+//import com.pilot.astrobuddy.data.remote.WeatherApi
 import android.app.Application
 import android.content.Context
 import android.util.Log
@@ -9,7 +10,6 @@ import com.pilot.astrobuddy.data.local.AstroBuddyDatabase
 import com.pilot.astrobuddy.data.local.AstroObjectDatabase
 import com.pilot.astrobuddy.data.remote.OpenMeteoApi
 import com.pilot.astrobuddy.data.remote.OpenMeteoSearchApi
-import com.pilot.astrobuddy.data.remote.WeatherApi
 import com.pilot.astrobuddy.data.repository.AstroEquipmentRepositoryImpl
 import com.pilot.astrobuddy.data.repository.AstroObjectRepositoryImpl
 import com.pilot.astrobuddy.data.repository.ForecastRepositoryImpl
@@ -25,8 +25,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -37,26 +35,6 @@ Contains providers for dagger hilt to inject dependencies
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
-    //retrofit
-    @Provides
-    @Singleton
-    fun providesWeatherApi() : WeatherApi {
-
-        val loggingInterceptor = HttpLoggingInterceptor()
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-
-        val client = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .build()
-
-        return Retrofit.Builder()
-            .baseUrl(Constants.WA_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
-            .build()
-            .create(WeatherApi::class.java)
-    }
 
     @Provides
     @Singleton
@@ -89,8 +67,8 @@ object AppModule {
     //repositories
     @Provides
     @Singleton
-    fun providesForecastRepository(apiWA: WeatherApi, apiOM: OpenMeteoApi, apiSOM: OpenMeteoSearchApi, settingsStore: SettingsStore): ForecastRepository{
-        return ForecastRepositoryImpl(apiWA,apiOM, apiSOM, settingsStore)
+    fun providesForecastRepository(apiOM: OpenMeteoApi, apiSOM: OpenMeteoSearchApi, settingsStore: SettingsStore): ForecastRepository{
+        return ForecastRepositoryImpl(apiOM, apiSOM, settingsStore)
     }
 
     @Provides

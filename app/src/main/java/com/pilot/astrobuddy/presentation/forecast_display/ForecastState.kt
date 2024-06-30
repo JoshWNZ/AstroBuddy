@@ -10,10 +10,9 @@ data class ForecastState(
     val isLoading: Boolean = false,
     val isAstroLoading: Boolean = false,
     val forecast: OMForecast? = null,
-    val astro: List<Astro> = emptyList(),
     val error: String = "",
     val astroError: String = "",
     val isSaved: Boolean = false,
     val calendar: Boolean = false,
-    val sunInfo: List<Pair<String,String>> = emptyList()
+    val astro: List<Astro> = emptyList()
 )

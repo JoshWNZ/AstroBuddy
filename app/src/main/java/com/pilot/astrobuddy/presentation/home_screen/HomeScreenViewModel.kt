@@ -10,7 +10,6 @@ import com.pilot.astrobuddy.domain.model.astro_equipment.AstroEquipment
 import com.pilot.astrobuddy.domain.model.astro_objects.AstroObject
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.domain.use_case.get_equipment.GetAstroEquipmentUseCase
-import com.pilot.astrobuddy.domain.use_case.get_forecast.GetAstroUseCase
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetForecastUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
 import com.pilot.astrobuddy.domain.use_case.get_objects.GetSavedObjectUseCase
@@ -25,8 +24,7 @@ class HomeScreenViewModel @Inject constructor(
     private val getAstroEquipmentUseCase: GetAstroEquipmentUseCase,
     private val getSavedObjectUseCase: GetSavedObjectUseCase,
     private val getSavedLocUseCase: GetSavedLocUseCase,
-    private val getForecastUseCase: GetForecastUseCase,
-    private val getAstroUseCase: GetAstroUseCase
+    private val getForecastUseCase: GetForecastUseCase
 ): ViewModel() {
     //initialise a blank state
     private val _state = mutableStateOf(HomeScreenState())

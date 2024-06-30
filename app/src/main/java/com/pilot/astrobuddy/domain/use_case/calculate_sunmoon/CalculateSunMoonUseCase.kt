@@ -1,93 +1,161 @@
 package com.pilot.astrobuddy.domain.use_case.calculate_sunmoon
 
-import android.util.Log
-import java.time.LocalDate
+import io.github.cosinekitty.astronomy.Body
+import io.github.cosinekitty.astronomy.Direction
+import io.github.cosinekitty.astronomy.Observer
+import io.github.cosinekitty.astronomy.Time
+import io.github.cosinekitty.astronomy.illumination
+import io.github.cosinekitty.astronomy.moonPhase
+import io.github.cosinekitty.astronomy.searchRiseSet
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.time.temporal.JulianFields
-import kotlin.math.acos
-import kotlin.math.asin
-import kotlin.math.ceil
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
+import java.util.TimeZone
+import kotlin.math.round
 
-
+/*
+  Use-case to calculate rising and setting for the sun and moon.
+ */
 object CalculateSunMoonUseCase {
-    fun calculateSun(time: String, latitude: String, longitude: String, elevation: Double): Pair<String,String>{
-        val date = LocalDate.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        Log.i("TIME", "$time $latitude $longitude $elevation")
-        Log.i("STEP","NEW DAY")
 
-        // Jdate - get number of julian days since jan 1 2000
-        val julianDay = getJulianDay(date)
-        val curJulian = ceil(julianDay - 2451545.0 + 0.0008)
+    private fun convertToUTC(time: LocalDateTime): ZonedDateTime{
+        val timeZone = TimeZone.getDefault().toZoneId()
+        val utcZone = ZoneId.of("UTC")
 
-
-        // J* - calculate mean solar time
-        val meanSol = curJulian - ((longitude.toDouble()*-1) / 360)
-
-        // M - calculate solar mean anomaly
-        val solMeanAnom = (357.5291 + 0.98560028 * meanSol) % 360
-
-        //C - equation of the center
-        val center = 1.9148*sin(solMeanAnom) + 0.0200*sin(2*solMeanAnom) + 0.0003*sin(3*solMeanAnom)
-
-        //Lambda - ecliptic longitude
-        val eclipLong = (solMeanAnom + center + 180 + 102.9372) % 360
-
-        // Jtransit - solar transit
-        val solarTrans = 2451545.0 + meanSol + (0.0053*sin(solMeanAnom)) - (0.0069*sin(2*eclipLong))
-
-        // sigma - declination of the sun
-        val declination = asin(sin(eclipLong) * sin((23.44*(Math.PI/180))))
-
-        //altitude correction
-        val altCorrect = (-2.076*sqrt(elevation))/60
-
-        //hour angle
-        val hourAngle = acos((sin(((-0.83+altCorrect)*(Math.PI/180)))-(sin(latitude.toDouble())*sin(declination)))/
-                (cos(latitude.toDouble())*cos(declination)))*(180/Math.PI)
-
-        Log.i("HOURANGLE",hourAngle.toString())
-        Log.i("SOLARTRANS",solarTrans.toString())
-        //grand finale
-        val sunrise = solarTrans - hourAngle/360
-        val sunset = solarTrans + hourAngle/360
-
-        Log.i("STEP","BACK TO DATE")
-        return Pair(getRealTime(sunrise), getRealTime(sunset))
+        val zonedDateTime = ZonedDateTime.of(time, timeZone)
+        val utcDateTime = zonedDateTime.withZoneSameInstant(utcZone)
+        return utcDateTime
     }
 
-    /*
-    Convert LocalDate into integer julian date (midday?)
-    appears to be adding 1.5 days somewhere along the line
-     */
-    private fun getJulianDay(date: LocalDate): Double{
-        //outputs integer julian day, midday on current day
-        val result = date.getLong(JulianFields.JULIAN_DAY).toDouble()-0.5
-        Log.i("DATE",date.toString())
-        Log.i("JULIAN",result.toString())
-        return result
+    private fun convertToLocalTZ(time: LocalDateTime): ZonedDateTime{
+        val timeZone = TimeZone.getDefault().toZoneId()
+        val utcZone = ZoneId.of("UTC")
+
+        val zonedDateTime = ZonedDateTime.of(time, utcZone)
+        val localDateTime = zonedDateTime.withZoneSameInstant(timeZone)
+        return localDateTime
     }
-    /*
-    Convert fractional julian day into readable time (buggered)
-     */
-    private fun getRealTime(julianDay: Double): String{
-        //use int to find fractional component
-        val wholeJulianDay = julianDay.toInt()
-        val fractionalDay: Double = julianDay - wholeJulianDay.toDouble()
-        //hour is the fraction*24 e.g. 0.5*24 = 12:00
-        var hour = (fractionalDay * 24).toInt().toString()
-        //minute is the hour * 60 then the remainder from 60
-        var minute = (fractionalDay * 24 * 60 % 60).toInt().toString()
 
-        if(minute.length < 2){minute = "0$minute"}
-        if(hour.length < 2){ hour = "0$hour" }
+    fun calculateSunRiseSet(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<String,String> {
 
-        val time = "$hour:$minute"
+        var sunRiseString = "--:--"
+        var sunSetString = "--:--"
+        val timeFormatter = if(timeFormat == "12h"){DateTimeFormatter.ofPattern("hh:mm a")}
+                            else{DateTimeFormatter.ofPattern("HH:mm")}
 
-        Log.i("JULIAN",julianDay.toString())
-        Log.i("DATE",time)
-        return time
+        val localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+
+        val utcDateTime = convertToUTC(localDateTime)
+
+        val obs = Observer(latitude.toDouble(), longitude.toDouble(), elevation)
+
+        val astTime = Time(
+            utcDateTime.year,
+            utcDateTime.monthValue,
+            utcDateTime.dayOfMonth,
+            utcDateTime.hour,
+            utcDateTime.minute,
+            utcDateTime.second.toDouble()
+        )
+
+        val sunRise = searchRiseSet(Body.Sun,obs,Direction.Rise,astTime,1.0,elevation)
+        val sunSet = searchRiseSet(Body.Sun,obs,Direction.Set,astTime,1.0,elevation)
+
+        if(sunRise != null){
+            val sunRiseDateTime = sunRise.toDateTime()
+            val sunRiseLocalDateTime = LocalDateTime.parse(sunRiseDateTime.toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            val sunRiseUserDateTime = convertToLocalTZ(sunRiseLocalDateTime)
+
+            sunRiseString = sunRiseUserDateTime.format(timeFormatter)
+        }
+        if(sunSet != null){
+            val sunSetDateTime = sunSet.toDateTime()
+            val sunSetLocalDateTime = LocalDateTime.parse(sunSetDateTime.toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            val sunSetUserDateTime = convertToLocalTZ(sunSetLocalDateTime)
+
+            sunSetString = sunSetUserDateTime.format(timeFormatter)
+        }
+
+        return Pair(sunRiseString,sunSetString)
     }
+
+    fun calculateMoonRiseSet(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<String,String> {
+        var moonRiseString = "--:--"
+        var moonSetString = "--:--"
+        val timeFormatter = if(timeFormat == "12h"){DateTimeFormatter.ofPattern("hh:mm a")}
+        else{DateTimeFormatter.ofPattern("HH:mm")}
+
+        val localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+
+        val utcDateTime = convertToUTC(localDateTime)
+
+        val obs = Observer(latitude.toDouble(), longitude.toDouble(), elevation)
+
+        val astTime = Time(
+            utcDateTime.year,
+            utcDateTime.monthValue,
+            utcDateTime.dayOfMonth,
+            utcDateTime.hour,
+            utcDateTime.minute,
+            utcDateTime.second.toDouble()
+        )
+
+        val moonRise = searchRiseSet(Body.Moon,obs,Direction.Rise,astTime,1.0,elevation)
+        val moonSet = searchRiseSet(Body.Moon,obs,Direction.Set,astTime,1.0,elevation)
+
+        if(moonRise != null){
+            val moonRiseDateTime = moonRise.toDateTime()
+            val moonRiseLocalDateTime = LocalDateTime.parse(moonRiseDateTime.toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            val moonRiseUserDateTime = convertToLocalTZ(moonRiseLocalDateTime)
+
+            moonRiseString = moonRiseUserDateTime.format(timeFormatter)
+        }
+        if(moonSet != null){
+            val sunSetDateTime = moonSet.toDateTime()
+            val sunSetLocalDateTime = LocalDateTime.parse(sunSetDateTime.toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            val sunSetUserDateTime = convertToLocalTZ(sunSetLocalDateTime)
+
+            moonSetString = sunSetUserDateTime.format(timeFormatter)
+        }
+
+        return Pair(moonRiseString,moonSetString)
+    }
+
+    fun calculateMoonIllumPhase(time: String): Pair<String,String> {
+        val moonIllumString: String
+        val moonPhaseString: String
+
+        val localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+
+        val astTime = Time(
+            localDateTime.year,
+            localDateTime.monthValue,
+            localDateTime.dayOfMonth,
+            localDateTime.hour,
+            localDateTime.minute,
+            localDateTime.second.toDouble()
+        )
+
+        val phaseDeg = moonPhase(astTime)
+        val illum = round(illumination(Body.Moon, astTime).phaseFraction*100).toInt()
+
+        moonPhaseString = when{
+            phaseDeg < 5 || phaseDeg > 355 -> "New Moon"
+            phaseDeg >= 5 && phaseDeg < 85 -> "Waxing Crescent"
+            phaseDeg >= 85 && phaseDeg < 95 -> "First Quarter"
+            phaseDeg >= 95 && phaseDeg < 175 -> "Waxing Gibbous"
+            phaseDeg >= 175 && phaseDeg < 185 -> "Full Moon"
+            phaseDeg >= 185 && phaseDeg < 265 -> "Waning Gibbous"
+            phaseDeg >= 265 && phaseDeg < 275 -> "Last Quarter"
+            phaseDeg >= 275 -> "Waning Crescent"
+            else -> "N/A"
+        }
+
+        moonIllumString = illum.toString()
+
+        return Pair(moonIllumString,moonPhaseString)
+    }
+
+
 }

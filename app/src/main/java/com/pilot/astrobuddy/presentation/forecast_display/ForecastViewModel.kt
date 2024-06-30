@@ -9,8 +9,8 @@ import com.pilot.astrobuddy.common.Constants
 import com.pilot.astrobuddy.common.Resource
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
+import com.pilot.astrobuddy.domain.model.weatherapi.Astro
 import com.pilot.astrobuddy.domain.use_case.calculate_sunmoon.CalculateSunMoonUseCase
-import com.pilot.astrobuddy.domain.use_case.get_forecast.GetAstroUseCase
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetForecastUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
 import com.pilot.astrobuddy.setings_store.SettingsStore
@@ -23,7 +23,6 @@ import javax.inject.Inject
 @HiltViewModel
 class ForecastViewModel @Inject constructor(
     private val getForecastUseCase: GetForecastUseCase,
-    private val getAstroUseCase: GetAstroUseCase,
     private val getSavedLocUseCase: GetSavedLocUseCase,
     savedStateHandle: SavedStateHandle,
     private val settingsStore: SettingsStore
@@ -55,13 +54,8 @@ class ForecastViewModel @Inject constructor(
             //fetch lat/long from location
             val lat = location.latitude.toString()
             val long = location.longitude.toString()
-            //launch coroutines to get weather and astro forecasts
-            launch{
-                getForecast(lat, long, location.elevation)
-            }
-            launch{
-                getAstro(lat, long)
-            }
+            //get forecasts
+            getForecast(lat, long, location.elevation)
         }
 
     }
@@ -78,7 +72,7 @@ class ForecastViewModel @Inject constructor(
                     is Resource.Success -> {
                         _state.value = _state.value.copy(forecast = result.data, isLoading = false, error = "")
                         result.data?.let {
-                            calculateAstro(latitude, longitude, location.elevation, it)
+                            calculateAstro(latitude, longitude, elevation, it)
                         }
                     }
                     is Resource.Error -> {
@@ -92,30 +86,28 @@ class ForecastViewModel @Inject constructor(
                 }
             }.launchIn(viewModelScope)
         }
-
-
     }
 
-    /*
-    Function to get astronomical forecast and update state accordingly
-     */
-    private fun getAstro(latitude: String, longitude: String){
-        getAstroUseCase(latitude,longitude).onEach{result ->
-            when(result){
-                is Resource.Success -> {
-                    _state.value = _state.value.copy(astro = result.data?: emptyList(), isAstroLoading = false, astroError = "")
-                }
-                is Resource.Error -> {
-                    _state.value = _state.value.copy(
-                        astroError = result.message ?: "An unexpected error occurred"
-                    )
-                }
-                is Resource.Loading -> {
-                    _state.value = _state.value.copy(isAstroLoading = true)
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
+//    /*
+//    Function to get astronomical forecast and update state accordingly
+//     */
+//    private fun getAstro(latitude: String, longitude: String){
+//        getAstroUseCase(latitude,longitude).onEach{result ->
+//            when(result){
+//                is Resource.Success -> {
+//                    _state.value = _state.value.copy(astro = result.data?: emptyList(), isAstroLoading = false, astroError = "")
+//                }
+//                is Resource.Error -> {
+//                    _state.value = _state.value.copy(
+//                        astroError = result.message ?: "An unexpected error occurred"
+//                    )
+//                }
+//                is Resource.Loading -> {
+//                    _state.value = _state.value.copy(isAstroLoading = true)
+//                }
+//            }
+//        }.launchIn(viewModelScope)
+//    }
 
     /*
     Save or unsave a location
@@ -140,24 +132,44 @@ class ForecastViewModel @Inject constructor(
 
     private fun calculateAstro(latitude: String, longitude: String, elevation: Double, forecast: OMForecast){
         val days = forecast.hourly.time.size / 24
-        val sunrises = ArrayList<String>()
-        val sunsets = ArrayList<String>()
-        val sunInfo = ArrayList<Pair<String,String>>()
+
+        val astros = ArrayList<Astro>()
         for(i in 0 until days){
-            val sun = CalculateSunMoonUseCase.calculateSunRiseSet(
+            val sunRiseSet = CalculateSunMoonUseCase.calculateSunRiseSet(
                 latitude = latitude,
                 longitude = longitude,
                 elevation = elevation,
+                time = forecast.hourly.time[i*24],
+                timeFormat = getTimeFormat()
+            )
+
+            val moonRiseSet = CalculateSunMoonUseCase.calculateMoonRiseSet(
+                latitude = latitude,
+                longitude = longitude,
+                elevation = elevation,
+                time = forecast.hourly.time[i*24],
+                timeFormat = getTimeFormat()
+            )
+
+            val moonIllumPhase = CalculateSunMoonUseCase.calculateMoonIllumPhase(
                 time = forecast.hourly.time[i*24]
             )
-            sunInfo.add(sun)
-            sunrises.add(sun.first)
-            sunsets.add(sun.second)
+
+            val curAstro = Astro(
+                moonIllumPhase.first,
+                moonIllumPhase.second,
+                moonRiseSet.first,
+                moonRiseSet.second,
+                sunRiseSet.first,
+                sunRiseSet.second
+            )
+            astros.add(curAstro)
         }
-        _state.value = _state.value.copy(sunInfo = sunInfo)
+
+        _state.value = _state.value.copy(astro = astros)
     }
 
-    fun getTimeFormat(): String{
+    private fun getTimeFormat(): String{
         var result = ""
         viewModelScope.launch{
             result = settingsStore.getTimeFormatFromDataStore()
