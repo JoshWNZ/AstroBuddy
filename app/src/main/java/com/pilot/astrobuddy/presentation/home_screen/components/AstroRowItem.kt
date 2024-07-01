@@ -21,6 +21,7 @@ fun AstroRowItem(
     obj: AstroObject,
     onItemClick: (AstroObject) -> Unit
 ){
+    //TODO improve this, make them larger cards with their images, say rise/set and other info
         Column(
             modifier = Modifier
                 .padding(3.dp)

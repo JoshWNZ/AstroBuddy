@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
-import com.pilot.astrobuddy.domain.model.weatherapi.Astro
+import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime

@@ -1,4 +1,4 @@
-package com.pilot.astrobuddy.domain.model.weatherapi
+package com.pilot.astrobuddy.domain.model.astro_forecast
 
 data class Astro(
     val moon_illumination: String,

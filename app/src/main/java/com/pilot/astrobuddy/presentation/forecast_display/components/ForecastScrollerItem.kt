@@ -3,7 +3,6 @@ package com.pilot.astrobuddy.presentation.forecast_display.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableDefaults
-import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
@@ -39,8 +38,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
-import com.pilot.astrobuddy.domain.model.weatherapi.Astro
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -53,33 +52,51 @@ fun ForecastScrollerItem(
 ){
     val scope = rememberCoroutineScope()
 
-    //remember the states of the day and hour rows
-    val dayRowState = rememberLazyListState()
-    val hoursRowState = rememberLazyListState()
-    //update the day row position when the hour row moves, but more slowly to keep in sync
-    val scrollState = rememberScrollableState{delta->
-        scope.launch{
-            dayRowState.scrollBy(-delta/1.935f)
-            hoursRowState.scrollBy(-delta)
-        }
-        delta
-    }
     //store the current pixel width of the screen
     val width = LocalConfiguration.current.screenWidthDp
+    val scrollSyncRatio = (width/722.0).toFloat()
 
     //fetch the current datetime from the system, format it to an hour value
     val curTime = LocalDateTime.now()
     val curHour = curTime.format(DateTimeFormatter.ofPattern("HH"))
 
+    //remember the states of the day and hour rows
+    val dayRowState = rememberLazyListState()
+    val hoursRowState = rememberLazyListState()
+    val skyScrollerState = rememberLazyListState()
+
+    //keep track of whether any scrolling has been done
+    var firstScroll = true
+
+    //update the lazyrows at the correct ratios
+    //correct the day-info row on the first scroll only
+    val scrollState = rememberScrollableState{delta->
+        if(firstScroll) {
+            scope.launch {
+                val hoursElapsed = curHour.toInt() - 1
+                dayRowState.scrollBy((((hoursElapsed*30f)-(width*0.15f))/scrollSyncRatio))
+                firstScroll = firstScroll.not()
+            }
+        }
+        scope.launch{
+            dayRowState.scrollBy(-delta*scrollSyncRatio)
+            hoursRowState.scrollBy(-delta)
+            skyScrollerState.scrollBy(-delta)
+        }
+        delta
+    }
+
     //automatically scroll to the current hour
     LaunchedEffect(Unit){
         scope.launch{
-            scrollState.animateScrollBy(curHour.toFloat()*(29.dp.value))
+            firstScroll = true
             hoursRowState.animateScrollToItem(curHour.toInt())
         }
     }
 
-
+    Divider(
+        color = Color.Gray
+    )
     Column(
         modifier = Modifier.scrollable(
             scrollState,
@@ -104,7 +121,7 @@ fun ForecastScrollerItem(
                     modifier = Modifier
                         .background(Color.LightGray)
                         .height(44.dp)
-                        .width((width*0.15).dp),
+                        .width((width * 0.15).dp),
                     contentAlignment = Center
                 ){
                     Column(modifier = Modifier.padding(start = 2.dp)){
@@ -127,13 +144,15 @@ fun ForecastScrollerItem(
                     modifier = Modifier
                         .background(Color.Yellow)
                         .height(44.dp)
-                        .width((width*0.35).dp)
+                        .width((width * 0.35).dp)
                 ){
                     Icon(
                         imageVector = Icons.Rounded.WbSunny,
                         contentDescription = "Sun",
                         tint = Color.Black,
-                        modifier = Modifier.fillMaxHeight().padding(start=6.dp)
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(start = 6.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(
@@ -156,8 +175,8 @@ fun ForecastScrollerItem(
                     modifier = Modifier
                         .background(Color.Gray)
                         .height(44.dp)
-                        .width((width*0.5).dp)
-                        .offset(x=6.dp)
+                        .width((width * 0.5).dp)
+                        .offset(x = 6.dp)
                 ){
                     Row{
                         Icon(
@@ -181,16 +200,19 @@ fun ForecastScrollerItem(
                 }
             }
         }
+        Divider(
+            color = Color.Gray
+        )
         Row(modifier = Modifier.height(380.dp)){
             Column{
                 //display a column of labels for each element of the forecast
                 val labels = listOf(
-                    "Time","Total Cloud","High Cloud","Mid Cloud","Low Cloud","Visibility","Rain prob.","Wind Speed","Wind Dir.","Temp","Feels Like","Humidity","Dew Point"
+                    "Time","Total Cloud","High Cloud","Mid Cloud","Low Cloud","Visibility","Rain prob.","Wind Spd.","Wind Dir.","Temp","Feels Like","Humidity","Dew Point"
                 )
                 Column(
                     modifier = Modifier
                         .background(Color.DarkGray)
-                        .width(64.dp)
+                        .width((width*0.15).dp)
                 ){
                     labels.forEach {
                         Box(
@@ -234,7 +256,7 @@ fun ForecastScrollerItem(
 
                     val curDay = (dayMon == curTime.format(DateTimeFormatter.ofPattern("dd - MMM")))
 
-                    val isNewDay = (i+1)%24==0
+                    val isNewDay = (i+1)%24==0 && i+1!=fd.hourly.time.size
 
                     //pass the current hour into hours from the current day
                     if(curDay){
@@ -256,6 +278,7 @@ fun ForecastScrollerItem(
             color = MaterialTheme.colors.onSurface.copy(alpha=0.1f),
             modifier = Modifier.fillMaxWidth()
         )
+        ForecastSkyScroller(fd = fd, astros = astro, listState = skyScrollerState)
     }
 }
 

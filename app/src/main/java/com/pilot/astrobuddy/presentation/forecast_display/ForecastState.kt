@@ -1,7 +1,7 @@
 package com.pilot.astrobuddy.presentation.forecast_display
 
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
-import com.pilot.astrobuddy.domain.model.weatherapi.Astro
+import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
 
 /*
 State record to hold up-to-date information to update the ui

@@ -19,6 +19,9 @@ import kotlin.math.round
  */
 object CalculateSunMoonUseCase {
 
+    /*
+      Convert from device timezone to utc
+     */
     private fun convertToUTC(time: LocalDateTime): ZonedDateTime{
         val timeZone = TimeZone.getDefault().toZoneId()
         val utcZone = ZoneId.of("UTC")
@@ -28,6 +31,9 @@ object CalculateSunMoonUseCase {
         return utcDateTime
     }
 
+    /*
+      Convert from UTC to device timezone
+     */
     private fun convertToLocalTZ(time: LocalDateTime): ZonedDateTime{
         val timeZone = TimeZone.getDefault().toZoneId()
         val utcZone = ZoneId.of("UTC")
@@ -37,6 +43,10 @@ object CalculateSunMoonUseCase {
         return localDateTime
     }
 
+    /*
+      Calculate the time of sunrise and sunset for a given day
+      Returns a pair of strings in the specified time format
+     */
     fun calculateSunRiseSet(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<String,String> {
 
         var sunRiseString = "--:--"
@@ -80,6 +90,10 @@ object CalculateSunMoonUseCase {
         return Pair(sunRiseString,sunSetString)
     }
 
+    /*
+      Calculate the time of moonrise and moonset for a given day
+      Returns a pair of strings in the specified time format
+     */
     fun calculateMoonRiseSet(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<String,String> {
         var moonRiseString = "--:--"
         var moonSetString = "--:--"
@@ -122,6 +136,10 @@ object CalculateSunMoonUseCase {
         return Pair(moonRiseString,moonSetString)
     }
 
+    /*
+      Calculate the percentage of illumination and the phase of the moon for a given day
+      Returns a pair of strings containing illumination then phase.
+     */
     fun calculateMoonIllumPhase(time: String): Pair<String,String> {
         val moonIllumString: String
         val moonPhaseString: String
@@ -157,5 +175,18 @@ object CalculateSunMoonUseCase {
         return Pair(moonIllumString,moonPhaseString)
     }
 
+
+    fun calcCivilDark(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<LocalDateTime,LocalDateTime>{
+        return Pair(LocalDateTime.now(),LocalDateTime.now())
+    }
+
+    fun calcNauticalDark(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<LocalDateTime,LocalDateTime>{
+        return Pair(LocalDateTime.now(),LocalDateTime.now())
+    }
+
+    fun calcAstroDark(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<LocalDateTime,LocalDateTime>{
+        //searchAltitude()
+        return Pair(LocalDateTime.now(),LocalDateTime.now())
+    }
 
 }

@@ -9,7 +9,7 @@ import com.pilot.astrobuddy.common.Constants
 import com.pilot.astrobuddy.common.Resource
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
-import com.pilot.astrobuddy.domain.model.weatherapi.Astro
+import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
 import com.pilot.astrobuddy.domain.use_case.calculate_sunmoon.CalculateSunMoonUseCase
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetForecastUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase

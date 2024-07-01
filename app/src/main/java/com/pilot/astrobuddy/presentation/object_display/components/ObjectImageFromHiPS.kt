@@ -18,6 +18,7 @@ fun ObjectImageFromHiPS(
     fov: String,
     obj: String,
 ){
+    //TODO cache images in local persistant storage (?) with uri pointer in database
     var url = "https://alasky.cds.unistra.fr/hips-image-services/hips2fits?" +
             "hips=CDS%2FP%2FDSS2%2Fcolor" +
             "&width=720&height=720" +
