@@ -50,7 +50,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ForecastScrollerItem(
     fd: OMForecast,
-    astro: List<Astro>
+    astro: List<Astro>,
+    timeFormat: String
 ){
     val scope = rememberCoroutineScope()
 
@@ -143,17 +144,12 @@ fun ForecastScrollerItem(
                     }
                 }
                 //get the current astronomical forecast or default to an empty one (to be fixed)
-                val curAstro = astro.elementAtOrElse(d){
-                    Astro(
-                        "",
-                        "",
-                        Pair("",""),
-                        Pair("",""),
-                        Pair(LocalDateTime.MIN,LocalDateTime.MIN),
-                        Pair(LocalDateTime.MIN,LocalDateTime.MIN),
-                        Pair(LocalDateTime.MIN,LocalDateTime.MIN),
-                    )
-                }
+                val curAstro = astro[d]
+
+                val timeFormatter = if(timeFormat == "12h"){
+                    DateTimeFormatter.ofPattern("hh:mm a")}
+                else{
+                    DateTimeFormatter.ofPattern("HH:mm")}
 
                 // Sunrise/set
                 Row(
@@ -176,11 +172,11 @@ fun ForecastScrollerItem(
                         verticalArrangement = Arrangement.Center
                     ){
                         Text(
-                            text= "rise: ${curAstro.sunRiseSet.first}",
+                            text= "rise: ${timeFormatter.format(curAstro.sunRiseSet.first)}",
                             style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
                         )
                         Text(
-                            text= "set:  ${curAstro.sunRiseSet.second}",
+                            text= "set:  ${timeFormatter.format(curAstro.sunRiseSet.second)}",
                             style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
                         )
                     }
@@ -208,8 +204,8 @@ fun ForecastScrollerItem(
                         )
                     }
                     Text(
-                        text= "rise: ${curAstro.moonRiseSet.first}" +
-                                ", set: ${curAstro.moonRiseSet.second}",
+                        text= "rise: ${timeFormatter.format(curAstro.moonRiseSet.first)}" +
+                                ", set: ${timeFormatter.format(curAstro.moonRiseSet.second)}",
                         style = MaterialTheme.typography.body2,
                         modifier = Modifier.padding(start = 2.dp)
                     )

@@ -29,10 +29,12 @@ fun ForecastSkyScroller(
 ) {
     val scope = rememberCoroutineScope()
 
+    //Colours for times of day
     val skyMidDay = Color.hsv(235f,0.7f,0.9f)
     val skyCivilDark = Color.hsv(235f,1f,0.22f)
     val skyNauticalDark = Color.hsv(235f,1f,0.13f)
     val skyAstroDark = Color.hsv(235f,1f,0f)
+    val skySunRiseSet = Color.hsv(27f,0.94f,0.9f)
 
     LazyRow(
         state = listState,
@@ -47,18 +49,24 @@ fun ForecastSkyScroller(
         val hours = fd.hourly.time.size
         val days = hours / 24
         items(days){i->
+            val curAstro = astros[i]
+            val sunrise = curAstro.sunRiseSet.first
+
             Box(modifier = Modifier
                 .width(720.dp)
                 .fillMaxHeight()
                 //.border(width = 1.dp, color = Color.Green)
             ){
+                //androidx.compose.ui.geometry.Size()
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val width = size.width
                     val height = size.height
-
                     val horiSect = width / 96
-                    //androidx.compose.ui.geometry.Size()
-                    //androidx.compose.ui.geometry.Offset()
+
+                    //val sunRise =
+
+                    //val dayOffset = Offset(x=,y=)
+
                     drawRect(color = skyAstroDark, size = size)
                 }
             }
@@ -70,4 +78,12 @@ fun ForecastSkyScroller(
             )
         }
     }
+}
+
+/*
+Calculate and return which section a given time belongs to
+ */
+fun getPosition(hour: Int, min: Int):Int{
+
+    return 0
 }

@@ -118,16 +118,14 @@ class ForecastViewModel @Inject constructor(
                 latitude = latitude,
                 longitude = longitude,
                 elevation = elevation,
-                time = forecast.hourly.time[i*24],
-                timeFormat = getTimeFormat()
+                time = forecast.hourly.time[i*24]
             )
 
             val moonRiseSet = CalculateSunMoonUseCase.calculateMoonRiseSet(
                 latitude = latitude,
                 longitude = longitude,
                 elevation = elevation,
-                time = forecast.hourly.time[i*24],
-                timeFormat = getTimeFormat()
+                time = forecast.hourly.time[i*24]
             )
 
             val moonIllumPhase = CalculateSunMoonUseCase.calculateMoonIllumPhase(
@@ -170,7 +168,7 @@ class ForecastViewModel @Inject constructor(
         _state.value = _state.value.copy(astro = astros)
     }
 
-    private fun getTimeFormat(): String{
+    fun getTimeFormat(): String{
         var result = ""
         viewModelScope.launch{
             result = settingsStore.getTimeFormatFromDataStore()

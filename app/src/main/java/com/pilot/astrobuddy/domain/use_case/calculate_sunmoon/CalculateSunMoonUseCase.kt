@@ -48,12 +48,7 @@ object CalculateSunMoonUseCase {
       Calculate the time of sunrise and sunset for a given day
       Returns a pair of strings in the specified time format
      */
-    fun calculateSunRiseSet(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<String,String> {
-
-        var sunRiseString = "--:--"
-        var sunSetString = "--:--"
-        val timeFormatter = if(timeFormat == "12h"){DateTimeFormatter.ofPattern("hh:mm a")}
-                            else{DateTimeFormatter.ofPattern("HH:mm")}
+    fun calculateSunRiseSet(time: String, latitude: String, longitude: String, elevation: Double): Pair<LocalDateTime,LocalDateTime> {
 
         val localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
@@ -73,33 +68,28 @@ object CalculateSunMoonUseCase {
         val sunRise = searchRiseSet(Body.Sun,obs,Direction.Rise,astTime,1.0,elevation)
         val sunSet = searchRiseSet(Body.Sun,obs,Direction.Set,astTime,1.0,elevation)
 
+        var sunRiseUserDateTime: LocalDateTime = LocalDateTime.MIN
+        var sunSetUserDateTime: LocalDateTime = LocalDateTime.MIN
+
         if(sunRise != null){
             val sunRiseDateTime = sunRise.toDateTime()
             val sunRiseLocalDateTime = LocalDateTime.parse(sunRiseDateTime.toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-            val sunRiseUserDateTime = convertToLocalTZ(sunRiseLocalDateTime)
-
-            sunRiseString = sunRiseUserDateTime.format(timeFormatter)
+            sunRiseUserDateTime = convertToLocalTZ(sunRiseLocalDateTime).toLocalDateTime()
         }
         if(sunSet != null){
             val sunSetDateTime = sunSet.toDateTime()
             val sunSetLocalDateTime = LocalDateTime.parse(sunSetDateTime.toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-            val sunSetUserDateTime = convertToLocalTZ(sunSetLocalDateTime)
-
-            sunSetString = sunSetUserDateTime.format(timeFormatter)
+            sunSetUserDateTime = convertToLocalTZ(sunSetLocalDateTime).toLocalDateTime()
         }
 
-        return Pair(sunRiseString,sunSetString)
+        return Pair(sunRiseUserDateTime,sunSetUserDateTime)
     }
 
     /*
       Calculate the time of moonrise and moonset for a given day
       Returns a pair of strings in the specified time format
      */
-    fun calculateMoonRiseSet(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<String,String> {
-        var moonRiseString = "--:--"
-        var moonSetString = "--:--"
-        val timeFormatter = if(timeFormat == "12h"){DateTimeFormatter.ofPattern("hh:mm a")}
-        else{DateTimeFormatter.ofPattern("HH:mm")}
+    fun calculateMoonRiseSet(time: String, latitude: String, longitude: String, elevation: Double): Pair<LocalDateTime,LocalDateTime> {
 
         val localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
@@ -119,22 +109,21 @@ object CalculateSunMoonUseCase {
         val moonRise = searchRiseSet(Body.Moon,obs,Direction.Rise,astTime,1.0,elevation)
         val moonSet = searchRiseSet(Body.Moon,obs,Direction.Set,astTime,1.0,elevation)
 
+        var moonRiseUserDateTime: LocalDateTime = LocalDateTime.MIN
+        var moonSetUserDateTime: LocalDateTime = LocalDateTime.MIN
+
         if(moonRise != null){
             val moonRiseDateTime = moonRise.toDateTime()
             val moonRiseLocalDateTime = LocalDateTime.parse(moonRiseDateTime.toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-            val moonRiseUserDateTime = convertToLocalTZ(moonRiseLocalDateTime)
-
-            moonRiseString = moonRiseUserDateTime.format(timeFormatter)
+            moonRiseUserDateTime = convertToLocalTZ(moonRiseLocalDateTime).toLocalDateTime()
         }
         if(moonSet != null){
-            val sunSetDateTime = moonSet.toDateTime()
-            val sunSetLocalDateTime = LocalDateTime.parse(sunSetDateTime.toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-            val sunSetUserDateTime = convertToLocalTZ(sunSetLocalDateTime)
-
-            moonSetString = sunSetUserDateTime.format(timeFormatter)
+            val moonSetDateTime = moonSet.toDateTime()
+            val moonSetLocalDateTime = LocalDateTime.parse(moonSetDateTime.toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            moonSetUserDateTime = convertToLocalTZ(moonSetLocalDateTime).toLocalDateTime()
         }
 
-        return Pair(moonRiseString,moonSetString)
+        return Pair(moonRiseUserDateTime,moonSetUserDateTime)
     }
 
     /*

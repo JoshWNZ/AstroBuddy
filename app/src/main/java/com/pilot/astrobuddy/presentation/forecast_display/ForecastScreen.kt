@@ -42,9 +42,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
 import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
-import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastCalendarItem
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastScrollerItem
 import kotlinx.coroutines.launch
+import java.time.format.DateTimeFormatter
 import kotlin.math.round
 
 @Composable
@@ -187,12 +187,14 @@ fun ForecastScreen(
                         Log.i("Empty", "NoAstro")
                         emptyList()
                     }
+
                     //pass forecast data into scrollable composable
-                    if(state.calendar){
-                        ForecastCalendarItem(fd = fc, astro = curAstro)
-                    }else{
-                        ForecastScrollerItem(fd = fc, astro = curAstro)
-                    }
+                    ForecastScrollerItem(fd = fc, astro = curAstro, timeFormat = viewModel.getTimeFormat())
+//                    if(state.calendar){
+//                        ForecastCalendarItem(fd = fc, astro = curAstro)
+//                    }else{
+//
+//                    }
                 }
                 //display an error message if one is available
                 if (state.error.isNotBlank()) {
