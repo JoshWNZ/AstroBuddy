@@ -134,12 +134,16 @@ fun ForecastScreen(
                                 )
                                 Text(
                                     text= "(${fc.latitude}, ${fc.longitude}), $elevationString",
-                                    style = MaterialTheme.typography.body1,
+                                    style = MaterialTheme.typography.body2,
                                 )
                             }else{
                                 Text(
-                                    text= "(${fc.latitude}, ${fc.longitude}), $elevationString",
+                                    text= "(${fc.latitude}, ${fc.longitude})",
                                     style = MaterialTheme.typography.body1,
+                                )
+                                Text(
+                                    text= elevationString,
+                                    style = MaterialTheme.typography.body2,
                                 )
                             }
                         }

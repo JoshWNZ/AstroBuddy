@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pilot.astrobuddy.common.Constants
 import com.pilot.astrobuddy.common.Resource
+import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
-import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
 import com.pilot.astrobuddy.domain.use_case.calculate_sunmoon.CalculateSunMoonUseCase
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetForecastUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
@@ -134,13 +134,35 @@ class ForecastViewModel @Inject constructor(
                 time = forecast.hourly.time[i*24]
             )
 
+            val civilDark = CalculateSunMoonUseCase.calcCivilDark(
+                latitude = latitude,
+                longitude = longitude,
+                elevation = elevation,
+                time = forecast.hourly.time[i*24]
+            )
+
+            val nauticalDark = CalculateSunMoonUseCase.calcNauticalDark(
+                latitude = latitude,
+                longitude = longitude,
+                elevation = elevation,
+                time = forecast.hourly.time[i*24]
+            )
+
+            val astroDark = CalculateSunMoonUseCase.calcAstroDark(
+                latitude = latitude,
+                longitude = longitude,
+                elevation = elevation,
+                time = forecast.hourly.time[i*24]
+            )
+
             val curAstro = Astro(
                 moonIllumPhase.first,
                 moonIllumPhase.second,
-                moonRiseSet.first,
-                moonRiseSet.second,
-                sunRiseSet.first,
-                sunRiseSet.second
+                moonRiseSet,
+                sunRiseSet,
+                civilDark,
+                nauticalDark,
+                astroDark
             )
             astros.add(curAstro)
         }

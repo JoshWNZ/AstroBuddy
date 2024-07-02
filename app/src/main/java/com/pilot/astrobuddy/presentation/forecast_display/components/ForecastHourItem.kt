@@ -149,7 +149,6 @@ fun ForecastHourItem(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
-        Divider()
     }
 }
 

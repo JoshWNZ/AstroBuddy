@@ -134,7 +134,7 @@ fun LocationSearchScreen(
                                         //initialise a new location object with the fetched info
                                         val curLoc = OMLocation(
                                             "", "", "", "", "", "",
-                                            result.altitude, id.toInt(), result.latitude, result.longitude, "User Location"
+                                            result.altitude, id.toInt(), result.latitude, result.longitude, ""
                                         )
                                         //save the location and navigate to the forecast screen as usual
                                         viewModel.saveLoc(curLoc)

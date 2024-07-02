@@ -1,43 +1,73 @@
 package com.pilot.astrobuddy.presentation.forecast_display.components
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
-import kotlin.math.floor
-import kotlin.math.roundToInt
 
 @Composable
 fun ForecastSkyScroller(
     fd: OMForecast,
     astros: List<Astro>,
-    listState: LazyListState
+    listState: LazyListState,
+    scrollState: ScrollableState
 ) {
     val scope = rememberCoroutineScope()
 
+    val skyMidDay = Color.hsv(235f,0.7f,0.9f)
+    val skyCivilDark = Color.hsv(235f,1f,0.22f)
+    val skyNauticalDark = Color.hsv(235f,1f,0.13f)
+    val skyAstroDark = Color.hsv(235f,1f,0f)
+
     LazyRow(
         state = listState,
-        userScrollEnabled = false //TODO fix this, pass scroll back
+        userScrollEnabled = false,
+        modifier = Modifier
+            .scrollable(
+                state = scrollState,
+                orientation = Orientation.Horizontal,
+                flingBehavior = ScrollableDefaults.flingBehavior()
+            ).fillMaxHeight(fraction=0.995f)
     ){
         val hours = fd.hourly.time.size
         val days = hours / 24
-        items(hours){i->
-            val curDay = floor(i / 24.0).roundToInt()
-            val curAstro = astros[curDay]
+        items(days){i->
             Box(modifier = Modifier
-                .width(30.dp)
+                .width(720.dp)
                 .fillMaxHeight()
-                //.border(width = 1.dp, color = Color.Blue )
+                //.border(width = 1.dp, color = Color.Green)
             ){
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val width = size.width
+                    val height = size.height
 
+                    val horiSect = width / 96
+                    //androidx.compose.ui.geometry.Size()
+                    //androidx.compose.ui.geometry.Offset()
+                    drawRect(color = skyAstroDark, size = size)
+                }
             }
+            Divider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(2.dp),
+                color = Color.Blue
+            )
         }
     }
 }

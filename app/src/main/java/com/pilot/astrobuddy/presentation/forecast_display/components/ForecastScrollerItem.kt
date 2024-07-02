@@ -3,6 +3,7 @@ package com.pilot.astrobuddy.presentation.forecast_display.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.gestures.scrollable
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -86,11 +88,15 @@ fun ForecastScrollerItem(
         delta
     }
 
+    val skyScrollBy = with(LocalDensity.current){((curHour.toInt()*30)+1).dp.toPx()}
+
     //automatically scroll to the current hour
     LaunchedEffect(Unit){
         scope.launch{
             firstScroll = true
             hoursRowState.animateScrollToItem(curHour.toInt())
+
+            skyScrollerState.animateScrollBy(skyScrollBy)
         }
     }
 
@@ -137,7 +143,17 @@ fun ForecastScrollerItem(
                     }
                 }
                 //get the current astronomical forecast or default to an empty one (to be fixed)
-                val curAstro = astro.elementAtOrElse(d){Astro("","","","","","")}
+                val curAstro = astro.elementAtOrElse(d){
+                    Astro(
+                        "",
+                        "",
+                        Pair("",""),
+                        Pair("",""),
+                        Pair(LocalDateTime.MIN,LocalDateTime.MIN),
+                        Pair(LocalDateTime.MIN,LocalDateTime.MIN),
+                        Pair(LocalDateTime.MIN,LocalDateTime.MIN),
+                    )
+                }
 
                 // Sunrise/set
                 Row(
@@ -160,11 +176,11 @@ fun ForecastScrollerItem(
                         verticalArrangement = Arrangement.Center
                     ){
                         Text(
-                            text= "rise: ${curAstro.sunrise}",
+                            text= "rise: ${curAstro.sunRiseSet.first}",
                             style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
                         )
                         Text(
-                            text= "set:  ${curAstro.sunset}",
+                            text= "set:  ${curAstro.sunRiseSet.second}",
                             style = MaterialTheme.typography.body2.copy(color= MaterialTheme.colors.onSecondary)
                         )
                     }
@@ -192,8 +208,8 @@ fun ForecastScrollerItem(
                         )
                     }
                     Text(
-                        text= "rise: ${curAstro.moonrise}" +
-                                ", set: ${curAstro.moonset}",
+                        text= "rise: ${curAstro.moonRiseSet.first}" +
+                                ", set: ${curAstro.moonRiseSet.second}",
                         style = MaterialTheme.typography.body2,
                         modifier = Modifier.padding(start = 2.dp)
                     )
@@ -203,7 +219,7 @@ fun ForecastScrollerItem(
         Divider(
             color = Color.Gray
         )
-        Row(modifier = Modifier.height(380.dp)){
+        Row(/*modifier = Modifier.height(380.dp)*/){
             Column{
                 //display a column of labels for each element of the forecast
                 val labels = listOf(
@@ -235,7 +251,8 @@ fun ForecastScrollerItem(
                             color = Color.Gray
                         )
                     }
-
+                    Box(modifier = Modifier.fillMaxHeight(fraction =0.995f)){}
+                    Divider(color = Color.Gray)
                 }
             }
             //Vertical divider
@@ -246,39 +263,43 @@ fun ForecastScrollerItem(
                     .width(2.dp)
             )
             //scrollable lazyrow containing all forecast values for each hour
-            LazyRow(
-                state = hoursRowState,
-                userScrollEnabled = false
-            ){
-                items(fd.hourly.time.size){i->
-                    val date = LocalDate.parse(fd.hourly.time[i], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-                    val dayMon = date.format(DateTimeFormatter.ofPattern("dd - MMM"))
+            Column(){
+                LazyRow(
+                    state = hoursRowState,
+                    userScrollEnabled = false
+                ){
+                    items(fd.hourly.time.size){i->
+                        val date = LocalDate.parse(fd.hourly.time[i], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        val dayMon = date.format(DateTimeFormatter.ofPattern("dd - MMM"))
 
-                    val curDay = (dayMon == curTime.format(DateTimeFormatter.ofPattern("dd - MMM")))
+                        val curDay = (dayMon == curTime.format(DateTimeFormatter.ofPattern("dd - MMM")))
 
-                    val isNewDay = (i+1)%24==0 && i+1!=fd.hourly.time.size
+                        val isNewDay = (i+1)%24==0 && i+1!=fd.hourly.time.size
 
-                    //pass the current hour into hours from the current day
-                    if(curDay){
-                        ForecastHourItem(forecastHour = fd.hourly, i=i, curHour = curHour)
-                    }else{
-                        ForecastHourItem(forecastHour = fd.hourly, i=i, curHour=null)
+                        //pass the current hour into hours from the current day
+                        if(curDay){
+                            ForecastHourItem(forecastHour = fd.hourly, i=i, curHour = curHour)
+                        }else{
+                            ForecastHourItem(forecastHour = fd.hourly, i=i, curHour=null)
+                        }
+                        Divider(
+                            color = if(isNewDay){Color.Blue}else{MaterialTheme.colors.onSurface.copy(alpha=0.01f)},
+                            modifier = Modifier
+                                .height(380.dp)
+                                .width(2.dp)
+                        )
+
                     }
-                    Divider(
-                        color = if(isNewDay){Color.Blue}else{MaterialTheme.colors.onSurface.copy(alpha=0.01f)},
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(2.dp)
-                    )
-
                 }
+                Divider(
+                    color = Color.Gray,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                ForecastSkyScroller(fd = fd, astros = astro, listState = skyScrollerState, scrollState= scrollState)
+                Divider(color = Color.Gray)
             }
         }
-        Divider(
-            color = MaterialTheme.colors.onSurface.copy(alpha=0.1f),
-            modifier = Modifier.fillMaxWidth()
-        )
-        ForecastSkyScroller(fd = fd, astros = astro, listState = skyScrollerState)
+
     }
 }
 

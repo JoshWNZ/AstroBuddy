@@ -34,7 +34,9 @@ fun MyBottomNavBar(navController: NavController){
     )
 
 
-    BottomNavigation(backgroundColor = Color.DarkGray) {
+    BottomNavigation(
+        backgroundColor = Color.DarkGray
+    ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         items.forEach { screen ->

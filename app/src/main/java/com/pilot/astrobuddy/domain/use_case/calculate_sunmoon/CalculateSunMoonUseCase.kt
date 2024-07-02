@@ -6,6 +6,7 @@ import io.github.cosinekitty.astronomy.Observer
 import io.github.cosinekitty.astronomy.Time
 import io.github.cosinekitty.astronomy.illumination
 import io.github.cosinekitty.astronomy.moonPhase
+import io.github.cosinekitty.astronomy.searchAltitude
 import io.github.cosinekitty.astronomy.searchRiseSet
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -175,18 +176,46 @@ object CalculateSunMoonUseCase {
         return Pair(moonIllumString,moonPhaseString)
     }
 
+    private fun calcDuskDawn(time: String, latitude: String, longitude: String, elevation: Double, altitude: Double): Pair<LocalDateTime,LocalDateTime>{
+        val localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
-    fun calcCivilDark(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<LocalDateTime,LocalDateTime>{
-        return Pair(LocalDateTime.now(),LocalDateTime.now())
+        val astTime = Time(
+            localDateTime.year,
+            localDateTime.monthValue,
+            localDateTime.dayOfMonth,
+            localDateTime.hour,
+            localDateTime.minute,
+            localDateTime.second.toDouble()
+        )
+
+        val obs = Observer(latitude.toDouble(), longitude.toDouble(), elevation)
+
+        val dusk = searchAltitude(Body.Sun,obs,Direction.Set,astTime,1.0,-18.0)
+        val dawn = searchAltitude(Body.Sun,obs,Direction.Rise,astTime,1.0,-18.0)
+
+        var duskLocalDateTime: LocalDateTime = LocalDateTime.MIN
+        var dawnLocalDateTime: LocalDateTime = LocalDateTime.MIN
+
+        if(dusk != null){
+            duskLocalDateTime = LocalDateTime.parse(dusk.toDateTime().toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        }
+        if(dawn != null){
+            dawnLocalDateTime = LocalDateTime.parse(dawn.toDateTime().toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        }
+
+        return Pair(duskLocalDateTime,dawnLocalDateTime)
     }
 
-    fun calcNauticalDark(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<LocalDateTime,LocalDateTime>{
-        return Pair(LocalDateTime.now(),LocalDateTime.now())
+    fun calcCivilDark(time: String, latitude: String, longitude: String, elevation: Double): Pair<LocalDateTime,LocalDateTime>{
+        return calcDuskDawn(time,latitude,longitude,elevation,-6.0)
     }
 
-    fun calcAstroDark(time: String, latitude: String, longitude: String, elevation: Double, timeFormat: String = "12h"): Pair<LocalDateTime,LocalDateTime>{
-        //searchAltitude()
-        return Pair(LocalDateTime.now(),LocalDateTime.now())
+    fun calcNauticalDark(time: String, latitude: String, longitude: String, elevation: Double): Pair<LocalDateTime,LocalDateTime>{
+        return calcDuskDawn(time,latitude,longitude,elevation,-12.0)
+    }
+
+    fun calcAstroDark(time: String, latitude: String, longitude: String, elevation: Double): Pair<LocalDateTime,LocalDateTime>{
+        return calcDuskDawn(time,latitude,longitude,elevation,-18.0)
     }
 
 }
