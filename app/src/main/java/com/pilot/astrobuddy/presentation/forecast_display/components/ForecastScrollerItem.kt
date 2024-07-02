@@ -247,8 +247,30 @@ fun ForecastScrollerItem(
                             color = Color.Gray
                         )
                     }
-                    Box(modifier = Modifier.fillMaxHeight(fraction =0.995f)){}
+                    Box(modifier = Modifier.fillMaxHeight(fraction =0.571f)){}
                     Divider(color = Color.Gray)
+                    val skyLabels = listOf("Warnings:","Rain","Wind","Frost/Dew")
+                    skyLabels.forEach {
+                        Box(
+                            modifier = Modifier
+                                .height(26.dp)
+                                .align(CenterHorizontally),
+                            contentAlignment = Center
+                        ){
+                            Text(
+                                text=it,
+                                style = MaterialTheme.typography.body2,
+                                fontSize = 11.sp,
+                                textAlign = TextAlign.Right,
+                                modifier = Modifier
+                                    .padding(end = 2.dp)
+                                    .fillMaxWidth()
+                            )
+                        }
+                        Divider(
+                            color = Color.Gray
+                        )
+                    }
                 }
             }
             //Vertical divider

@@ -179,17 +179,17 @@ object CalculateSunMoonUseCase {
 
         val obs = Observer(latitude.toDouble(), longitude.toDouble(), elevation)
 
-        val dusk = searchAltitude(Body.Sun,obs,Direction.Set,astTime,1.0,-18.0)
-        val dawn = searchAltitude(Body.Sun,obs,Direction.Rise,astTime,1.0,-18.0)
+        val dusk = searchAltitude(Body.Sun,obs,Direction.Set,astTime,1.0,altitude)
+        val dawn = searchAltitude(Body.Sun,obs,Direction.Rise,astTime,1.0,altitude)
 
         var duskLocalDateTime: LocalDateTime = LocalDateTime.MIN
         var dawnLocalDateTime: LocalDateTime = LocalDateTime.MIN
 
         if(dusk != null){
-            duskLocalDateTime = LocalDateTime.parse(dusk.toDateTime().toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            duskLocalDateTime = convertToLocalTZ(LocalDateTime.parse(dusk.toDateTime().toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)).toLocalDateTime()
         }
         if(dawn != null){
-            dawnLocalDateTime = LocalDateTime.parse(dawn.toDateTime().toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            dawnLocalDateTime = convertToLocalTZ(LocalDateTime.parse(dawn.toDateTime().toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)).toLocalDateTime()
         }
 
         return Pair(duskLocalDateTime,dawnLocalDateTime)
