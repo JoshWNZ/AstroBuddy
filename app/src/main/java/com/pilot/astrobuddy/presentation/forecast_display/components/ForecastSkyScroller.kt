@@ -1,6 +1,5 @@
 package com.pilot.astrobuddy.presentation.forecast_display.components
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -62,7 +61,6 @@ fun ForecastSkyScroller(
         val days = hours / 24
         items(days){i->
             val curAstro = astros[i]
-            Log.i("ASTRO",curAstro.toString())
             Box(modifier = Modifier
                 .width(720.dp)
                 .fillMaxHeight()
