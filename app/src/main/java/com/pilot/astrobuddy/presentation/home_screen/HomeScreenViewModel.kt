@@ -13,6 +13,7 @@ import com.pilot.astrobuddy.domain.use_case.get_equipment.GetAstroEquipmentUseCa
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetForecastUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
 import com.pilot.astrobuddy.domain.use_case.get_objects.GetSavedObjectUseCase
+import com.pilot.astrobuddy.setings_store.SettingsStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -24,12 +25,19 @@ class HomeScreenViewModel @Inject constructor(
     private val getAstroEquipmentUseCase: GetAstroEquipmentUseCase,
     private val getSavedObjectUseCase: GetSavedObjectUseCase,
     private val getSavedLocUseCase: GetSavedLocUseCase,
-    private val getForecastUseCase: GetForecastUseCase
+    private val getForecastUseCase: GetForecastUseCase,
+    private val settingsStore: SettingsStore
 ): ViewModel() {
     //initialise a blank state
     private val _state = mutableStateOf(HomeScreenState())
     val state: State<HomeScreenState> = _state
 
+    init{
+        //cursed hack to pre-load the dataStore to avoid 500ms first query
+        viewModelScope.launch{
+            settingsStore.getDaysFromDataStore()
+        }
+    }
 
     fun fetchInformation(){
         //initialise lists to save data

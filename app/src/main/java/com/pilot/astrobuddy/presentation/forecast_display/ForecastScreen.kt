@@ -41,10 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
+import com.pilot.astrobuddy.domain.model.warning.WarningSeverity
+import com.pilot.astrobuddy.domain.model.warning.WarningType
 import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
 import com.pilot.astrobuddy.presentation.forecast_display.components.ForecastScrollerItem
 import kotlinx.coroutines.launch
-import java.time.format.DateTimeFormatter
 import kotlin.math.round
 
 @Composable
@@ -189,7 +190,27 @@ fun ForecastScreen(
                     }
 
                     //pass forecast data into scrollable composable
-                    ForecastScrollerItem(fd = fc, astro = curAstro, timeFormat = viewModel.getTimeFormat())
+                    ForecastScrollerItem(
+                        fd = fc,
+                        astro = curAstro,
+                        timeFormat = viewModel.getTimeFormat(),
+                        units = viewModel.getUnits(),
+                        dewThres = Triple(
+                            viewModel.getWarningThreshold(WarningType.DEW, WarningSeverity.LOW),
+                            viewModel.getWarningThreshold(WarningType.DEW, WarningSeverity.MED),
+                            viewModel.getWarningThreshold(WarningType.DEW, WarningSeverity.HIGH)
+                        ),
+                        windThres = Triple(
+                            viewModel.getWarningThreshold(WarningType.WIND, WarningSeverity.LOW),
+                            viewModel.getWarningThreshold(WarningType.WIND, WarningSeverity.MED),
+                            viewModel.getWarningThreshold(WarningType.WIND, WarningSeverity.HIGH)
+                        ),
+                        rainThres = Triple(
+                            viewModel.getWarningThreshold(WarningType.RAIN, WarningSeverity.LOW),
+                            viewModel.getWarningThreshold(WarningType.RAIN, WarningSeverity.MED),
+                            viewModel.getWarningThreshold(WarningType.RAIN, WarningSeverity.HIGH)
+                        )
+                    )
 //                    if(state.calendar){
 //                        ForecastCalendarItem(fd = fc, astro = curAstro)
 //                    }else{

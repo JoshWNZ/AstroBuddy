@@ -51,7 +51,11 @@ import java.time.format.DateTimeFormatter
 fun ForecastScrollerItem(
     fd: OMForecast,
     astro: List<Astro>,
-    timeFormat: String
+    timeFormat: String,
+    units: String,
+    dewThres: Triple<Int,Int,Int>,
+    windThres: Triple<Int,Int,Int>,
+    rainThres: Triple<Int,Int,Int>
 ){
     val scope = rememberCoroutineScope()
 
@@ -313,7 +317,15 @@ fun ForecastScrollerItem(
                     color = Color.Gray,
                     modifier = Modifier.fillMaxWidth()
                 )
-                ForecastSkyScroller(fd = fd, astros = astro, listState = skyScrollerState, scrollState= scrollState)
+                ForecastSkyScroller(
+                    fd = fd,
+                    astros = astro,
+                    listState = skyScrollerState,
+                    scrollState= scrollState,
+                    dewThres = dewThres,
+                    rainThres = rainThres,
+                    windThres = windThres
+                )
                 Divider(color = Color.Gray)
             }
         }

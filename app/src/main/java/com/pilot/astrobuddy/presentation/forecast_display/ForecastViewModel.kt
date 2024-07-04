@@ -10,6 +10,8 @@ import com.pilot.astrobuddy.common.Resource
 import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
+import com.pilot.astrobuddy.domain.model.warning.WarningSeverity
+import com.pilot.astrobuddy.domain.model.warning.WarningType
 import com.pilot.astrobuddy.domain.use_case.calculate_sunmoon.CalculateSunMoonUseCase
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetForecastUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
@@ -180,6 +182,14 @@ class ForecastViewModel @Inject constructor(
         var result = ""
         viewModelScope.launch{
             result = settingsStore.getUnitsFromDataStore()
+        }
+        return result
+    }
+
+    fun getWarningThreshold(warningType: WarningType,warningSeverity: WarningSeverity):Int{
+        var result = 0
+        viewModelScope.launch{
+            result = settingsStore.getThresFromDataStore(warningType,warningSeverity)
         }
         return result
     }

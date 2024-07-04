@@ -35,7 +35,10 @@ fun ForecastSkyScroller(
     fd: OMForecast,
     astros: List<Astro>,
     listState: LazyListState,
-    scrollState: ScrollableState
+    scrollState: ScrollableState,
+    dewThres: Triple<Int,Int,Int>,
+    windThres: Triple<Int,Int,Int>,
+    rainThres: Triple<Int,Int,Int>
 ) {
     //val scope = rememberCoroutineScope()
 
@@ -167,9 +170,9 @@ fun ForecastSkyScroller(
                         if(dewPoint >= temperature){
                             val tempDelta = dewPoint - temperature
                             val tint = when{
-                                tempDelta <= 1.0 -> {minorTint}
-                                tempDelta <= 2.0 -> {moderateTint}
-                                tempDelta > 3 -> {severeTint}
+                                tempDelta >= dewThres.third -> {severeTint}
+                                tempDelta >= dewThres.second -> {moderateTint}
+                                tempDelta >= dewThres.first -> {minorTint}
                                 else -> {minorTint}
                             }
                             translate(left=hourWidth*h,top=height*0.9f){
@@ -183,11 +186,11 @@ fun ForecastSkyScroller(
                         }
                         //high wind warning
                         val speed = windSpeeds[h]
-                        if(speed >= 5){
+                        if(speed >= windThres.first){
                             val tint = when{
-                                speed <= 10 -> {minorTint}
-                                speed <= 30 -> {moderateTint}
-                                speed > 30 -> {severeTint}
+                                speed >= windThres.third -> {severeTint}
+                                speed >= windThres.second -> {moderateTint}
+                                speed >= windThres.first -> {minorTint}
                                 else -> {minorTint}
                             }
                             translate(left=hourWidth*h,top=height*0.80f){
@@ -201,11 +204,11 @@ fun ForecastSkyScroller(
                         }
                         //rain warning
                         val prob = rainProbs[h]?:0
-                        if(prob >= 1){
+                        if(prob >= rainThres.first){
                             val tint = when{
-                                prob <= 10 -> {minorTint}
-                                prob <= 40 -> {moderateTint}
-                                prob > 40 -> {severeTint}
+                                prob >= rainThres.third -> {severeTint}
+                                prob >= rainThres.second -> {moderateTint}
+                                prob >= rainThres.first -> {minorTint}
                                 else -> {minorTint}
                             }
                             translate(left=hourWidth*h,top=height*0.70f){

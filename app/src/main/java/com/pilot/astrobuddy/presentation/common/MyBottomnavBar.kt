@@ -33,6 +33,28 @@ fun MyBottomNavBar(navController: NavController){
         Screen.SettingsScreen
     )
 
+    val subScreens = mapOf(
+        Pair(
+            Screen.LocationSearchScreen.route,
+            listOf(Screen.LocationSearchScreen.route,Screen.ForecastScreen.route)
+        ),
+        Pair(
+            Screen.ObjectSearchScreen.route,
+            listOf(Screen.ObjectSearchScreen.route,Screen.ObjectDisplayScreen.route)
+        ),
+        Pair(
+            Screen.HomeScreen.route,
+            listOf(Screen.HomeScreen.route)
+        ),
+        Pair(
+            Screen.EquipmentScreen.route,
+            listOf(Screen.EquipmentScreen.route,Screen.EquipmentSetupScreen.route)
+        ),
+        Pair(
+            Screen.SettingsScreen.route,
+            listOf(Screen.SettingsScreen.route)
+        )
+    )
 
     BottomNavigation(
         backgroundColor = Color.DarkGray
