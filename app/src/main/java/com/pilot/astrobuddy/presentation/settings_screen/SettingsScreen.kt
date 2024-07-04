@@ -32,7 +32,6 @@ import androidx.compose.material.icons.rounded.ArrowDropUp
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +48,7 @@ import androidx.navigation.NavController
 import com.pilot.astrobuddy.domain.model.warning.WarningSeverity
 import com.pilot.astrobuddy.domain.model.warning.WarningType
 import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
+import kotlin.math.roundToInt
 
 @Composable
 fun SettingsScreen(
@@ -62,7 +62,7 @@ fun SettingsScreen(
         mutableStateOf("")
     }
 
-    var daysPosition by remember { mutableFloatStateOf(state.forecastDays.toFloat())}
+    var daysPosition by remember { mutableIntStateOf(state.forecastDays)}
     var unitPosition by remember {mutableStateOf(state.units=="C")}
     var timePosition by remember {mutableStateOf(state.timeFormat=="24h")}
     var dewLowPosition by remember {mutableIntStateOf(state.dewThres.first)}
@@ -163,18 +163,18 @@ fun SettingsScreen(
                                         Text(text = "Days", style = MaterialTheme.typography.h6)
 
                                         Slider(
-                                            value = daysPosition,
-                                            onValueChange = { daysPosition = it },
-                                            onValueChangeFinished = { viewModel.updateDays(daysPosition.toInt()) },
+                                            value = daysPosition.toFloat(),
+                                            onValueChange = { daysPosition = it.roundToInt() },
+                                            onValueChangeFinished = { viewModel.updateDays(daysPosition) },
                                             colors = SliderDefaults.colors(),
-                                            steps = 14,
+                                            steps = 13,
                                             valueRange = 1f..14f,
                                             modifier = Modifier.width(256.dp)
                                         )
 
                                         Box(modifier = Modifier.width(32.dp)) {
                                             Text(
-                                                text = daysPosition.toInt().toString(),
+                                                text = daysPosition.toString(),
                                                 style = MaterialTheme.typography.h5
                                             )
                                         }
@@ -190,7 +190,6 @@ fun SettingsScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(text = "Units", style = MaterialTheme.typography.h6)
-                                        val unit = state.units
 
                                         Column() {
                                             Text(text = "Imperial", style = MaterialTheme.typography.h5)
@@ -231,7 +230,6 @@ fun SettingsScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(text = "Time Format", style = MaterialTheme.typography.h6)
-                                        val timeFormat = state.timeFormat
 
                                         Column() {
                                             Text(text = "12h", style = MaterialTheme.typography.h5)
@@ -321,7 +319,7 @@ fun SettingsScreen(
                                                 )
                                                 Slider(
                                                     value = windLowPosition.toFloat(),
-                                                    onValueChange = { windLowPosition = it.toInt() },
+                                                    onValueChange = { windLowPosition = it.roundToInt() },
                                                     onValueChangeFinished = {
                                                         viewModel.updateWarningThreshold(
                                                             WarningType.WIND,
@@ -333,7 +331,7 @@ fun SettingsScreen(
                                                         activeTickColor = Color.Transparent,
                                                         inactiveTickColor = Color.Transparent
                                                     ),
-                                                    steps = 51,
+                                                    steps = 50,
                                                     valueRange = 0f..50f,
                                                     modifier = Modifier.width(224.dp)
                                                 )
@@ -353,7 +351,7 @@ fun SettingsScreen(
                                                 )
                                                 Slider(
                                                     value = windMedPosition.toFloat(),
-                                                    onValueChange = { windMedPosition = it.toInt() },
+                                                    onValueChange = { windMedPosition = it.roundToInt() },
                                                     onValueChangeFinished = {
                                                         viewModel.updateWarningThreshold(
                                                             WarningType.WIND,
@@ -365,7 +363,7 @@ fun SettingsScreen(
                                                         activeTickColor = Color.Transparent,
                                                         inactiveTickColor = Color.Transparent
                                                     ),
-                                                    steps = 51,
+                                                    steps = 50,
                                                     valueRange = 0f..50f,
                                                     modifier = Modifier.width(224.dp)
                                                 )
@@ -385,7 +383,7 @@ fun SettingsScreen(
                                                 )
                                                 Slider(
                                                     value = windHighPosition.toFloat(),
-                                                    onValueChange = { windHighPosition = it.toInt() },
+                                                    onValueChange = { windHighPosition = it.roundToInt() },
                                                     onValueChangeFinished = {
                                                         viewModel.updateWarningThreshold(
                                                             WarningType.WIND,
@@ -397,7 +395,7 @@ fun SettingsScreen(
                                                         activeTickColor = Color.Transparent,
                                                         inactiveTickColor = Color.Transparent
                                                     ),
-                                                    steps = 51,
+                                                    steps = 50,
                                                     valueRange = 0f..50f,
                                                     modifier = Modifier.width(224.dp)
                                                 )
@@ -443,7 +441,7 @@ fun SettingsScreen(
                                                 )
                                                 Slider(
                                                     value = rainLowPosition.toFloat(),
-                                                    onValueChange = { rainLowPosition = it.toInt() },
+                                                    onValueChange = { rainLowPosition = it.roundToInt() },
                                                     onValueChangeFinished = {
                                                         viewModel.updateWarningThreshold(
                                                             WarningType.RAIN,
@@ -455,7 +453,7 @@ fun SettingsScreen(
                                                         activeTickColor = Color.Transparent,
                                                         inactiveTickColor = Color.Transparent
                                                     ),
-                                                    steps = 101,
+                                                    steps = 100,
                                                     valueRange = 0f..100f,
                                                     modifier = Modifier.width(224.dp)
                                                 )
@@ -475,7 +473,7 @@ fun SettingsScreen(
                                                 )
                                                 Slider(
                                                     value = rainMedPosition.toFloat(),
-                                                    onValueChange = { rainMedPosition = it.toInt() },
+                                                    onValueChange = { rainMedPosition = it.roundToInt() },
                                                     onValueChangeFinished = {
                                                         viewModel.updateWarningThreshold(
                                                             WarningType.RAIN,
@@ -487,7 +485,7 @@ fun SettingsScreen(
                                                         activeTickColor = Color.Transparent,
                                                         inactiveTickColor = Color.Transparent
                                                     ),
-                                                    steps = 101,
+                                                    steps = 100,
                                                     valueRange = 0f..100f,
                                                     modifier = Modifier.width(224.dp)
                                                 )
@@ -507,7 +505,7 @@ fun SettingsScreen(
                                                 )
                                                 Slider(
                                                     value = rainHighPosition.toFloat(),
-                                                    onValueChange = { rainHighPosition = it.toInt() },
+                                                    onValueChange = { rainHighPosition = it.roundToInt() },
                                                     onValueChangeFinished = {
                                                         viewModel.updateWarningThreshold(
                                                             WarningType.RAIN,
@@ -519,7 +517,7 @@ fun SettingsScreen(
                                                         activeTickColor = Color.Transparent,
                                                         inactiveTickColor = Color.Transparent
                                                     ),
-                                                    steps = 101,
+                                                    steps = 100,
                                                     valueRange = 0f..100f,
                                                     modifier = Modifier.width(224.dp)
                                                 )
@@ -565,7 +563,7 @@ fun SettingsScreen(
                                                 )
                                                 Slider(
                                                     value = dewLowPosition.toFloat(),
-                                                    onValueChange = { dewLowPosition = it.toInt() },
+                                                    onValueChange = { dewLowPosition = it.roundToInt() },
                                                     onValueChangeFinished = {
                                                         viewModel.updateWarningThreshold(
                                                             WarningType.DEW,
@@ -577,7 +575,7 @@ fun SettingsScreen(
                                                         activeTickColor = Color.Transparent,
                                                         inactiveTickColor = Color.Transparent
                                                     ),
-                                                    steps = 16,
+                                                    steps = 15,
                                                     valueRange = 0f..15f,
                                                     modifier = Modifier.width(224.dp)
                                                 )
@@ -597,7 +595,7 @@ fun SettingsScreen(
                                                 )
                                                 Slider(
                                                     value = dewMedPosition.toFloat(),
-                                                    onValueChange = { dewMedPosition = it.toInt() },
+                                                    onValueChange = { dewMedPosition = it.roundToInt() },
                                                     onValueChangeFinished = {
                                                         viewModel.updateWarningThreshold(
                                                             WarningType.DEW,
@@ -609,7 +607,7 @@ fun SettingsScreen(
                                                         activeTickColor = Color.Transparent,
                                                         inactiveTickColor = Color.Transparent
                                                     ),
-                                                    steps = 31,
+                                                    steps = 30,
                                                     valueRange = 0f..30f,
                                                     modifier = Modifier.width(224.dp)
                                                 )
@@ -629,7 +627,7 @@ fun SettingsScreen(
                                                 )
                                                 Slider(
                                                     value = dewHighPosition.toFloat(),
-                                                    onValueChange = { dewHighPosition = it.toInt() },
+                                                    onValueChange = { dewHighPosition = it.roundToInt() },
                                                     onValueChangeFinished = {
                                                         viewModel.updateWarningThreshold(
                                                             WarningType.DEW,
@@ -641,7 +639,7 @@ fun SettingsScreen(
                                                         activeTickColor = Color.Transparent,
                                                         inactiveTickColor = Color.Transparent
                                                     ),
-                                                    steps = 31,
+                                                    steps = 30,
                                                     valueRange = 0f..30f,
                                                     modifier = Modifier.width(224.dp)
                                                 )

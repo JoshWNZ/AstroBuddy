@@ -29,7 +29,7 @@ fun ObjectImageFromHiPS(
             "&object=$obj" +
             "&format=jpg"
 
-    Log.i("IMAGE", "$obj $fov")
+    //Log.i("IMAGE", "$obj $fov")
 
     Box(modifier = Modifier.size(imageScale.dp), contentAlignment = Alignment.Center){
         SubcomposeAsyncImage(

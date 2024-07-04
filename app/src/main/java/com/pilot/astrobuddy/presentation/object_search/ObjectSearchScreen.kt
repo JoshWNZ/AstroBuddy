@@ -1,6 +1,5 @@
 package com.pilot.astrobuddy.presentation.object_search
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -83,8 +82,8 @@ fun ObjectSearchScreen(
                     ){
                         //show fetched objects from the user query
                         items(state.objects){obj->
-                            Log.i("OBJECT","object NGC:"+obj.NGC+" IC:"+obj.IC+" M:"+obj.M)
-                            Log.i("OBJECT", obj.toString())
+                            //Log.i("OBJECT","object NGC:"+obj.NGC+" IC:"+obj.IC+" M:"+obj.M)
+                            //Log.i("OBJECT", obj.toString())
                             ObjSearchItem(
                                 astroObject = obj,
                                 onItemClick = {
