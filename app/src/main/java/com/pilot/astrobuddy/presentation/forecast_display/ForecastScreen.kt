@@ -172,13 +172,14 @@ fun ForecastScreen(
                             .align(CenterVertically)
                             .padding(end = 5.dp)
                         ){
-                            val lightPollution = getLightPollution(fc.latitude.toString(),fc.longitude.toString())
+                            val sqm = state.sqm
+                            val bortle = state.bortle
                             Text(
-                                text= "sqm: ${lightPollution.second}",
+                                text= "sqm: ${"%.2f".format((sqm.first+sqm.second)/2)}",
                                 style = MaterialTheme.typography.body1
                             )
                             Text(
-                                text= "bortle: ${lightPollution.first}",
+                                text= "bortle: $bortle",
                                 style = MaterialTheme.typography.body1
                             )
                         }
@@ -242,14 +243,4 @@ fun ForecastScreen(
             MyBottomNavBar(navController = navController)
         }
     )
-}
-
-/*
-Helper function to get light pollution info from some magical method that i will write
-sometime maybe
- */
-private fun getLightPollution(lat: String, long: String): Pair<Int,Double>{
-    val goawaywarning = lat+long+"a"
-    goawaywarning+""
-    return Pair(0,0.0)
 }

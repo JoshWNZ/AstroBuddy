@@ -1,5 +1,6 @@
 package com.pilot.astrobuddy.presentation.forecast_display
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -12,6 +13,7 @@ import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.domain.model.warning.WarningSeverity
 import com.pilot.astrobuddy.domain.model.warning.WarningType
+import com.pilot.astrobuddy.domain.use_case.calculate_lightpollution.CalculateLightPollUseCase
 import com.pilot.astrobuddy.domain.use_case.calculate_sunmoon.CalculateSunMoonUseCase
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetForecastUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
@@ -26,6 +28,7 @@ import javax.inject.Inject
 class ForecastViewModel @Inject constructor(
     private val getForecastUseCase: GetForecastUseCase,
     private val getSavedLocUseCase: GetSavedLocUseCase,
+    private val getLightPollUseCase: CalculateLightPollUseCase,
     savedStateHandle: SavedStateHandle,
     private val settingsStore: SettingsStore
 ) : ViewModel() {
@@ -75,6 +78,7 @@ class ForecastViewModel @Inject constructor(
                         _state.value = _state.value.copy(forecast = result.data, isLoading = false, error = "")
                         result.data?.let {
                             calculateAstro(latitude, longitude, elevation, it)
+                            getLightPol(latitude, longitude)
                         }
                     }
                     is Resource.Error -> {
@@ -192,5 +196,17 @@ class ForecastViewModel @Inject constructor(
             result = settingsStore.getThresFromDataStore(warningType,warningSeverity)
         }
         return result
+    }
+
+    private fun getLightPol(lat: String, long: String){
+        var sqm: Pair<Double,Double> = Pair(0.0,0.0)
+        viewModelScope.launch{
+            sqm = getLightPollUseCase.calcLightPol(lat.toDouble(),long.toDouble())
+        }
+        Log.i("VIEWMODEL",sqm.toString())
+        val avg = (sqm.first + sqm.second)/2
+        val bortle =  getLightPollUseCase.calcBortleFromSQM(avg)
+        _state.value = _state.value.copy(sqm=sqm,bortle=bortle)
+        //return (sqm.first+sqm.second) / 2
     }
 }

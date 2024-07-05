@@ -20,10 +20,12 @@ import com.pilot.astrobuddy.domain.repository.AstroObjectRepository
 import com.pilot.astrobuddy.domain.repository.ForecastRepository
 import com.pilot.astrobuddy.domain.repository.SavedLocationRepository
 import com.pilot.astrobuddy.domain.repository.SavedObjectRepository
+import com.pilot.astrobuddy.domain.use_case.calculate_lightpollution.CalculateLightPollUseCase
 import com.pilot.astrobuddy.setings_store.SettingsStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -93,6 +95,12 @@ object AppModule {
     @Singleton
     fun providesAstroEquipmentRepository(db: AstroBuddyDatabase): AstroEquipmentRepository {
         return AstroEquipmentRepositoryImpl(db.equipDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providesLightPollutionUseCase(@ApplicationContext context: Context): CalculateLightPollUseCase {
+        return CalculateLightPollUseCase(context)
     }
 
     //room database
