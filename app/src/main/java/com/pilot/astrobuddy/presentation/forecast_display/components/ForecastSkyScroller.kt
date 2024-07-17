@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.Divider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.pilot.astrobuddy.R
 import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
+import com.pilot.astrobuddy.domain.model.warning.WarningSeverity
 import java.time.LocalDateTime
 
 @Composable
@@ -38,7 +41,8 @@ fun ForecastSkyScroller(
     scrollState: ScrollableState,
     dewThres: Triple<Int,Int,Int>,
     windThres: Triple<Int,Int,Int>,
-    rainThres: Triple<Int,Int,Int>
+    rainThres: Triple<Int,Int,Int>,
+    dpScale: Float
 ) {
     //val scope = rememberCoroutineScope()
 
@@ -48,6 +52,15 @@ fun ForecastSkyScroller(
     val skyNauticalDark = Color.hsv(235f,1f,0.13f)
     val skyAstroDark = Color.hsv(235f,1f,0f)
     val skySunRiseSet = Color.hsv(27f,0.94f,0.9f)
+
+    //Icon painters and colours
+    val frostPainter = rememberVectorPainter(image = ImageVector.vectorResource(id = R.drawable.severe_cold))
+    val windPainter = rememberVectorPainter(image = ImageVector.vectorResource(id = R.drawable.wind))
+    val rainPainter = rememberVectorPainter(image = ImageVector.vectorResource(id = R.drawable.rainy))
+    val cloudPainter = rememberVectorPainter(image = Icons.Rounded.Cloud)
+    val minorTint = remember { ColorFilter.tint(Color.hsv(201f,0.1f,0.98f))}
+    val moderateTint = remember { ColorFilter.tint(Color.hsv(34f,1f,0.93f))}
+    val severeTint = remember { ColorFilter.tint(Color.hsv(3f,1f,1f))}
 
     LazyRow(
         state = listState,
@@ -70,13 +83,6 @@ fun ForecastSkyScroller(
                 .background(color = skyAstroDark)
                 //.border(width = 1.dp, color = Color.Green)
             ){
-                val frostPainter = rememberVectorPainter(image = ImageVector.vectorResource(id = R.drawable.severe_cold))
-                val windPainter = rememberVectorPainter(image = ImageVector.vectorResource(id = R.drawable.wind))
-                val rainPainter = rememberVectorPainter(image = ImageVector.vectorResource(id = R.drawable.rainy))
-                val minorTint = remember { ColorFilter.tint(Color.hsv(201f,0.1f,0.98f))}
-                val moderateTint = remember { ColorFilter.tint(Color.hsv(34f,1f,0.93f))}
-                val severeTint = remember { ColorFilter.tint(Color.hsv(3f,1f,1f))}
-
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val width = size.width
                     val height = size.height
@@ -100,6 +106,8 @@ fun ForecastSkyScroller(
 
                     val astroDarkMorningBlock = calcOffsetAndSize(dayStart,curAstro.astroDark.first,width)
                     val astroDarkEveningBlock = calcOffsetAndSize(curAstro.astroDark.second,dayEnd,width)
+
+                    val curTime = calcOffsetAndSize(LocalDateTime.now(),LocalDateTime.now(),width)
 
                     //astroDarks
                     drawRect(
@@ -156,11 +164,33 @@ fun ForecastSkyScroller(
                         size = Size(width=dayBlock.second,height=height)
                     )
 
+                    //current time line
+                    drawLine(
+                        color = Color.Magenta.copy(alpha = 0.9f),
+                        start = Offset(x=curTime.first-4,y=0f),
+                        end = Offset(x=curTime.first-4,y=height),
+                        strokeWidth = 8f
+                    )
+
                     //daily weather values
                     val dewPoints = fd.hourly.dewpoint_2m.subList(i*24,(i+1)*24)
                     val temperatures = fd.hourly.temperature_2m.subList(i*24,(i+1)*24)
                     val rainProbs = fd.hourly.precipitation_probability.subList(i*24,(i+1)*24)
                     val windSpeeds = fd.hourly.windspeed_10m.subList(i*24,(i+1)*24)
+
+                    val dewTimes: HashMap<Int,ColorFilter> = hashMapOf()
+                    val windTimes: HashMap<Int,ColorFilter> = hashMapOf()
+                    val rainTimes: HashMap<Int,ColorFilter> = hashMapOf()
+
+                    val cloudThres = Triple(25.0,50.0,75.0)
+
+                    val lowCloudCovers = fd.hourly.cloudcover_low.subList(i*24,(i+1)*24)
+                    val medCloudCovers = fd.hourly.cloudcover_mid.subList(i*24,(i+1)*24)
+                    val highCloudCovers = fd.hourly.cloudcover_high.subList(i*24,(i+1)*24)
+
+                    val lowCloudTimes: HashMap<Int,WarningSeverity> = hashMapOf()
+                    val medCloudTimes: HashMap<Int,WarningSeverity> = hashMapOf()
+                    val highCloudTimes: HashMap<Int,WarningSeverity> = hashMapOf()
 
                     //check conditions for each hour
                     for(h in 0 until 24){
@@ -175,14 +205,7 @@ fun ForecastSkyScroller(
                                 tempDelta >= dewThres.first -> {minorTint}
                                 else -> {minorTint}
                             }
-                            translate(left=hourWidth*h,top=height*0.9f){
-                                with(frostPainter){
-                                    draw(
-                                        size = frostPainter.intrinsicSize,
-                                        colorFilter = tint
-                                    )
-                                }
-                            }
+                            dewTimes[h] = tint
                         }
                         //high wind warning
                         val speed = windSpeeds[h]
@@ -193,14 +216,7 @@ fun ForecastSkyScroller(
                                 speed >= windThres.first -> {minorTint}
                                 else -> {minorTint}
                             }
-                            translate(left=hourWidth*h,top=height*0.80f){
-                                with(windPainter){
-                                    draw(
-                                        size = windPainter.intrinsicSize,
-                                        colorFilter = tint
-                                    )
-                                }
-                            }
+                            windTimes[h] = tint
                         }
                         //rain warning
                         val prob = rainProbs[h]?:0
@@ -211,13 +227,111 @@ fun ForecastSkyScroller(
                                 prob >= rainThres.first -> {minorTint}
                                 else -> {minorTint}
                             }
-                            translate(left=hourWidth*h,top=height*0.70f){
-                                with(rainPainter){
-                                    draw(
-                                        size = rainPainter.intrinsicSize,
-                                        colorFilter = tint
-                                    )
-                                }
+                            rainTimes[h] = tint
+                        }
+                        //low cloud
+                        val lowCover = lowCloudCovers[h]
+                        if(lowCover >= cloudThres.first){
+                            val severity = when{
+                                lowCover >= cloudThres.third -> {WarningSeverity.HIGH}
+                                lowCover >= cloudThres.second -> {WarningSeverity.MED}
+                                lowCover >= cloudThres.first -> {WarningSeverity.LOW}
+                                else -> {WarningSeverity.LOW}
+                            }
+                            lowCloudTimes[h] = severity
+                        }
+                        //mid cloud
+                        val medCover = medCloudCovers[h]
+                        if(medCover >= cloudThres.first){
+                            val severity = when{
+                                medCover >= cloudThres.third -> {WarningSeverity.HIGH}
+                                medCover >= cloudThres.second -> {WarningSeverity.MED}
+                                medCover >= cloudThres.first -> {WarningSeverity.LOW}
+                                else -> {WarningSeverity.LOW}
+                            }
+                            medCloudTimes[h] = severity
+                        }
+                        //high cloud
+                        val highCover = highCloudCovers[h]
+                        if(highCover >= cloudThres.first){
+                            val severity = when{
+                                highCover >= cloudThres.third -> {WarningSeverity.HIGH}
+                                highCover >= cloudThres.second -> {WarningSeverity.MED}
+                                highCover >= cloudThres.first -> {WarningSeverity.LOW}
+                                else -> {WarningSeverity.LOW}
+                            }
+                            highCloudTimes[h] = severity
+                        }
+                        //visibility (?)
+
+                    }
+
+                    //draw dew icons
+                    for(h in dewTimes.keys){
+                        translate(left=hourWidth*h,top=/*height*0.90f*/dpScale*27*9){
+                            with(frostPainter){
+                                draw(
+                                    size = frostPainter.intrinsicSize,
+                                    colorFilter = dewTimes[h]
+                                )
+                            }
+                        }
+                    }
+
+                    //draw wind icons
+                    for(h in windTimes.keys){
+                        translate(left=hourWidth*h,top=/*height*0.80f*/dpScale*27*18.75f){
+                            with(windPainter){
+                                draw(
+                                    size = windPainter.intrinsicSize,
+                                    colorFilter = windTimes[h]
+                                )
+                            }
+                        }
+                    }
+
+                    //draw rain icons
+                    for(h in rainTimes.keys){
+                        translate(left=hourWidth*h,top=/*height*0.70f*/dpScale*27*16){
+                            with(rainPainter){
+                                draw(
+                                    size = rainPainter.intrinsicSize,
+                                    colorFilter = rainTimes[h]
+                                )
+                            }
+                        }
+                    }
+
+                    //draw low cloud
+                    for(h in lowCloudTimes.keys){
+                        translate(left=hourWidth*h,top=/*height*0.40f*/dpScale*27*11){
+                            with(cloudPainter){
+                                draw(
+                                    size = cloudPainter.intrinsicSize,
+                                    colorFilter = minorTint
+                                )
+                            }
+                        }
+                    }
+                    //draw med cloud
+                    for(h in medCloudTimes.keys){
+                        translate(left=hourWidth*h,top=/*height*0.30f*/dpScale*27*8.25f){
+                            with(cloudPainter){
+                                draw(
+                                    size = cloudPainter.intrinsicSize,
+                                    colorFilter = minorTint
+                                )
+                            }
+                        }
+                    }
+                    //draw high cloud
+                    for(h in highCloudTimes.keys){
+                        translate(left=hourWidth*h,top=/*height*0.20f*/dpScale*27*5.5f){
+                            with(cloudPainter){
+                                draw(
+                                    size = cloudPainter.intrinsicSize,
+                                    colorFilter = minorTint
+                                )
                             }
                         }
                     }

@@ -222,15 +222,19 @@ fun ForecastScrollerItem(
         Row(/*modifier = Modifier.height(380.dp)*/){
             Column{
                 //display a column of labels for each element of the forecast
-                val labels = listOf(
+                val forecastLabels = listOf(
                     "Time","Total Cloud","High Cloud","Mid Cloud","Low Cloud","Visibility","Rain prob.","Wind Spd.","Wind Dir.","Temp","Feels Like","Humidity","Dew Point"
+                )
+                val skyLabels = listOf(
+                    "","Cloud:","High","Med","Low","Warnings:","Rain","Wind","Frost/Dew"
                 )
                 Column(
                     modifier = Modifier
                         .background(Color.DarkGray)
                         .width((width*0.15).dp)
+                        .fillMaxHeight()
                 ){
-                    labels.forEach {
+                    forecastLabels.forEach {
                         Box(
                             modifier = Modifier
                                 .height(28.dp)
@@ -251,9 +255,9 @@ fun ForecastScrollerItem(
                             color = Color.Gray
                         )
                     }
-                    Box(modifier = Modifier.fillMaxHeight(fraction =0.571f)){}
+                    //Box(modifier = Modifier.fillMaxHeight(fraction =0.571f)){}
                     Divider(color = Color.Gray)
-                    val skyLabels = listOf("Warnings:","Rain","Wind","Frost/Dew")
+
                     skyLabels.forEach {
                         Box(
                             modifier = Modifier
@@ -275,6 +279,7 @@ fun ForecastScrollerItem(
                             color = Color.Gray
                         )
                     }
+                    Divider()
                 }
             }
             //Vertical divider
@@ -290,16 +295,17 @@ fun ForecastScrollerItem(
                     state = hoursRowState,
                     userScrollEnabled = false
                 ){
+                    val curDay = curTime.format(DateTimeFormatter.ofPattern("dd - MMM"))
                     items(fd.hourly.time.size){i->
                         val date = LocalDate.parse(fd.hourly.time[i], DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                         val dayMon = date.format(DateTimeFormatter.ofPattern("dd - MMM"))
 
-                        val curDay = (dayMon == curTime.format(DateTimeFormatter.ofPattern("dd - MMM")))
+                        val isCurDay = (dayMon == curDay)
 
                         val isNewDay = (i+1)%24==0 && i+1!=fd.hourly.time.size
 
                         //pass the current hour into hours from the current day
-                        if(curDay){
+                        if(isCurDay){
                             ForecastHourItem(forecastHour = fd.hourly, i=i, curHour = curHour)
                         }else{
                             ForecastHourItem(forecastHour = fd.hourly, i=i, curHour=null)
@@ -317,6 +323,7 @@ fun ForecastScrollerItem(
                     color = Color.Gray,
                     modifier = Modifier.fillMaxWidth()
                 )
+                val dpScale = 1.dp.value
                 ForecastSkyScroller(
                     fd = fd,
                     astros = astro,
@@ -324,12 +331,12 @@ fun ForecastScrollerItem(
                     scrollState= scrollState,
                     dewThres = dewThres,
                     rainThres = rainThres,
-                    windThres = windThres
+                    windThres = windThres,
+                    dpScale = dpScale
                 )
                 Divider(color = Color.Gray)
             }
         }
-
     }
 }
 
