@@ -1,6 +1,7 @@
 package com.pilot.astrobuddy.presentation.location_search
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -125,6 +126,7 @@ fun LocationSearchScreen(
                                     //launch a coroutine to get current location
                                     scope.launch {
                                         //get the location from the google api
+                                        Log.i("LOC","fetching location")
                                         val result = locClient.getCurrentLocation(
                                             Priority.PRIORITY_BALANCED_POWER_ACCURACY,
                                             CancellationTokenSource().token,
@@ -132,6 +134,7 @@ fun LocationSearchScreen(
                                         //generate a semi-unique id from the location info
                                         val id = ((result.latitude + result.longitude) * result.accuracy)
                                         //initialise a new location object with the fetched info
+                                        Log.i("LOC","${result.latitude},${result.longitude}")
                                         val curLoc = OMLocation(
                                             "", "", "", "", "", "",
                                             result.altitude, id.toInt(), result.latitude, result.longitude, ""

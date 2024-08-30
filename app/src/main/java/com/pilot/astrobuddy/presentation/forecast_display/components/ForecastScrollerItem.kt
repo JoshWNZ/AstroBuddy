@@ -226,7 +226,7 @@ fun ForecastScrollerItem(
                     "Time","Total Cloud","High Cloud","Mid Cloud","Low Cloud","Visibility","Rain prob.","Wind Spd.","Wind Dir.","Temp","Feels Like","Humidity","Dew Point"
                 )
                 val skyLabels = listOf(
-                    "","Cloud:","High","Med","Low","Warnings:","Rain","Wind","Frost/Dew"
+                    "","","High","Med","Low","","Rain","Wind","Frost/Dew"
                 )
                 Column(
                     modifier = Modifier
