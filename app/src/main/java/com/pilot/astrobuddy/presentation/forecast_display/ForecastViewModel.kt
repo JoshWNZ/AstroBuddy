@@ -13,8 +13,8 @@ import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.domain.model.warning.WarningSeverity
 import com.pilot.astrobuddy.domain.model.warning.WarningType
+import com.pilot.astrobuddy.domain.use_case.calculate_astro.CalculateSunMoonUseCase
 import com.pilot.astrobuddy.domain.use_case.calculate_lightpollution.CalculateLightPollUseCase
-import com.pilot.astrobuddy.domain.use_case.calculate_sunmoon.CalculateSunMoonUseCase
 import com.pilot.astrobuddy.domain.use_case.get_forecast.GetForecastUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
 import com.pilot.astrobuddy.setings_store.SettingsStore

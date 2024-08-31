@@ -2,7 +2,9 @@ package com.pilot.astrobuddy.presentation.object_display.components
 
 import android.util.Log
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,11 +19,15 @@ import com.pilot.astrobuddy.presentation.object_display.imageScale
 fun ObjectImageFromHiPS(
     fov: String,
     obj: String,
+    bg: Boolean = false
 ){
+
+    val height = if(bg){360}else{720}
+
     //TODO cache images in local persistant storage (?) with uri pointer in database
-    var url = "https://alasky.cds.unistra.fr/hips-image-services/hips2fits?" +
+    val url = "https://alasky.cds.unistra.fr/hips-image-services/hips2fits?" +
             "hips=CDS%2FP%2FDSS2%2Fcolor" +
-            "&width=720&height=720" +
+            "&width=720&height=$height" +
             "&fov=$fov" +
             "&projection=TAN" +
             "&coordsys=icrs" +
@@ -31,19 +37,27 @@ fun ObjectImageFromHiPS(
 
     //Log.i("IMAGE", "$obj $fov")
 
-    Box(modifier = Modifier.size(imageScale.dp), contentAlignment = Alignment.Center){
+    Box(
+        modifier = if(!bg){Modifier.size(imageScale.dp)}
+        else{Modifier.height((imageScale*1.5).dp).width((imageScale*2.5).dp)},
+        contentAlignment = Alignment.Center
+    ){
         SubcomposeAsyncImage(
             model = url,
             contentDescription = "image",
-            modifier = Modifier.size(imageScale.dp),
+            modifier =
+            if(!bg){Modifier.size(imageScale.dp)}
+            else{Modifier.height((imageScale*1.5).dp).width((imageScale*2.5).dp)},
             contentScale = ContentScale.Crop,
             filterQuality = FilterQuality.High,
             loading = {
-                Box(
-                    modifier = Modifier.size((imageScale/1.5).dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+                if(!bg){
+                    Box(
+                        modifier = Modifier.size((imageScale/1.5).dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             },
             onError = {

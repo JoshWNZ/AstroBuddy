@@ -1,5 +1,7 @@
-package com.pilot.astrobuddy.domain.use_case.calculate_sunmoon
+package com.pilot.astrobuddy.domain.use_case.calculate_astro
 
+import com.pilot.astrobuddy.domain.use_case.calculate_astro.TimeConversion.convertToLocalTZ
+import com.pilot.astrobuddy.domain.use_case.calculate_astro.TimeConversion.convertToUTC
 import io.github.cosinekitty.astronomy.Body
 import io.github.cosinekitty.astronomy.Direction
 import io.github.cosinekitty.astronomy.Observer
@@ -9,40 +11,13 @@ import io.github.cosinekitty.astronomy.moonPhase
 import io.github.cosinekitty.astronomy.searchAltitude
 import io.github.cosinekitty.astronomy.searchRiseSet
 import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.TimeZone
 import kotlin.math.round
 
 /*
   Use-case to calculate rising and setting for the sun and moon.
  */
 object CalculateSunMoonUseCase {
-
-    /*
-      Convert from device timezone to utc
-     */
-    private fun convertToUTC(time: LocalDateTime): ZonedDateTime{
-        val timeZone = TimeZone.getDefault().toZoneId()
-        val utcZone = ZoneId.of("UTC")
-
-        val zonedDateTime = ZonedDateTime.of(time, timeZone)
-        val utcDateTime = zonedDateTime.withZoneSameInstant(utcZone)
-        return utcDateTime
-    }
-
-    /*
-      Convert from UTC to device timezone
-     */
-    private fun convertToLocalTZ(time: LocalDateTime): ZonedDateTime{
-        val timeZone = TimeZone.getDefault().toZoneId()
-        val utcZone = ZoneId.of("UTC")
-
-        val zonedDateTime = ZonedDateTime.of(time, utcZone)
-        val localDateTime = zonedDateTime.withZoneSameInstant(timeZone)
-        return localDateTime
-    }
 
     /*
       Calculate the time of sunrise and sunset for a given day
