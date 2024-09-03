@@ -1,7 +1,6 @@
 package com.pilot.astrobuddy.domain.model.astro_objects
 
 import com.pilot.astrobuddy.data.local.entity.AstroObjectEntity
-import kotlin.math.log10
 
 data class AstroObject (
     val Name: String,
@@ -34,35 +33,21 @@ data class AstroObject (
     val Identifiers: String?="",
     val CommonNames: String?=""
 ){
-    //returns the apparent magnitude as an average of BMag and VMag
+    //returns the magnitude as an average of BMag and VMag
     fun getMagnitude(): Double?{
 
         val vMag = VMag?.toDouble()
         val bMag = BMag?.toDouble()
 
-        var appVMag: Double? = null
-        var appBMag: Double? = null
-
-        if(vMag != null){
-            appVMag = -2.5 * log10(vMag)
-        }
-        if(bMag != null){
-            appBMag = -2.5 * log10(bMag)
+        if(vMag == null){
+            return bMag
         }
 
-        if(appVMag == null && appBMag == null){
-            return null
+        if(bMag == null){
+            return vMag
         }
 
-        if(appVMag == null){
-            return appBMag
-        }
-
-        if(appBMag == null){
-            return appVMag
-        }
-
-        return (appVMag + appBMag) / 2
+        return (vMag + bMag) / 2
     }
 
     //return the arcsec dimensions of the object (Maj, Min)

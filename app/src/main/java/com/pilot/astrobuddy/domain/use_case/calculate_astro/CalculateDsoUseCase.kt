@@ -10,6 +10,8 @@ import io.github.cosinekitty.astronomy.Observer
 import io.github.cosinekitty.astronomy.Time
 import io.github.cosinekitty.astronomy.defineStar
 import io.github.cosinekitty.astronomy.equator
+import io.github.cosinekitty.astronomy.hourAngle
+import io.github.cosinekitty.astronomy.searchHourAngle
 import io.github.cosinekitty.astronomy.searchRiseSet
 import java.text.DecimalFormat
 import java.time.LocalDateTime
@@ -73,7 +75,33 @@ object CalculateDsoUseCase {
         return Pair(riseUserDateTime,setUserDateTime)
     }
 
-    fun calcObjPosition(time: String, latitude: String, longitude: String, elevation: Double, body: Body): Pair<String,String> {
+    fun calcObjTransit(time: String, latitude: String, longitude: String, elevation: Double, body: Body): Pair<LocalDateTime,Double> {
+        val localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+
+        val utcDateTime = convertToUTC(localDateTime)
+
+        val obs = Observer(latitude.toDouble(), longitude.toDouble(), elevation)
+
+        val astTime = Time(
+            utcDateTime.year,
+            utcDateTime.monthValue,
+            utcDateTime.dayOfMonth,
+            utcDateTime.hour,
+            utcDateTime.minute,
+            utcDateTime.second.toDouble()
+        )
+
+        val transit = searchHourAngle(body, obs, 0.0, astTime, 1)
+
+        val alt = transit.hor.altitude
+        val sunRiseDateTime = transit.time.toDateTime()
+        val sunRiseLocalDateTime = LocalDateTime.parse(sunRiseDateTime.toString().dropLast(5), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        val transitUserDateTime = convertToLocalTZ(sunRiseLocalDateTime).toLocalDateTime()
+
+        return Pair(transitUserDateTime,alt)
+    }
+
+    fun calcObjPosition(time: String, latitude: String, longitude: String, elevation: Double, body: Body, eq: Boolean = true): Pair<String,String> {
 
         val df = DecimalFormat("#.##")
 
@@ -99,16 +127,20 @@ object CalculateDsoUseCase {
             equdate = EquatorEpoch.OfDate,
             aberration = Aberration.Corrected
         )
+        //TODO fix this to get HA apparent instead of RA
+        val hourAngle = hourAngle(
+            body = body,
+            time = astTime,
+            observer = obs,
+        )
 
         val raSidereal = equatorial.ra
 
-        val raDecimal = raSidereal * 15
-
-        val raDeg = raDecimal.toInt()
-        val raMin = (raDecimal - raDeg) * 60
+        val raHour = raSidereal.toInt()
+        val raMin = (raSidereal - raHour) * 60
         val raSec = (raMin - raMin.toInt()) * 60
 
-        val raString = "${raDeg}:${raMin.toInt().toString().trimStart('-')}:${df.format(raSec).trimStart('-')}"
+        val raString = "${raHour}h${raMin.toInt().toString().trimStart('-')}m${df.format(raSec).trimStart('-')}s"
 
         val decDecimal = equatorial.dec
 

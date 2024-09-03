@@ -12,6 +12,7 @@ import com.pilot.astrobuddy.domain.use_case.calculate_astro.CalculateDsoUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
 import com.pilot.astrobuddy.domain.use_case.get_objects.GetAstroObjectUseCase
 import com.pilot.astrobuddy.domain.use_case.get_objects.GetSavedObjectUseCase
+import com.pilot.astrobuddy.setings_store.SettingsStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -24,7 +25,8 @@ class ObjectDisplayViewModel @Inject constructor(
     private val getAstroObjectUseCase: GetAstroObjectUseCase,
     private val getSavedObjectUseCase: GetSavedObjectUseCase,
     private val getSavedLocUseCase: GetSavedLocUseCase,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val settingsStore: SettingsStore
 ) : ViewModel() {
 
     //initialise a mutable state
@@ -142,8 +144,43 @@ class ObjectDisplayViewModel @Inject constructor(
         }
     }
 
+    fun getObjTransit(){
+        viewModelScope.launch{
+            //TODO make this based on location selected on home screen
+            val tempLoc = getSavedLocUseCase.getAllSaved()[0]
+            val loc = getSavedLocUseCase.getLocation(tempLoc)
+
+            val obj = _state.value.astroObject
+
+            if(obj!=null){
+                val body = CalculateDsoUseCase.getCustomBody(
+                    obj.RA.toString(),
+                    obj.Dec.toString()
+                )
+
+                val transit = CalculateDsoUseCase.calcObjTransit(
+                    time = LocalDateTime.now().toString(),
+                    latitude = loc.latitude.toString(),
+                    longitude = loc.longitude.toString(),
+                    elevation = loc.elevation,
+                    body = body
+                )
+
+                _state.value = _state.value.copy(transit = transit)
+            }
+        }
+    }
+
     fun ceaseLoading() {
         _state.value = _state.value.copy(isLoading = false)
+    }
+
+    fun getTimeFormat(): String{
+        var result = ""
+        viewModelScope.launch{
+            result = settingsStore.getTimeFormatFromDataStore()
+        }
+        return result
     }
 
 }

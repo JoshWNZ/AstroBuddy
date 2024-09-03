@@ -48,7 +48,9 @@ import com.pilot.astrobuddy.presentation.object_display.components.ObjectImageFr
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.absoluteValue
+import kotlin.math.round
 import kotlin.math.roundToInt
 
 const val imageScale = 200
@@ -204,6 +206,7 @@ fun ObjectDisplayScreen(
                                 }
                             }
                             Divider()
+
                             //Object Type
                             Box(
                                 modifier = Modifier
@@ -260,9 +263,8 @@ fun ObjectDisplayScreen(
                                     .padding(start = 8.dp),
                                 contentAlignment = Alignment.CenterStart
                             ){
-                                //TODO make this h:m:s (may need to change usecase)
                                 val raApparent = curPos.first
-                                Text("RA (of now):   $raApparent")
+                                Text("HA (now):   $raApparent")
                             }
                             Divider()
 
@@ -274,13 +276,22 @@ fun ObjectDisplayScreen(
                                 contentAlignment = Alignment.CenterStart
                             ){
                                 val decApparent = curPos.second
-                                Text("Dec (of now):  $decApparent")
+                                Text("Dec (now):  $decApparent")
                             }
                             Divider()
 
                             viewModel.getObjRiseSet()
+                            viewModel.getObjTransit()
+
+                            val timeFormat = viewModel.getTimeFormat()
+
+                            val timeFormatter = if(timeFormat == "12h"){
+                                DateTimeFormatter.ofPattern("hh:mm a")}
+                            else{
+                                DateTimeFormatter.ofPattern("HH:mm")}
 
                             val riseSet = state.riseSet?:Pair(LocalDateTime.MIN, LocalDateTime.MIN)
+                            val transit = state.transit?:Pair(LocalDateTime.MIN, 0.0)
 
                             //Rise
                             Box(
@@ -293,7 +304,24 @@ fun ObjectDisplayScreen(
                                 if(rise==LocalDateTime.MIN){
                                     Text("Rises:   N/A")
                                 }else{
-                                    Text("Rises:   $rise")
+                                    Text("Rises:   ${timeFormatter.format(rise)}")
+                                }
+                            }
+                            Divider()
+
+                            //Transit
+                            Box(
+                                modifier = Modifier
+                                    .height(32.dp)
+                                    .padding(start = 8.dp),
+                                contentAlignment = Alignment.CenterStart
+                            ){
+                                val transitTime = transit.first
+                                val maxAlt = round(transit.second * 10) / 10
+                                if(transitTime==LocalDateTime.MIN || maxAlt < 0.0){
+                                    Text("Transits:   N/A")
+                                }else{
+                                    Text("Transits:   ${timeFormatter.format(transitTime)}   (Max alt. ${maxAlt}°)")
                                 }
                             }
                             Divider()
@@ -309,7 +337,7 @@ fun ObjectDisplayScreen(
                                 if(set==LocalDateTime.MIN){
                                     Text("Sets:   N/A")
                                 }else{
-                                    Text("Sets:   $set")
+                                    Text("Sets:   ${timeFormatter.format(set)}")
                                 }
 
                             }
@@ -348,7 +376,7 @@ fun ObjectDisplayScreen(
                             ){
                                 val mag = obj.getMagnitude()?:0.0
                                 val rndMag = (mag * 100).roundToInt() / 100.0
-                                Text("App. Mag: $rndMag")
+                                Text("Mag: $rndMag")
                             }
                             Divider()
 
@@ -359,7 +387,7 @@ fun ObjectDisplayScreen(
                                     .padding(start = 8.dp),
                                 contentAlignment = Alignment.CenterStart
                             ){
-                                Text("Size :  "+obj.getSize().first+"\', "+obj.getSize().second+"\'")
+                                Text("Size :  "+obj.getSize().first+"\' x "+obj.getSize().second+"\'")
                             }
                             Divider()
 

@@ -8,6 +8,7 @@ data class ObjectDisplayState(
     val astroObject: AstroObject? = null,
     val apparentPos: Pair<String,String>? = null,
     val riseSet: Pair<LocalDateTime,LocalDateTime>? = null,
+    val transit: Pair<LocalDateTime,Double>? = null,
     val error: String = "",
     val isSaved: Boolean = false
 )
