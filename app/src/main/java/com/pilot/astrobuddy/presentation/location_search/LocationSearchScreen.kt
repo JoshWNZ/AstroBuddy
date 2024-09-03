@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -24,13 +25,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -63,6 +63,16 @@ fun LocationSearchScreen(
 ){
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
+
+    //initialise states n scopes for location services
+    val locPermissionState = rememberPermissionState(
+        android.Manifest.permission.ACCESS_COARSE_LOCATION
+    )
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val locClient = remember{
+        LocationServices.getFusedLocationProviderClient(context)
+    }
 
     Scaffold (
         scaffoldState = scaffoldState,
@@ -97,59 +107,14 @@ fun LocationSearchScreen(
                                 .weight(0.85f),
                             placeholder = {
                                 Text(text = "Enter location or coordinates")
-                            }
-                        )
-                        //initialise states n scopes for location services
-                        val locPermissionState = rememberPermissionState(
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION
-                        )
-                        val scope = rememberCoroutineScope()
-                        val context = LocalContext.current
-                        val locClient = remember{
-                            LocationServices.getFusedLocationProviderClient(context)
-                        }
-
-                        //Button to get current location
-                        IconButton(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(CenterVertically)
-                                .weight(0.15f)
-                                .clip(CircleShape)
-                                .background(Color.Blue),
-                            content = {
-                                Icon(imageVector = Icons.Rounded.LocationOn,
-                                    contentDescription = "Location pin")
                             },
-                            onClick = {
-                                if(locPermissionState.status.isGranted){
-                                    //launch a coroutine to get current location
-                                    scope.launch {
-                                        //get the location from the google api
-                                        Log.i("LOC","fetching location")
-                                        val result = locClient.getCurrentLocation(
-                                            Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-                                            CancellationTokenSource().token,
-                                        ).await()
-                                        //generate a semi-unique id from the location info
-                                        val id = ((result.latitude + result.longitude) * result.accuracy)
-                                        //initialise a new location object with the fetched info
-                                        Log.i("LOC","${result.latitude},${result.longitude}")
-                                        val curLoc = OMLocation(
-                                            "", "", "", "", "", "",
-                                            result.altitude, id.toInt(), result.latitude, result.longitude, ""
-                                        )
-                                        //save the location and navigate to the forecast screen as usual
-                                        viewModel.saveLoc(curLoc)
-                                        navController.navigate(Screen.ForecastScreen.route+"/${curLoc.id}")
-                                    }
-                                }else{
-                                    //launch permission request
-                                    locPermissionState.launchPermissionRequest()
-                                }
+                            trailingIcon = {
 
                             }
                         )
+
+
+
 
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -172,7 +137,9 @@ fun LocationSearchScreen(
                                         long = if (arr[1].isBlank() || (arr[1].length <= 2 && !arr[1].isDigitsOnly())) 0.0 else arr[1].toDouble()
                                     }catch(_: NumberFormatException){}
 
-                                    //TODO make this work properly
+                                    val clampedLat = if(lat < -180 || lat > 180) 0.0 else lat
+                                    val clampedLong = if(long < -180 || long > 180) 0.0 else long
+
                                     val coordLoc = OMLocation(
                                         admin1 = "",
                                         admin2 = "",
@@ -180,10 +147,10 @@ fun LocationSearchScreen(
                                         admin4 = "",
                                         country = "",
                                         country_code = "",
-                                        elevation = -1.0,
-                                        id = 9999999,
-                                        latitude = if(lat < -180 || lat > 180) 0.0 else lat,
-                                        longitude = if(long < -180 || long > 180) 0.0 else long,
+                                        elevation = 0.0,
+                                        id = "$clampedLat,$clampedLong".hashCode() xor (Int.MIN_VALUE..Int.MAX_VALUE).random(),
+                                        latitude = clampedLat,
+                                        longitude = clampedLong,
                                         name = "Custom Location"
                                     )
                                     item {
@@ -245,6 +212,51 @@ fun LocationSearchScreen(
         },
         bottomBar = {
             MyBottomNavBar(navController = navController)
+        },
+        floatingActionButton = {
+            //Button to get current location
+            IconButton(
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(72.dp)
+                    .clip(CircleShape)
+                    .background(Color.Blue),
+                content = {
+                    Icon(imageVector = Icons.Rounded.MyLocation,
+                        tint = Color.White,
+                        contentDescription = "Location pin",
+                        modifier = Modifier.fillMaxSize(0.5f)
+                    )
+                },
+                onClick = {
+                    if(locPermissionState.status.isGranted){
+                        //launch a coroutine to get current location
+                        scope.launch {
+                            //get the location from the google api
+                            Log.i("LOC","fetching location")
+                            val result = locClient.getCurrentLocation(
+                                Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+                                CancellationTokenSource().token,
+                            ).await()
+                            //generate a unique id for the location
+                            val id = ((result.latitude + result.longitude) * result.accuracy).hashCode()
+                            //initialise a new location object with the fetched info
+                            Log.i("LOC","${result.latitude},${result.longitude}")
+                            val curLoc = OMLocation(
+                                "", "", "", "", "", "",
+                                result.altitude, id, result.latitude, result.longitude, "Your Location"
+                            )
+                            //save the location and navigate to the forecast screen as usual
+                            viewModel.saveLoc(curLoc)
+                            navController.navigate(Screen.ForecastScreen.route+"/${curLoc.id}")
+                        }
+                    }else{
+                        //launch permission request
+                        locPermissionState.launchPermissionRequest()
+                    }
+
+                }
+            )
         }
     )
 }

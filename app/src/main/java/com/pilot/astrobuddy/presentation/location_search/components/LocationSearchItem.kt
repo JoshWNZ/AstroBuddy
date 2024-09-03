@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
+import kotlin.math.round
 
 @Composable
 fun LocationSearchItem(
@@ -51,12 +52,12 @@ fun LocationSearchItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text= "${location.latitude}, ${location.longitude}",
+                    text= "${round(location.latitude * 100000) / 100000}, ${round(location.longitude * 100000) / 100000}",
                     style = MaterialTheme.typography.body1,
                 )
             }else{
                 Text(
-                    text= "${location.latitude}, ${location.longitude}",
+                    text= "${round(location.latitude * 100000) / 100000}, ${round(location.longitude * 100000) / 100000}",
                     style = MaterialTheme.typography.body2,
                 )
             }
