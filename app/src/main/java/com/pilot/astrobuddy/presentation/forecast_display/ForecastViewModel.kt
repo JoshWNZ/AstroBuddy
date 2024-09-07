@@ -209,4 +209,10 @@ class ForecastViewModel @Inject constructor(
         _state.value = _state.value.copy(sqm=sqm,bortle=bortle)
         //return (sqm.first+sqm.second) / 2
     }
+
+    fun renameLocation(newName: String){
+        viewModelScope.launch{
+            getSavedLocUseCase.renameLocation(id = location.id, name = newName)
+        }
+    }
 }

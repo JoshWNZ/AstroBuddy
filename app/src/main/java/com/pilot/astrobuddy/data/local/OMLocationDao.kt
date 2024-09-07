@@ -12,7 +12,7 @@ Dao to access and update the location and saved-location tables in the database
  */
 @Dao
 interface OMLocationDao{
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertLocation(loc: OMLocationEntity)
 
     @Query("DELETE FROM OMLocationEntity WHERE (:delId) == id")
@@ -27,13 +27,16 @@ interface OMLocationDao{
     @Query("SELECT * FROM OMLocationSavedEntity")
     suspend fun getAllSaved(): List<OMLocationSavedEntity>
 
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun saveLocation(loc: OMLocationSavedEntity)
 
-    @Query("DELETE FROM OMLocationSavedEntity WHERE (:delId)==id")
+    @Query("DELETE FROM OMLocationSavedEntity WHERE (:delId) == id")
     suspend fun unsaveLocation(delId: Int)
 
     //Query method to delete all locations which haven't been saved/bookmarked by the user
     @Query("DELETE FROM OMLocationEntity WHERE id NOT IN(SELECT id FROM OMLocationSavedEntity)")
     suspend fun deleteUnsaved()
+
+    @Query("UPDATE OMLocationEntity SET name = (:name) WHERE (:id) == id")
+    suspend fun renameLocation(id: Int, name: String)
 }

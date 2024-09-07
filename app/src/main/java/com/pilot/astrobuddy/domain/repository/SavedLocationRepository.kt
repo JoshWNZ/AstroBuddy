@@ -11,4 +11,5 @@ interface SavedLocationRepository{
     suspend fun deleteUnsaved()
     suspend fun saveLocation(id: Int)
     suspend fun unsaveLocation(id: Int)
+    suspend fun renameLocation(id: Int, name: String)
 }

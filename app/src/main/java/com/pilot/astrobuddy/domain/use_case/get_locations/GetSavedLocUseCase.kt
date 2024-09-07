@@ -33,4 +33,7 @@ class GetSavedLocUseCase @Inject constructor(
     suspend fun unsaveLocation(id: Int){
         repository.unsaveLocation(id)
     }
+    suspend fun renameLocation(id: Int, name: String){
+        repository.renameLocation(id, name)
+    }
 }

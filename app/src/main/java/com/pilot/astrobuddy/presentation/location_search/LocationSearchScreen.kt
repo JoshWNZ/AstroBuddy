@@ -1,7 +1,6 @@
 package com.pilot.astrobuddy.presentation.location_search
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +20,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -51,8 +52,10 @@ import com.pilot.astrobuddy.presentation.Screen
 import com.pilot.astrobuddy.presentation.common.MyBottomNavBar
 import com.pilot.astrobuddy.presentation.location_search.components.LocDropDownMenu
 import com.pilot.astrobuddy.presentation.location_search.components.LocationSearchItem
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlin.math.roundToInt
 
 @SuppressLint("MissingPermission")
 @OptIn(ExperimentalPermissionsApi::class)
@@ -63,6 +66,7 @@ fun LocationSearchScreen(
 ){
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     //initialise states n scopes for location services
     val locPermissionState = rememberPermissionState(
@@ -72,6 +76,18 @@ fun LocationSearchScreen(
     val context = LocalContext.current
     val locClient = remember{
         LocationServices.getFusedLocationProviderClient(context)
+    }
+
+    // update location list if updated (i.e location saved/unsaved or renamed)
+    LaunchedEffect(Unit){
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<Boolean>("updatedLoc")
+            ?.observeForever { updateLocs ->
+                if(updateLocs){
+                    viewModel.onSearch(viewModel.searchQuery.value)
+                }
+            }
     }
 
     Scaffold (
@@ -112,10 +128,6 @@ fun LocationSearchScreen(
 
                             }
                         )
-
-
-
-
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     LazyColumn(
@@ -233,19 +245,27 @@ fun LocationSearchScreen(
                         //launch a coroutine to get current location
                         scope.launch {
                             //get the location from the google api
-                            Log.i("LOC","fetching location")
                             val result = locClient.getCurrentLocation(
                                 Priority.PRIORITY_BALANCED_POWER_ACCURACY,
                                 CancellationTokenSource().token,
                             ).await()
                             //generate a unique id for the location
+                            if(result==null){
+                                snackbarHostState.showSnackbar("Failed to fetch location.")
+                                cancel()
+                            }
                             val id = ((result.latitude + result.longitude) * result.accuracy).hashCode()
+
+                            val roundedLat = (result.latitude * 100000).toInt() / 100000.0
+                            val roundedLong = (result.longitude * 100000).toInt() / 100000.0
+                            val roundedAlt = result.altitude.roundToInt().toDouble()
+
                             //initialise a new location object with the fetched info
-                            Log.i("LOC","${result.latitude},${result.longitude}")
                             val curLoc = OMLocation(
                                 "", "", "", "", "", "",
-                                result.altitude, id, result.latitude, result.longitude, "Your Location"
+                                roundedAlt, id, roundedLat, roundedLong, "Your Location"
                             )
+
                             //save the location and navigate to the forecast screen as usual
                             viewModel.saveLoc(curLoc)
                             navController.navigate(Screen.ForecastScreen.route+"/${curLoc.id}")

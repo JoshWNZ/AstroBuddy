@@ -44,4 +44,8 @@ class SavedLocationRepositoryImpl @Inject constructor(
     override suspend fun unsaveLocation(id: Int) {
         locDao.unsaveLocation(id)
     }
+
+    override suspend fun renameLocation(id: Int, name: String) {
+        locDao.renameLocation(id, name)
+    }
 }
