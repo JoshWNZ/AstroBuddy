@@ -6,9 +6,10 @@ import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.domain.repository.SavedLocationRepository
 import javax.inject.Inject
 
-/*
-Implementation of the savedlocationrepository, which takes the database access object
-and gives implementations of each method, mapping the direct database outputs to more useful objects
+/**
+ * Implementation of SavedLocationRepository utilising OMLocationDao
+ *
+ * Dao is provided via hilt DI
  */
 class SavedLocationRepositoryImpl @Inject constructor(
     private val locDao: OMLocationDao

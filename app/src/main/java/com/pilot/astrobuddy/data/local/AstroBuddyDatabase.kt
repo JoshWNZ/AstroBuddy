@@ -7,6 +7,9 @@ import com.pilot.astrobuddy.data.local.entity.AstroObjectEntity
 import com.pilot.astrobuddy.data.local.entity.OMLocationEntity
 import com.pilot.astrobuddy.data.local.entity.OMLocationSavedEntity
 
+/**
+ * Room Database to store locations, saved astro objects, and equipment
+ */
 @Database(
     entities = [
         OMLocationEntity::class,

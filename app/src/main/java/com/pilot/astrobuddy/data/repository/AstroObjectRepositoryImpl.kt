@@ -5,6 +5,11 @@ import com.pilot.astrobuddy.domain.model.astro_objects.AstroObject
 import com.pilot.astrobuddy.domain.repository.AstroObjectRepository
 import javax.inject.Inject
 
+/**
+ * Implementation of AstroobjectRepository utilising AstroObjectDao
+ *
+ * DAO is provided via hilt DI
+ */
 class AstroObjectRepositoryImpl @Inject constructor(
     private val objDao: AstroObjectDao
 ) : AstroObjectRepository {

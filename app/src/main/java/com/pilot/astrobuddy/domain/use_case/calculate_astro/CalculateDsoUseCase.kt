@@ -17,10 +17,17 @@ import java.text.DecimalFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+/**
+ * Use-case for calculating positional information about DSOs
+ */
 object CalculateDsoUseCase {
 
-    /*
+    /**
      * Define and return a custom body based on given ra/dec
+     *
+     * @param ra RA of the object
+     * @param dec DEC of the object
+     * @return the custom body
      */
     fun getCustomBody(ra: String, dec: String): Body{
 
@@ -39,6 +46,16 @@ object CalculateDsoUseCase {
         return Body.Star1
     }
 
+    /**
+     * Calculate the rise and set times for a given body
+     *
+     * @param time the time to search from
+     * @param latitude the latitude of the observer
+     * @param longitude the longitude of the observer
+     * @param elevation the elevation of the observer
+     * @param body the body to search for (defined with getCustomBody())
+     * @return pair of LocalDateTimes for the rise and set (LocalDateTime.MIN if N/A)
+     */
     fun calcObjRiseSet(time: String, latitude: String, longitude: String, elevation: Double, body: Body): Pair<LocalDateTime,LocalDateTime> {
         val localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
@@ -75,6 +92,15 @@ object CalculateDsoUseCase {
         return Pair(riseUserDateTime,setUserDateTime)
     }
 
+    /**
+     * Calculate the transit time and max altitude for a given object
+     * @param time the time to search from
+     * @param latitude the latitude of the observer
+     * @param longitude the longitude of the observer
+     * @param elevation the elevation of the observer
+     * @param body the body to search for (defined with getCustomBody())
+     * @return pair of LocalDateTime and Double for the transit and max alt
+     */
     fun calcObjTransit(time: String, latitude: String, longitude: String, elevation: Double, body: Body): Pair<LocalDateTime,Double> {
         val localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
@@ -101,6 +127,16 @@ object CalculateDsoUseCase {
         return Pair(transitUserDateTime,alt)
     }
 
+    /**
+     * Calculate the current position of a given object in the sky
+     * @param time the time to search from
+     * @param latitude the latitude of the observer
+     * @param longitude the longitude of the observer
+     * @param elevation the elevation of the observer
+     * @param body the body to search for (defined with getCustomBody())
+     * @param eq whether to return eq or az/alt co-ords (default=true)
+     * @return pair of Strings for RA and Dec
+     */
     fun calcObjPosition(time: String, latitude: String, longitude: String, elevation: Double, body: Body, eq: Boolean = true): Pair<String,String> {
 
         val df = DecimalFormat("#.##")

@@ -9,11 +9,14 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Use-case to get forecasts
+ */
 class GetForecastUseCase @Inject constructor(
     private val repository: ForecastRepository
 ) {
-    /*
-    Overridden invocation function to return a flow of resources containing weather forecasts
+    /**
+     * Invocation function to return a flow of resources containing OMForecast
      */
     operator fun invoke(lat: String, long: String, days: Int): Flow<Resource<OMForecast>> = flow{
         try{

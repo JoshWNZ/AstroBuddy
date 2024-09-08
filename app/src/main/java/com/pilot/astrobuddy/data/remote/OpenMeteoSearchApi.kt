@@ -6,9 +6,14 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface OpenMeteoSearchApi {
-    /*
-    Function to get a number of autocomplete/fuzzy-searched location results from a given location name
-    Mapping the output to an OMLocationResultDto object
+    /**
+     * Function to get a number of autocomplete/fuzzy-searched location results.
+     *
+     * @param query search query
+     * @param count number of results to return
+     * @param lang which language to search in
+     * @param format result format (DO NOT OVERRIDE)
+     * @return location search results mapped to OMLocationResultDto object.
      */
     @GET("/v1/search")
     suspend fun getLocations(

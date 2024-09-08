@@ -3,7 +3,9 @@ package com.pilot.astrobuddy.setings_store
 import com.pilot.astrobuddy.domain.model.warning.WarningSeverity
 import com.pilot.astrobuddy.domain.model.warning.WarningType
 
-
+/**
+ * SettingsStore interface
+ */
 interface SettingsStore {
     suspend fun saveDaysToDataStore(forecastDays: Int)
     suspend fun getDaysFromDataStore(): Int

@@ -5,11 +5,16 @@ import com.pilot.astrobuddy.domain.model.astro_objects.AstroObject
 import com.pilot.astrobuddy.domain.repository.SavedObjectRepository
 import javax.inject.Inject
 
+/**
+ * Implementation of SavedObjectRepository utilising SavedObjectDao
+ *
+ * Dao is provided via hilt DI
+ */
 class SavedObjectRepositoryImpl @Inject constructor(
     private val saveObjDao: SavedObjectDao
 ): SavedObjectRepository {
-    override suspend fun insertObject(loc: AstroObject) {
-        saveObjDao.insertObject(loc.toAstroObjectEntity())
+    override suspend fun insertObject(obj: AstroObject) {
+        saveObjDao.insertObject(obj.toAstroObjectEntity())
     }
 
     override suspend fun deleteObject(delName: String) {

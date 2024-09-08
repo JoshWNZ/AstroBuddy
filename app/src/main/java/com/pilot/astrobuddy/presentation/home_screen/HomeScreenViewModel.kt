@@ -1,6 +1,5 @@
 package com.pilot.astrobuddy.presentation.home_screen
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -15,8 +14,9 @@ import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
 import com.pilot.astrobuddy.domain.use_case.get_objects.GetSavedObjectUseCase
 import com.pilot.astrobuddy.setings_store.SettingsStore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -47,28 +47,36 @@ class HomeScreenViewModel @Inject constructor(
 
         //fetch astro equipment
         viewModelScope.launch{
-            getAstroEquipmentUseCase.getAllAstroEquipment().onEach{ result ->
-                when(result){
-                    is Resource.Success -> {
-                        astroEquipmentList = result.data?:emptyList()
-                        Log.i("HOMELOAD","equipment fetched")
-                    }
-                    is Resource.Error -> {
-                        _state.value = _state.value.copy(
-                            error = result.message ?: "An unexpected error occurred"
-                        )
-                    }
-                    is Resource.Loading -> {
-                        _state.value = _state.value.copy(isLoading = true)
+            val equipmentDefer = async{
+                getAstroEquipmentUseCase.getAllAstroEquipment().first{ result ->
+                    when(result){
+                        is Resource.Success -> {
+                            astroEquipmentList = result.data?:emptyList()
+                            true
+                        }
+                        is Resource.Error -> {
+                            _state.value = _state.value.copy(
+                                error = result.message ?: "An unexpected error occurred"
+                            )
+                            false
+                        }
+                        is Resource.Loading -> {
+                            _state.value = _state.value.copy(isLoading = true)
+                            false
+                        }
                     }
                 }
-            }.launchIn(this)
+            }
 
-            savedLocationList = getSavedLocUseCase.getAllLocations()
-            Log.i("HOMELOAD","locations fetched")
+            val locationDefer = async{
+                savedLocationList = getSavedLocUseCase.getAllLocations()
+            }
 
-            savedObjectList = getSavedObjectUseCase.getAllObjects()
-            Log.i("HOMELOAD","objects fetched")
+            val objectsDefer = async{
+                savedObjectList = getSavedObjectUseCase.getAllObjects()
+            }
+
+            awaitAll(equipmentDefer,locationDefer,objectsDefer)
 
             _state.value = _state.value.copy(
                 isLoading = false,

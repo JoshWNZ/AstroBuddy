@@ -3,8 +3,9 @@ package com.pilot.astrobuddy.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
-/*
-Database entity to contain openmeteo-sourced location objects
+
+/**
+ * Database entity to contain openmeteo-sourced location objects
  */
 @Entity
 data class OMLocationEntity(
@@ -20,6 +21,11 @@ data class OMLocationEntity(
     val longitude: Double,
     val name: String,
 ){
+    /**
+     * Convert db record to OMLocation object
+     *
+     * @return OMLocation object
+     */
     fun toLocation(): OMLocation{
         return OMLocation(admin1, admin2, admin3, admin4, country, country_code, elevation, id, latitude, longitude, name)
     }

@@ -1,5 +1,10 @@
 package com.pilot.astrobuddy.domain.model.astro_objects
 
+/**
+ * Helper object containing maps defining object type and constellation abbreviations.
+ * TO FIX: probably an inefficient way to do this, should be singleton or in the Constants, unless
+ * its effectively singleton because its only user is, idk.
+ */
 object ObjDefinitions {
     val objectTypes: Map<String,String> = hashMapOf(
         "*" to "Star",

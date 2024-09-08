@@ -9,11 +9,14 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Use-case to get location search results
+ */
 class GetLocationsUseCase @Inject constructor(
     private val repository: ForecastRepository
 ) {
-    /*
-    Overridden invocation function to return a flow of resources containing lists of location objects
+    /**
+     * Invocation function to return a flow of resources containing lists of location objects
      */
     operator fun invoke(query: String): Flow<Resource<List<OMLocation>>> = flow{
         try{

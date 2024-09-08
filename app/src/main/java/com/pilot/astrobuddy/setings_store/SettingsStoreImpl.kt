@@ -16,6 +16,9 @@ import javax.inject.Inject
 
 val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
+/**
+ * SettingsStore Implementation
+ */
 class SettingsStoreImpl @Inject constructor(
     @ApplicationContext context: Context
 ): SettingsStore {

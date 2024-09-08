@@ -8,9 +8,17 @@ import kotlinx.coroutines.flow.flow
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Use-case to interact with the Astro Equipment database.
+ */
 class GetAstroEquipmentUseCase @Inject constructor(
     private val repository: AstroEquipmentRepository
 ){
+    /**
+     * Fetch all astro equipment
+     *
+     * @return Flow of Resource containing List of all AstroEquipment records.
+     */
     suspend fun getAllAstroEquipment(): Flow<Resource<List<AstroEquipment>>> = flow{
         try{
             emit(Resource.Loading())
@@ -26,6 +34,12 @@ class GetAstroEquipmentUseCase @Inject constructor(
         }
     }
 
+    /**
+     * Fetch a particular AstroEquipment record by ID
+     *
+     * @param id id of the record
+     * @return Flow of resource of one-element list of AstroEquipment
+     */
     suspend fun getAstroEquipment(id: Int): Flow<Resource<List<AstroEquipment>>> = flow{
         try{
             emit(Resource.Loading())
@@ -41,10 +55,20 @@ class GetAstroEquipmentUseCase @Inject constructor(
         }
     }
 
+    /**
+     * Save an AstroEquipment object to the database
+     *
+     * @param equip AstroEquipment to save
+     */
     suspend fun saveAstroEquipment(equip: AstroEquipment){
         repository.saveAstroEquipment(equip)
     }
 
+    /**
+     * Remove an AstroEquipment object from the database
+     *
+     * @param id id of the equipment record to remove
+     */
     suspend fun unsaveAstroEquipment(id: Int){
         repository.unsaveAstroEquipment(id)
     }

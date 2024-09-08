@@ -5,9 +5,15 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.TimeZone
 
+/**
+ * Helper object containing timezone conversion functions
+ */
 object TimeConversion {
-    /*
-      Convert from device timezone to utc
+    /**
+     * Convert from device timezone to UTC.
+     *
+     * @param time local time to convert
+     * @return resulting UTC time
      */
     fun convertToUTC(time: LocalDateTime): ZonedDateTime {
         val timeZone = TimeZone.getDefault().toZoneId()
@@ -18,8 +24,11 @@ object TimeConversion {
         return utcDateTime
     }
 
-    /*
-      Convert from UTC to device timezone
+    /**
+     * Convert from UTC to device timezone
+     *
+     * @param time UTC time to convert
+     * @return resulting local time
      */
     fun convertToLocalTZ(time: LocalDateTime): ZonedDateTime {
         val timeZone = TimeZone.getDefault().toZoneId()

@@ -9,6 +9,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Contains provider for dagger-hilt to inject SettingsStore
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object SettingsModule {

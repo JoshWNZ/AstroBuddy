@@ -4,6 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.pilot.astrobuddy.domain.model.astro_objects.AstroObject
 
+/**
+ * RoomDB entity (table) for storing astro objects
+ */
 @Entity
 data class AstroObjectEntity (
     @PrimaryKey
@@ -36,7 +39,12 @@ data class AstroObjectEntity (
     val CstarNames: String?="",
     val Identifiers: String?="",
     val CommonNames: String?=""
-    ){
+){
+    /**
+     * Convert db record to AstroObject
+     *
+     * @return AstroObject object
+     */
     fun toAstroObject(): AstroObject{
         return AstroObject(Name, Type, RA, Dec, Const, MajAx, MinAx, PosAng, BMag, VMag, JMag,
             HMag, KMag, SurfBr, Hubble, Pax, PmRA, PMDec, RadVel, Redshift, CstarUMag, CstarBMag,

@@ -14,14 +14,19 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.round
 
-/*
-  Use-case to calculate rising and setting for the sun and moon.
+/**
+  * Use-case to calculate positional information for the sun and moon.
  */
 object CalculateSunMoonUseCase {
 
-    /*
-      Calculate the time of sunrise and sunset for a given day
-      Returns a pair of strings in the specified time format
+    /**
+     * Calculate the rise and set times for the sun
+     *
+     * @param time the time to search from
+     * @param latitude the latitude of the observer
+     * @param longitude the longitude of the observer
+     * @param elevation the elevation of the observer
+     * @return pair of LocalDateTimes for the rise and set (LocalDateTime.MIN if N/A)
      */
     fun calculateSunRiseSet(time: String, latitude: String, longitude: String, elevation: Double): Pair<LocalDateTime,LocalDateTime> {
 
@@ -60,9 +65,14 @@ object CalculateSunMoonUseCase {
         return Pair(sunRiseUserDateTime,sunSetUserDateTime)
     }
 
-    /*
-      Calculate the time of moonrise and moonset for a given day
-      Returns a pair of strings in the specified time format
+    /**
+     * Calculate the rise and set times for the moon
+     *
+     * @param time the time to search from
+     * @param latitude the latitude of the observer
+     * @param longitude the longitude of the observer
+     * @param elevation the elevation of the observer
+     * @return pair of LocalDateTimes for the rise and set (LocalDateTime.MIN if N/A)
      */
     fun calculateMoonRiseSet(time: String, latitude: String, longitude: String, elevation: Double): Pair<LocalDateTime,LocalDateTime> {
 
@@ -101,9 +111,11 @@ object CalculateSunMoonUseCase {
         return Pair(moonRiseUserDateTime,moonSetUserDateTime)
     }
 
-    /*
-      Calculate the percentage of illumination and the phase of the moon for a given day
-      Returns a pair of strings containing illumination then phase.
+    /**
+     * Calculate the percentage illumination and phase of the moon
+     *
+     * @param time the time to calculate for
+     * @return Pair of strings for percent illuminated (##%) and phase
      */
     fun calculateMoonIllumPhase(time: String): Pair<String,String> {
         val moonIllumString: String
@@ -140,6 +152,16 @@ object CalculateSunMoonUseCase {
         return Pair(moonIllumString,moonPhaseString)
     }
 
+    /**
+     * Calculate the time the sun passes through a given altitude (indicating specific dusks/dawns)
+     *
+     * @param time the time to search from
+     * @param latitude the latitude of the observer
+     * @param longitude the longitude of the observer
+     * @param elevation the elevation of the observer
+     * @param altitude the sun altitude to search for
+     * @return pair of LocalDateTimes for the dusk and dawn (LocalDateTime.MIN if N/A)
+     */
     private fun calcDuskDawn(time: String, latitude: String, longitude: String, elevation: Double, altitude: Double): Pair<LocalDateTime,LocalDateTime>{
         val localDateTime = LocalDateTime.parse(time, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
@@ -170,14 +192,41 @@ object CalculateSunMoonUseCase {
         return Pair(duskLocalDateTime,dawnLocalDateTime)
     }
 
+    /**
+     * Calculate the times the sun passes through the threshold for civil dusk and dawn
+     *
+     * @param time the time to search from
+     * @param latitude the latitude of the observer
+     * @param longitude the longitude of the observer
+     * @param elevation the elevation of the observer
+     * @return pair of LocalDateTimes for civil dusk and dawn (LocalDateTime.MIN if N/A)
+     */
     fun calcCivilDark(time: String, latitude: String, longitude: String, elevation: Double): Pair<LocalDateTime,LocalDateTime>{
         return calcDuskDawn(time,latitude,longitude,elevation,-6.0)
     }
 
+    /**
+     * Calculate the times the sun passes through the threshold for nautical dusk and dawn
+     *
+     * @param time the time to search from
+     * @param latitude the latitude of the observer
+     * @param longitude the longitude of the observer
+     * @param elevation the elevation of the observer
+     * @return pair of LocalDateTimes for nautical dusk and dawn (LocalDateTime.MIN if N/A)
+     */
     fun calcNauticalDark(time: String, latitude: String, longitude: String, elevation: Double): Pair<LocalDateTime,LocalDateTime>{
         return calcDuskDawn(time,latitude,longitude,elevation,-12.0)
     }
 
+    /**
+     * Calculate the times the sun passes through the threshold for astronomical dusk and dawn
+     *
+     * @param time the time to search from
+     * @param latitude the latitude of the observer
+     * @param longitude the longitude of the observer
+     * @param elevation the elevation of the observer
+     * @return pair of LocalDateTimes for astronomical dusk and dawn (LocalDateTime.MIN if N/A)
+     */
     fun calcAstroDark(time: String, latitude: String, longitude: String, elevation: Double): Pair<LocalDateTime,LocalDateTime>{
         return calcDuskDawn(time,latitude,longitude,elevation,-18.0)
     }

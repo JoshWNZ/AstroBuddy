@@ -23,6 +23,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.pilot.astrobuddy.R
 import com.pilot.astrobuddy.presentation.Screen
 
+/**
+ * Custom bottom nav bar for all screens
+ */
 @Composable
 fun MyBottomNavBar(navController: NavController){
     val items = listOf(

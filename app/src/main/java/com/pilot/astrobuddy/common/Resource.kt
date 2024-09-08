@@ -1,7 +1,7 @@
 package com.pilot.astrobuddy.common
 
-/*
-Class to handle resource loading within coroutines/flows
+/**
+ * Class to handle resource loading within coroutines/flows
  */
 sealed class Resource<T>(val data: T? = null, val message: String? = null){
     class Success<T>(data: T) : Resource<T>(data)

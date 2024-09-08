@@ -9,9 +9,16 @@ import com.pilot.astrobuddy.R
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
+/**
+ * Use-case to calculate light-pollution for a given location.
+ * Based on map image, currently broken.
+ */
 class CalculateLightPollUseCase @Inject constructor(
     context: Context
 ){
+    /**
+     * Map containing colour definitions for sky brightness ranges.
+     */
     private val colorMap: Map<Color,Pair<Double,Double>> = mapOf(
         Pair(Color.hsv(0f,0f,0f),Pair(22.00,21.99)),
         Pair(Color.hsv(0f,0f,0.14f),Pair(21.99,21.93)),
@@ -30,14 +37,21 @@ class CalculateLightPollUseCase @Inject constructor(
         Pair(Color.hsv(0f,0f,1f),Pair(17.80,Double.MIN_VALUE))
     )
 
+    /**
+     * Image to sample colours from
+     */
     private val image: Bitmap? = BitmapFactory.decodeResource(context.resources, R.drawable.world2022)
 
     init{
         Log.i("LIGHTPOLL","init")
     }
 
-    /*
-      Calculate the light pollution range in magnitude per square metre (sqm) from lat/long
+    /**
+     * Calculate the light pollution range in magnitude per square metre (sqm) from lat/long
+     *
+     * @param lat location latitude
+     * @param long location longitude
+     * @return range of sky brightness values
      */
     fun calcLightPol(lat: Double, long: Double): Pair<Double,Double>{
         val pixelCoord = convertLatLongToPixelCoords(lat,long)
@@ -60,6 +74,13 @@ class CalculateLightPollUseCase @Inject constructor(
         return range
     }
 
+    /**
+     * Convert SQM sky brightness to bortle scale
+     * CURRENTLY BROKEN
+     *
+     * @param sqm sky brightness (from calcLightPol())
+     * @return bortle scale classification
+     */
     fun calcBortleFromSQM(sqm: Double): Int {
         return when{
             sqm < 18.0 -> 8
@@ -67,6 +88,13 @@ class CalculateLightPollUseCase @Inject constructor(
         }
     }
 
+    /**
+     * Helper function to convert lat/long values to coordinates on the map image
+     *
+     * @param lat latitude
+     * @param long longitude
+     * @return pair of integer pixel co-ords
+     */
     private fun convertLatLongToPixelCoords(lat: Double, long: Double): Pair<Int,Int>{
         //65S to 75N, 180W to 180E
         Log.i("IMAGENULLcoord",(image==null).toString())

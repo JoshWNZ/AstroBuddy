@@ -1,5 +1,8 @@
 package com.pilot.astrobuddy.data.remote.dto.openmeteo_dto
 
+/**
+ * DTO record for hourly forecasts.
+ */
 data class HourlyDto(
     val apparent_temperature: List<Double>,
     val cloudcover: List<Int>,

@@ -4,6 +4,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.pilot.astrobuddy.data.local.entity.AstroObjectEntity
 
+/**
+ * Room Database to store pre-defined astronomical objects
+ */
 @Database(
     entities = [AstroObjectEntity::class],
     exportSchema = false,

@@ -8,8 +8,11 @@ import com.pilot.astrobuddy.domain.repository.ForecastRepository
 import com.pilot.astrobuddy.setings_store.SettingsStore
 import javax.inject.Inject
 
-/*
-Implementation of the forecastrepository, which takes the various apis and applies the relevant methods
+
+/**
+ * Implementation of ForecastRepository utilising OpenMeteoApi, OpenMeteoSearchApi, and SettingsStore.
+ *
+ * APIs and settingsStore are provided via hilt DI
  */
 class ForecastRepositoryImpl @Inject constructor(
     private val apiOM: OpenMeteoApi,

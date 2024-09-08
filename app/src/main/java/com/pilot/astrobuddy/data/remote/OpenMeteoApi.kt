@@ -4,10 +4,21 @@ import com.pilot.astrobuddy.data.remote.dto.openmeteo_dto.OMForecastDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+/**
+ * API definition for OpenMeteo forecasts.
+ */
 interface OpenMeteoApi {
-    /*
-    Function to get a forecast from the openmeteo api, given a lat and long value, and map the json output
-     to an OMForecastDto object
+    /**
+     * Function to get a forecast from the openmeteo api.
+     *
+     * @param lat latitude
+     * @param long longitude
+     * @param hourly forecast fields (should not be overridden)
+     * @param timezone timezone (should not be overridden)
+     * @param days number of days to forecast
+     * @param tempUnit temperature units (F or C)
+     * @param speedUnit speed units (mph or kph)
+     * @return Forecast result mapped to OMForecastDto object.
      */
     @GET("/v1/forecast")
     suspend fun getForecast(

@@ -119,8 +119,8 @@ fun HomeScreen(
                     if(state.isLoading){
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                     }
-                    //CONTENT
 
+                    //CONTENT
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly

@@ -31,8 +31,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
-/*
-Contains providers for dagger hilt to inject dependencies
+/**
+ * Contains providers for dagger-hilt to inject dependencies
  */
 @Module
 @InstallIn(SingletonComponent::class)

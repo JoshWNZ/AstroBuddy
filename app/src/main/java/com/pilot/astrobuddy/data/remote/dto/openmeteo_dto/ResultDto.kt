@@ -2,6 +2,9 @@ package com.pilot.astrobuddy.data.remote.dto.openmeteo_dto
 
 import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 
+/**
+ * DTO for OpenMeteo Locations.
+ */
 data class ResultDto(
     val admin1: String?,
     val admin1_id: Int?,
@@ -24,6 +27,11 @@ data class ResultDto(
     val postcodes: List<String>?,
     val timezone: String
 ){
+    /**
+     * Convert DTO to OMLocation object
+     *
+     * @return OMLocation object
+     */
     fun toLocation(): OMLocation{
         return OMLocation(
             admin1,

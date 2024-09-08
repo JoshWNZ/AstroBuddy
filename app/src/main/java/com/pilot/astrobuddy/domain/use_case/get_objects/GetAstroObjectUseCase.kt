@@ -8,9 +8,17 @@ import kotlinx.coroutines.flow.flow
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Use-case for fetching astronomical objects
+ */
 class GetAstroObjectUseCase @Inject constructor(
     private val repository: AstroObjectRepository
 ) {
+    /**
+     * Fetch all astro objects
+     *
+     * @return Flow of resource of List of AstroObjects
+     */
     suspend fun getAllAstroObjects(): Flow<Resource<List<AstroObject>>> = flow{
        try{
            emit(Resource.Loading())
@@ -26,6 +34,12 @@ class GetAstroObjectUseCase @Inject constructor(
        }
     }
 
+    /**
+     * Search AstroObjects with a given string
+     *
+     * @param query search query
+     * @return Flow of resource of List of AstroObject search results
+     */
     suspend fun searchAstroObjects(query: String): Flow<Resource<List<AstroObject>>> = flow{
         try{
             emit(Resource.Loading())
@@ -41,6 +55,12 @@ class GetAstroObjectUseCase @Inject constructor(
         }
     }
 
+    /**
+     * Fetch a particular AstroObject
+     *
+     * @param name name of the AstroObject to fetch
+     * @return Flow of resource of single-element List of AstroObject
+     */
     suspend fun getAstroObject(name: String): Flow<Resource<List<AstroObject>>> = flow{
         try{
             emit(Resource.Loading())
