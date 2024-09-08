@@ -26,7 +26,12 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.pilot.astrobuddy.R
 import com.pilot.astrobuddy.domain.model.astro_forecast.Astro
 import com.pilot.astrobuddy.domain.model.openmeteo.OMForecast
@@ -48,8 +53,8 @@ fun ForecastSkyScroller(
 
     //Colours for times of day
     val skyMidDay = Color.hsv(197f,0.43f,0.92f)
-    val skyCivilDark = Color.hsv(235f,1f,0.22f)
-    val skyNauticalDark = Color.hsv(235f,1f,0.13f)
+    val skyCivilDark = Color.hsv(235f,1f,0.35f)
+    val skyNauticalDark = Color.hsv(235f,1f,0.15f)
     val skyAstroDark = Color.hsv(235f,1f,0f)
     val skySunRiseSet = Color.hsv(27f,0.94f,0.9f)
 
@@ -83,6 +88,7 @@ fun ForecastSkyScroller(
                 .background(color = skyAstroDark)
                 //.border(width = 1.dp, color = Color.Green)
             ){
+                val textMeasurer = rememberTextMeasurer()
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val width = size.width
                     val height = size.height
@@ -164,13 +170,81 @@ fun ForecastSkyScroller(
                         size = Size(width=dayBlock.second,height=height)
                     )
 
+                    //texts
+                    drawText(
+                        textMeasurer = textMeasurer,
+                        text = "A\nS\nT\nR\nO",
+                        style = TextStyle(
+                            fontSize = 8.sp,
+                            color = Color.White,
+                            lineHeight = 8.sp,
+                            textAlign = TextAlign.Center
+                        ),
+                        topLeft=Offset(x=astroDarkMorningBlock.first+astroDarkMorningBlock.second+10,y=4f)
+                    )
+                    drawText(
+                        textMeasurer = textMeasurer,
+                        text = "A\nS\nT\nR\nO",
+                        style = TextStyle(
+                            fontSize = 8.sp,
+                            color = Color.White,
+                            lineHeight = 8.sp,
+                            textAlign = TextAlign.Center
+                        ),
+                        topLeft=Offset(x=astroDarkEveningBlock.first-28,y=4f)
+                    )
+                    drawText(
+                        textMeasurer = textMeasurer,
+                        text = "N\nA\nU\nT",
+                        style = TextStyle(
+                            fontSize = 8.sp,
+                            color = Color.White,
+                            lineHeight = 8.sp,
+                            textAlign = TextAlign.Center
+                        ),
+                        topLeft=Offset(x=nautDarkMorningBlock.first+nautDarkMorningBlock.second+14,y=4f)
+                    )
+                    drawText(
+                        textMeasurer = textMeasurer,
+                        text = "N\nA\nU\nT",
+                        style = TextStyle(
+                            fontSize = 8.sp,
+                            color = Color.White,
+                            lineHeight = 8.sp,
+                            textAlign = TextAlign.Center
+                        ),
+                        topLeft=Offset(x=nautDarkEveningBlock.first-28,y=4f)
+                    )
+                    drawText(
+                        textMeasurer = textMeasurer,
+                        text = "C\nI\nV\nI\nL",
+                        style = TextStyle(
+                            fontSize = 8.sp,
+                            color = Color.White,
+                            lineHeight = 8.sp,
+                            textAlign = TextAlign.Center
+                        ),
+                        topLeft=Offset(x=civilDarkMorningBlock.first+civilDarkMorningBlock.second+14,y=4f)
+                    )
+                    drawText(
+                        textMeasurer = textMeasurer,
+                        text = "C\nI\nV\nI\nL",
+                        style = TextStyle(
+                            fontSize = 8.sp,
+                            color = Color.White,
+                            lineHeight = 8.sp,
+                            textAlign = TextAlign.Center
+                        ),
+                        topLeft=Offset(x=civilDarkEveningBlock.first-28,y=2f)
+                    )
+
                     if(i==0){
                         //current time line
                         drawLine(
                             color = Color.Magenta.copy(alpha = 0.9f),
                             start = Offset(x=curTime.first,y=0f),
                             end = Offset(x=curTime.first,y=height),
-                            strokeWidth = 8f
+                            strokeWidth = 6f
                         )
                     }
 
