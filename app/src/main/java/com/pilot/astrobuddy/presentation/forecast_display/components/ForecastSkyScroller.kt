@@ -170,6 +170,16 @@ fun ForecastSkyScroller(
                         size = Size(width=dayBlock.second,height=height)
                     )
 
+                    if(i==0){
+                        //current time line
+                        drawLine(
+                            color = Color.Magenta.copy(alpha = 0.9f),
+                            start = Offset(x=curTime.first,y=0f),
+                            end = Offset(x=curTime.first,y=height),
+                            strokeWidth = 6f
+                        )
+                    }
+
                     //texts
                     drawText(
                         textMeasurer = textMeasurer,
@@ -237,16 +247,6 @@ fun ForecastSkyScroller(
                         ),
                         topLeft=Offset(x=civilDarkEveningBlock.first-28,y=2f)
                     )
-
-                    if(i==0){
-                        //current time line
-                        drawLine(
-                            color = Color.Magenta.copy(alpha = 0.9f),
-                            start = Offset(x=curTime.first,y=0f),
-                            end = Offset(x=curTime.first,y=height),
-                            strokeWidth = 6f
-                        )
-                    }
 
                     //daily weather values
                     val dewPoints = fd.hourly.dewpoint_2m.subList(i*24,(i+1)*24)
