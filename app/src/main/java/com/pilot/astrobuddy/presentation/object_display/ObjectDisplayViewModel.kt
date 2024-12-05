@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pilot.astrobuddy.common.Constants
 import com.pilot.astrobuddy.common.Resource
+import com.pilot.astrobuddy.domain.model.openmeteo.OMLocation
 import com.pilot.astrobuddy.domain.use_case.calculate_astro.CalculateDsoUseCase
 import com.pilot.astrobuddy.domain.use_case.get_locations.GetSavedLocUseCase
 import com.pilot.astrobuddy.domain.use_case.get_objects.GetAstroObjectUseCase
@@ -89,8 +90,12 @@ class ObjectDisplayViewModel @Inject constructor(
         viewModelScope.launch{
             //Log.i("OBJPOS","get")
             //TODO make this based on location selected on home screen
-            val tempLoc = getSavedLocUseCase.getAllSaved()[0]
-            val loc = getSavedLocUseCase.getLocation(tempLoc)
+            var loc = OMLocation.getDummyOMLocation()
+
+            if(getSavedLocUseCase.getAllSaved().isNotEmpty()){
+                val locIndex = getSavedLocUseCase.getAllSaved()[0]
+                loc = getSavedLocUseCase.getLocation(locIndex)
+            }
 
             val obj = _state.value.astroObject
 
@@ -119,8 +124,12 @@ class ObjectDisplayViewModel @Inject constructor(
         viewModelScope.launch{
             Log.i("OBJPOS","get")
             //TODO make this based on location selected on home screen
-            val tempLoc = getSavedLocUseCase.getAllSaved()[0]
-            val loc = getSavedLocUseCase.getLocation(tempLoc)
+            var loc = OMLocation.getDummyOMLocation()
+
+            if(getSavedLocUseCase.getAllSaved().isNotEmpty()){
+                val locIndex = getSavedLocUseCase.getAllSaved()[0]
+                loc = getSavedLocUseCase.getLocation(locIndex)
+            }
 
             val obj = _state.value.astroObject
 
@@ -147,8 +156,12 @@ class ObjectDisplayViewModel @Inject constructor(
     fun getObjTransit(){
         viewModelScope.launch{
             //TODO make this based on location selected on home screen
-            val tempLoc = getSavedLocUseCase.getAllSaved()[0]
-            val loc = getSavedLocUseCase.getLocation(tempLoc)
+            var loc = OMLocation.getDummyOMLocation()
+
+            if(getSavedLocUseCase.getAllSaved().isNotEmpty()){
+                val locIndex = getSavedLocUseCase.getAllSaved()[0]
+                loc = getSavedLocUseCase.getLocation(locIndex)
+            }
 
             val obj = _state.value.astroObject
 
